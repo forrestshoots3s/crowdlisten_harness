@@ -29,7 +29,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "mcp",
@@ -41,7 +42,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/terrylinhaochen/crowdlisten_tasks_mcp.git"
+    "url": "https://github.com/Crowdlisten/crowdlisten_tasks_mcp.git"
   },
   "homepage": "https://crowdlisten.com"
 }
