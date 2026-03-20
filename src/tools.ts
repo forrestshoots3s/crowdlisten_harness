@@ -105,7 +105,7 @@ export function callbackHtml(success: boolean, error?: string): string {
 
 export const MCP_ENTRY = {
   command: "npx",
-  args: ["-y", "@crowdlisten/kanban-mcp"],
+  args: ["-y", "@crowdlisten/kanban"],
 };
 
 export interface AgentConfig {

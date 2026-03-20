@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * CrowdListen Kanban MCP Server
+ * CrowdListen Kanban CLI + MCP Server
  *
  * Connects any MCP-compatible coding agent (Claude Code, Cursor, Gemini CLI,
  * Codex, OpenClaw, Amp, etc.) to your CrowdListen task board.
  *
- * First time:  npx @crowdlisten/kanban-mcp login
+ * First time:  npx @crowdlisten/kanban login
  * Then add to your agent config and go.
  */
 
@@ -162,7 +162,7 @@ async function getAuthedClient(): Promise<{
 
   if (!auth) {
     console.error(
-      "Not logged in. Run: npx @crowdlisten/kanban-mcp login"
+      "Not logged in. Run: npx @crowdlisten/kanban login"
     );
     process.exit(1);
   }
@@ -180,7 +180,7 @@ async function getAuthedClient(): Promise<{
   });
 
   if (error || !data.session) {
-    console.error("Session expired. Please login again: npx @crowdlisten/kanban-mcp login");
+    console.error("Session expired. Please login again: npx @crowdlisten/kanban login");
     clearAuth();
     process.exit(1);
   }
@@ -213,7 +213,7 @@ if (command === "login") {
   if (auth) {
     console.error(`Logged in as: ${auth.email} (${auth.user_id})`);
   } else {
-    console.error("Not logged in. Run: npx @crowdlisten/kanban-mcp login");
+    console.error("Not logged in. Run: npx @crowdlisten/kanban login");
   }
   process.exit(0);
 } else if (command === "setup") {
@@ -232,7 +232,7 @@ if (command === "login") {
   });
 } else if (command === "help" || command === "--help" || command === "-h") {
   console.error(`
-CrowdListen Kanban MCP Server
+CrowdListen Kanban CLI
 
 COMMANDS:
   login     Sign in + auto-configure your coding agents
@@ -243,7 +243,7 @@ COMMANDS:
 
 QUICK START:
 
-  npx @crowdlisten/kanban-mcp login
+  npx @crowdlisten/kanban login
 
   That's it. Login auto-detects and configures Claude Code,
   Cursor, Gemini CLI, Codex, and Amp. Just restart your agent.
