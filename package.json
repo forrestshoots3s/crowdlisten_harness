@@ -1,11 +1,10 @@
 {
-  "name": "@crowdlisten/kanban-mcp",
-  "version": "0.2.0",
-  "description": "CrowdListen Kanban MCP Server — connect any coding agent to your CrowdListen task board",
+  "name": "@crowdlisten/kanban",
+  "version": "0.3.0",
+  "description": "CrowdListen Kanban CLI — connect any coding agent to your CrowdListen task board",
   "type": "module",
   "bin": {
-    "kanban-mcp": "dist/index.js",
-    "crowdlisten-kanban-mcp": "dist/index.js"
+    "crowdlisten-kanban": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -42,7 +41,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Crowdlisten/crowdlisten_tasks_mcp.git"
+    "url": "https://github.com/Crowdlisten/crowdlisten_tasks.git"
   },
   "homepage": "https://crowdlisten.com"
 }

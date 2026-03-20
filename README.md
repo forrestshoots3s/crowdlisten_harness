@@ -1,11 +1,11 @@
-# CrowdListen Kanban MCP
+# CrowdListen Kanban
 
 > Connect any coding agent to a kanban board. One command to set up. Works with Claude Code, Cursor, Gemini CLI, Codex, Amp, and more.
 
 ## Setup
 
 ```bash
-npx @crowdlisten/kanban-mcp login
+npx @crowdlisten/kanban login
 ```
 
 That's it. Your browser opens, you sign in to [CrowdListen](https://crowdlisten.com) (email, Google, whatever you use), and it **auto-configures** any coding agents on your machine. Just restart your agent.
@@ -16,7 +16,7 @@ No env vars. No JSON to copy. No API keys.
 
 1. Your browser opens to CrowdListen's sign-in page
 2. You log in (email/password or Google)
-3. The MCP server auto-detects and configures your coding agents
+3. The CLI auto-detects and configures your coding agents
 4. Restart your agent — it can now see your kanban board and work on tasks
 
 ## What your agent can do
@@ -84,7 +84,7 @@ If auto-configure doesn't work, add this to your agent's MCP config:
   "mcpServers": {
     "crowdlisten_tasks": {
       "command": "npx",
-      "args": ["-y", "@crowdlisten/kanban-mcp"]
+      "args": ["-y", "@crowdlisten/kanban"]
     }
   }
 }
@@ -93,10 +93,10 @@ If auto-configure doesn't work, add this to your agent's MCP config:
 ## Commands
 
 ```bash
-npx @crowdlisten/kanban-mcp login    # Sign in + auto-configure agents
-npx @crowdlisten/kanban-mcp setup    # Re-run auto-configure
-npx @crowdlisten/kanban-mcp logout   # Clear credentials
-npx @crowdlisten/kanban-mcp whoami   # Check current user
+npx @crowdlisten/kanban login    # Sign in + auto-configure agents
+npx @crowdlisten/kanban setup    # Re-run auto-configure
+npx @crowdlisten/kanban logout   # Clear credentials
+npx @crowdlisten/kanban whoami   # Check current user
 ```
 
 ## Multi-user
@@ -106,8 +106,8 @@ Each person logs in with their own CrowdListen account. Row-level security means
 ## Development
 
 ```bash
-git clone https://github.com/Crowdlisten/crowdlisten_tasks_mcp.git
-cd crowdlisten_tasks_mcp
+git clone https://github.com/Crowdlisten/crowdlisten_tasks.git
+cd crowdlisten_tasks
 npm install
 npm run build
 npm run dev     # Run with tsx
@@ -118,12 +118,12 @@ npm test        # Vitest
 
 **"command not found" on first run?**
 ```bash
-npm cache clean --force && npx --yes @crowdlisten/kanban-mcp@latest login
+npm cache clean --force && npx --yes @crowdlisten/kanban@latest login
 ```
 
 ## Contributing
 
-Issues and PRs welcome. This is part of the [CrowdListen](https://crowdlisten.com) open source ecosystem — see also [crowdlisten_sources_mcp](https://github.com/Crowdlisten/crowdlisten_sources_mcp) for social media extraction.
+Issues and PRs welcome. This is part of the [CrowdListen](https://crowdlisten.com) open source ecosystem — see also [crowdlisten_sources](https://github.com/Crowdlisten/crowdlisten_sources) for social media extraction.
 
 ## License
 
