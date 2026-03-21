@@ -5,7 +5,7 @@ Machine-readable capability description for AI agents.
 ## Ecosystem
 
 CrowdListen is two MCP servers that work together:
-- **Sources** ([crowdlisten](https://github.com/Crowdlisten/crowdlisten_sources)) — discovers audience signal from social platforms
+- **Insights** ([crowdlisten](https://github.com/Crowdlisten/crowdlisten_insights)) — discovers audience signal from social platforms
 - **Planner** (this server) — plans and tracks work with a cloud-synced knowledge base
 
 Install both with one command: `npx @crowdlisten/planner login`

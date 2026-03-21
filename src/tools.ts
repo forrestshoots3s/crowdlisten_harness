@@ -182,8 +182,8 @@ export async function autoInstallMcp(): Promise<string[]> {
         servers["crowdlisten/harness"] = { ...MCP_ENTRY };
         changed = true;
       }
-      if (!servers["crowdlisten/sources"]) {
-        servers["crowdlisten/sources"] = { command: "npx", args: ["-y", "crowdlisten"] };
+      if (!servers["crowdlisten/insights"]) {
+        servers["crowdlisten/insights"] = { command: "npx", args: ["-y", "crowdlisten"] };
         changed = true;
       }
       if (!changed) continue;

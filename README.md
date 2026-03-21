@@ -20,7 +20,49 @@ npx @crowdlisten/planner login
 
 One command. Browser opens, sign in to [CrowdListen](https://crowdlisten.com), auto-configures agents. No env vars, no JSON, no API keys.
 
-Also installs [CrowdListen Sources](https://github.com/Crowdlisten/crowdlisten_sources) for cross-channel audience signal.
+Also installs [CrowdListen Insights](https://github.com/Crowdlisten/crowdlisten_insights) for cross-channel audience signal.
+
+## Demo
+
+https://github.com/user-attachments/assets/DEMO_VIDEO_ID
+
+> Get the whole system, and more, deployed for you at [crowdlisten.com](https://crowdlisten.com)
+
+## How the Two Systems Work Together
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        CrowdListen Ecosystem                            │
+│                                                                         │
+│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
+│  │   CrowdListen Insights      │    │   CrowdListen Planner       │    │
+│  │   (crowdlisten_insights)    │    │   (crowdlisten_tasks)       │    │
+│  │                             │    │                             │    │
+│  │   "What are people saying?" │    │   "What should we build?"   │    │
+│  │                             │    │                             │    │
+│  │  ┌───────────────────────┐  │    │  ┌───────────────────────┐  │    │
+│  │  │  Search 7 platforms   │  │    │  │  Plan with context    │  │    │
+│  │  │  Extract comments     │  │    │  │  Execute with agents  │  │    │
+│  │  │  Cluster opinions     │  │    │  │  Capture learnings    │  │    │
+│  │  │  Analyze sentiment    │  │    │  │  Compound knowledge   │  │    │
+│  │  └───────────────────────┘  │    │  └───────────────────────┘  │    │
+│  │                             │    │                             │    │
+│  │  Reddit · YouTube · TikTok  │    │  Tasks → Plans → Knowledge  │    │
+│  │  Twitter · Instagram · more │    │  Cloud-synced across agents │    │
+│  └──────────────┬──────────────┘    └──────────────┬──────────────┘    │
+│                 │                                   │                   │
+│                 │    ┌─────────────────────────┐    │                   │
+│                 └───►│   Your AI Agent          │◄───┘                   │
+│                      │   (Claude Code, Cursor,  │                       │
+│                      │    Gemini CLI, Codex...) │                       │
+│                      └─────────────────────────┘                       │
+│                                                                         │
+│                 npx @crowdlisten/planner login                          │
+│                 One command installs both.                               │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+**Insights** discovers what audiences are saying across social platforms. **Planner** turns that signal into planned, tracked work — with context that compounds across every task. Together, your agent can research a topic, plan a response, execute it, and remember what it learned for next time.
 
 ## What This Does
 
@@ -108,7 +150,7 @@ Full parameter details: [docs/TOOLS.md](docs/TOOLS.md)
 ```bash
 npx @crowdlisten/planner login
 ```
-Opens browser, sign in, auto-configures MCP for 7 agents. Installs both Planner and Sources.
+Opens browser, sign in, auto-configures MCP for 7 agents. Installs both Planner and Insights.
 
 **Path 2 — Manual config:**
 ```json
@@ -222,4 +264,4 @@ npm test    # 210 tests via Vitest
 
 MIT
 
-Part of the [CrowdListen](https://crowdlisten.com) open source ecosystem.
+Get the whole system, and more, deployed for you at [crowdlisten.com](https://crowdlisten.com).

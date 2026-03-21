@@ -117,7 +117,7 @@ async function interactiveLogin(): Promise<StoredAuth> {
           );
           console.error(JSON.stringify({ mcpServers: {
             "crowdlisten/harness": MCP_ENTRY,
-            "crowdlisten/sources": { command: "npx", args: ["-y", "crowdlisten"] },
+            "crowdlisten/insights": { command: "npx", args: ["-y", "crowdlisten"] },
           } }, null, 2));
           console.error("");
         }
@@ -232,7 +232,7 @@ if (command === "login") {
       console.error("If your agent isn't listed, add this to its MCP config:\n");
       console.error(JSON.stringify({
         "crowdlisten/harness": MCP_ENTRY,
-        "crowdlisten/sources": { command: "npx", args: ["-y", "crowdlisten"] },
+        "crowdlisten/insights": { command: "npx", args: ["-y", "crowdlisten"] },
       }, null, 2));
     }
     process.exit(0);
