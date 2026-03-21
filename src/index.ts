@@ -115,7 +115,10 @@ async function interactiveLogin(): Promise<StoredAuth> {
           console.error(
             "To connect manually, add this to your agent's MCP config:\n"
           );
-          console.error(JSON.stringify({ mcpServers: { crowdlisten_tasks: MCP_ENTRY } }, null, 2));
+          console.error(JSON.stringify({ mcpServers: {
+            "crowdlisten/harness": MCP_ENTRY,
+            "crowdlisten/sources": { command: "npx", args: ["-y", "crowdlisten"] },
+          } }, null, 2));
           console.error("");
         }
 
@@ -225,9 +228,12 @@ if (command === "login") {
     } else {
       console.error("No new agent configs to update.");
       console.error("Already installed, or no agent config files found.\n");
-      console.error("Supported agents: Claude Code, Cursor, Gemini CLI, Codex, Amp");
+      console.error("Supported agents: Claude Code, Cursor, Gemini CLI, Codex, Amp, OpenClaw");
       console.error("If your agent isn't listed, add this to its MCP config:\n");
-      console.error(JSON.stringify({ crowdlisten_tasks: MCP_ENTRY }, null, 2));
+      console.error(JSON.stringify({
+        "crowdlisten/harness": MCP_ENTRY,
+        "crowdlisten/sources": { command: "npx", args: ["-y", "crowdlisten"] },
+      }, null, 2));
     }
     process.exit(0);
   });
@@ -263,7 +269,7 @@ async function startMcpServer() {
   const { supabase: sb, userId } = await getAuthedClient();
 
   const server = new Server(
-    { name: "crowdlisten_tasks", version: "0.1.5" },
+    { name: "crowdlisten/harness", version: "0.1.5" },
     { capabilities: { tools: {} } }
   );
 

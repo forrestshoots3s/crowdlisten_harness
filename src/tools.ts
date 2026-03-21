@@ -149,6 +149,11 @@ export function getAgentConfigs(): AgentConfig[] {
       configPath: path.join(home, ".amp", "settings.json"),
       mcpKey: "amp.mcpServers",
     },
+    {
+      name: "OpenClaw",
+      configPath: path.join(home, ".openclaw", "openclaw.json"),
+      mcpKey: "mcpServers",
+    },
   ];
 }
 
@@ -182,9 +187,17 @@ export async function autoInstallMcp(): Promise<string[]> {
       }
       const servers = target[leafKey] as Record<string, unknown>;
 
-      if (servers.crowdlisten_tasks) continue;
+      let changed = false;
+      if (!servers["crowdlisten/harness"]) {
+        servers["crowdlisten/harness"] = { ...MCP_ENTRY };
+        changed = true;
+      }
+      if (!servers["crowdlisten/sources"]) {
+        servers["crowdlisten/sources"] = { command: "npx", args: ["-y", "crowdlisten"] };
+        changed = true;
+      }
+      if (!changed) continue;
 
-      servers.crowdlisten_tasks = { ...MCP_ENTRY };
       target[leafKey] = servers;
 
       fs.writeFileSync(agent.configPath, JSON.stringify(config, null, 2) + "\n");

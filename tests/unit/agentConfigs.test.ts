@@ -14,11 +14,12 @@ describe("getAgentConfigs", () => {
     expect(names).toContain("Gemini CLI");
     expect(names).toContain("Codex");
     expect(names).toContain("Amp");
+    expect(names).toContain("OpenClaw");
   });
 
-  it("returns exactly 6 agent configurations", () => {
+  it("returns exactly 7 agent configurations", () => {
     const configs = getAgentConfigs();
-    expect(configs).toHaveLength(6);
+    expect(configs).toHaveLength(7);
   });
 
   it("each config has name, configPath, and mcpKey", () => {
