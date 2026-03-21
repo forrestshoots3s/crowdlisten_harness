@@ -215,17 +215,17 @@ export async function autoInstallMcp(): Promise<string[]> {
 export const TOOLS = [
   {
     name: "get_or_create_global_board",
-    description: "Get (or create) your single global task board. All tasks go here by default.",
+    description: "[Setup] Get (or create) your single global task board. Call once at start of session if you need the board_id. All tasks go here by default.",
     inputSchema: { type: "object" as const, properties: {} },
   },
   {
     name: "list_projects",
-    description: "List all projects you have access to.",
+    description: "[Setup] List all projects you have access to. Use to find project_id for scoping tasks and context.",
     inputSchema: { type: "object" as const, properties: {} },
   },
   {
     name: "list_boards",
-    description: "List task boards for a project.",
+    description: "[Setup] List task boards for a project. Most users have one global board — use get_or_create_global_board instead.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -236,7 +236,7 @@ export const TOOLS = [
   },
   {
     name: "create_board",
-    description: "Create a new task board for a project with default columns (To Do, In Progress, In Review, Done, Cancelled).",
+    description: "[Setup] Create a new task board for a project with default columns (To Do, In Progress, In Review, Done, Cancelled). Rarely needed — get_or_create_global_board handles this automatically.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -249,7 +249,7 @@ export const TOOLS = [
   {
     name: "list_tasks",
     description:
-      "List tasks. Uses global board by default. Optional status filter: todo, inprogress, inreview, done, cancelled.",
+      "List tasks on the board. Call this first to see what work is available. Uses global board by default. Filter by status: todo, inprogress, inreview, done, cancelled.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -261,7 +261,7 @@ export const TOOLS = [
   },
   {
     name: "get_task",
-    description: "Get full details of a task including description.",
+    description: "Get full details of a task including description, status, priority, and labels.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -272,7 +272,7 @@ export const TOOLS = [
   },
   {
     name: "create_task",
-    description: "Create a new task. Uses global board by default. Optionally tag with a project_id.",
+    description: "Create a new task on the board. Uses global board by default. Optionally tag with a project_id for scoping.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -292,7 +292,7 @@ export const TOOLS = [
   },
   {
     name: "update_task",
-    description: "Update a task. Pass only fields to change.",
+    description: "Update a task's title, description, status, or priority. Pass only the fields you want to change.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -308,7 +308,7 @@ export const TOOLS = [
   {
     name: "claim_task",
     description:
-      "Claim a task to start working. Moves to In Progress, creates workspace + session. Returns workspace_id and branch name.",
+      "Claim a task to start working on it. Call this after list_tasks to begin. Moves task to In Progress, creates workspace + session. Returns context (semantic map, knowledge base, existing plan) and branch name. Call query_context next to check existing decisions.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -324,7 +324,7 @@ export const TOOLS = [
   },
   {
     name: "complete_task",
-    description: "Mark task done. Optionally attach a summary of what was accomplished.",
+    description: "Mark task done. Call record_learning before this to capture what you learned. Optionally attach a summary of what was accomplished. Auto-completes the plan if one exists.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -337,7 +337,7 @@ export const TOOLS = [
   {
     name: "log_progress",
     description:
-      "Log a progress update or note to a task's execution session. Useful for tracking what the agent is doing.",
+      "Log a progress note to the task's execution session. Call periodically during execution to track what you're doing. Useful for handoff between agents.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -353,7 +353,7 @@ export const TOOLS = [
   },
   {
     name: "delete_task",
-    description: "Delete a task.",
+    description: "Permanently delete a task. Cannot be undone.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -364,13 +364,13 @@ export const TOOLS = [
   },
   {
     name: "migrate_to_global_board",
-    description: "Migrate all tasks from all boards to the global board. Run once to consolidate.",
+    description: "[Setup] Migrate all tasks from all boards to the global board. Run once to consolidate if you have tasks spread across multiple boards.",
     inputSchema: { type: "object" as const, properties: {} },
   },
   {
     name: "start_session",
     description:
-      "Start a new parallel agent session for a task. Allows multiple agents to work on different aspects simultaneously.",
+      "[Advanced] Start a new parallel agent session for a task. Use when multiple agents need to work on different aspects of the same task simultaneously. claim_task already creates one session.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -390,7 +390,7 @@ export const TOOLS = [
   {
     name: "list_sessions",
     description:
-      "List all agent sessions for a task, showing status and what each is working on.",
+      "[Advanced] List all agent sessions for a task, showing status and what each is working on. Useful for coordinating parallel agents.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -406,7 +406,7 @@ export const TOOLS = [
   {
     name: "update_session",
     description:
-      "Update a session's status or focus. Use to mark running/completed/stopped.",
+      "[Advanced] Update a session's status or focus. Use to mark running/completed/stopped when coordinating parallel agents.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -426,7 +426,7 @@ export const TOOLS = [
   {
     name: "create_plan",
     description:
-      "Create an execution plan for a task. Plans are first-class artifacts that go through draft → review → approved → executing → completed lifecycle.",
+      "Create an execution plan for a task. Call after claim_task and query_context. Plans go through draft → review → approved → executing → completed lifecycle. Submit for human review with update_plan(status='review').",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -459,7 +459,7 @@ export const TOOLS = [
   },
   {
     name: "get_plan",
-    description: "Get the plan for a task including version history and any pending feedback.",
+    description: "Get the current plan for a task including version history and any pending human feedback. Check this after human review to see feedback.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -471,7 +471,7 @@ export const TOOLS = [
   {
     name: "update_plan",
     description:
-      "Iterate on a plan: update approach, change status, or add feedback. Content changes archive the current version. Setting feedback auto-reverts status to draft.",
+      "Iterate on a plan: update approach, change status, or add human feedback. Set status='review' to submit for review, status='executing' after approval. Content changes archive the current version. Setting feedback auto-reverts status to draft for revision.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -493,7 +493,7 @@ export const TOOLS = [
   {
     name: "query_context",
     description:
-      "Search the project knowledge base — decisions, constraints, preferences, patterns, learnings, principles. Returns active entries matching your filters.",
+      "Search the project knowledge base. Call after claim_task to check existing decisions, constraints, patterns, and learnings before planning. Returns active entries matching your filters.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -512,7 +512,7 @@ export const TOOLS = [
   {
     name: "add_context",
     description:
-      "Write to the project knowledge base. Use for decisions, constraints, preferences, patterns, or principles discovered during work.",
+      "Write to the project knowledge base during execution. Record decisions, constraints, preferences, patterns, or principles discovered during work so future tasks benefit.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -534,7 +534,7 @@ export const TOOLS = [
   {
     name: "record_learning",
     description:
-      "Capture a learning from completed work. Optionally promote to project-level context so future tasks benefit.",
+      "Capture a learning from completed work. Call this before complete_task. Use promote=true to make it visible to all future tasks across the project.",
     inputSchema: {
       type: "object" as const,
       properties: {
