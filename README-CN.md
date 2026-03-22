@@ -36,7 +36,7 @@ https://github.com/user-attachments/assets/DEMO_VIDEO_ID
 │                                                                         │
 │  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
 │  │   CrowdListen Insights      │    │   CrowdListen Planner       │    │
-│  │   (crowdlisten_insights)    │    │   (crowdlisten_tasks)       │    │
+│  │   (crowdlisten_insights)    │    │   (crowdlisten_harness)       │    │
 │  │                             │    │                             │    │
 │  │   "用户在说什么？"           │    │   "我们应该构建什么？"       │    │
 │  │                             │    │                             │    │
@@ -254,8 +254,8 @@ npx @crowdlisten/planner whoami   # 查看当前用户
 ## 开发
 
 ```bash
-git clone https://github.com/Crowdlisten/crowdlisten_tasks.git
-cd crowdlisten_tasks
+git clone https://github.com/Crowdlisten/crowdlisten_harness.git
+cd crowdlisten_harness
 npm install && npm run build
 npm test    # 通过 Vitest 运行 210 个测试
 ```
