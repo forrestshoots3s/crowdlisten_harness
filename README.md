@@ -4,101 +4,84 @@
 
 [English](README.md) | [中文文档](README-CN.md)
 
-## Highlights
+## The Problem With AI Agents Today
 
-1. **Agents that get smarter** — Every task captures decisions, patterns, and learnings. The next task inherits all of it.
-2. **Context follows you across agents** — Cloud-synced knowledge base. Switch from Claude Code to Cursor to Gemini CLI — context comes with you.
-3. **Plans as first-class artifacts** — Draft → review → approved → executing → done. Versioned, with human feedback loops.
-4. **Multi-agent coordination** — Parallel sessions let multiple agents work on the same task with shared context.
-5. **One command setup** — `npx @crowdlisten/planner login` configures 5 agents automatically. No env vars, no JSON editing.
+AI agents are stateless. Every time you start a new session, your agent starts from scratch. It doesn't remember what it decided yesterday, why it chose one approach over another, or what patterns it discovered in your codebase last week. You end up re-explaining the same context, correcting the same mistakes, and watching it rediscover the same solutions.
 
-## Setup
+This gets worse when you use multiple agents. Your Claude Code session figured out your team's deployment conventions, but when you switch to Cursor for a quick fix, that knowledge is gone. When Gemini CLI picks up a task overnight, it has no idea what happened before it arrived. Every agent is an island.
+
+CrowdListen Planner fixes this. It gives your agents a shared, cloud-synced knowledge base that persists across sessions, across tools, and across agents. Every task your agent completes captures decisions, patterns, and learnings. The next task inherits all of it. Over time, your agents don't just execute — they get smarter.
+
+## What You Get
+
+**A knowledge base that compounds.** When your agent makes an architectural decision, resolves a tricky bug, or discovers a pattern in your codebase, CrowdListen Planner captures it. The next time any agent works on a related task, that knowledge is surfaced automatically. You stop re-explaining context and start building on what came before.
+
+**Plans as first-class artifacts.** Most task trackers treat plans as free-text descriptions. CrowdListen Planner treats them as versioned, reviewable artifacts with a lifecycle: draft, review, approved, executing, done. Your agent drafts a plan. You review it, leave feedback. The agent incorporates your notes, archives the previous version, and proceeds. Every decision and iteration is preserved.
+
+**Context that follows you across agents.** Switch from Claude Code to Cursor to Gemini CLI — the knowledge base comes with you. Cloud-synced through Supabase, so no matter which agent picks up the work, it has the full history of what was tried, what worked, and what didn't.
+
+**Multi-agent coordination.** Run multiple agents on the same task with parallel sessions. Each agent gets shared context and can contribute learnings back. Useful for breaking large tasks into parallel workstreams without losing coherence.
+
+## Try It Now
+
+One command. Your browser opens, you sign in, and your agents are configured automatically:
 
 ```bash
 npx @crowdlisten/planner login
 ```
 
-One command. Browser opens, sign in to [CrowdListen](https://crowdlisten.com), auto-configures agents. No env vars, no JSON, no API keys.
+This auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, and OpenClaw. It also installs [CrowdListen Insights](https://github.com/Crowdlisten/crowdlisten_insights) for cross-platform audience intelligence. No env vars, no JSON editing, no API keys to manage.
 
-Also installs [CrowdListen Insights](https://github.com/Crowdlisten/crowdlisten_insights) for cross-channel audience signal.
+Restart your agent after login, and it can start calling tools immediately.
 
-## Demo
+### Manual Setup
 
-https://github.com/user-attachments/assets/DEMO_VIDEO_ID
+If you prefer to configure manually, add this to your agent's MCP config:
 
-> Get the whole system, and more, deployed for you at [crowdlisten.com](https://crowdlisten.com)
-
-## How the Two Systems Work Together
-
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                        CrowdListen Ecosystem                            │
-│                                                                         │
-│  ┌─────────────────────────────┐    ┌─────────────────────────────┐    │
-│  │   CrowdListen Insights      │    │   CrowdListen Planner       │    │
-│  │   (crowdlisten_insights)    │    │   (crowdlisten_harness)       │    │
-│  │                             │    │                             │    │
-│  │   "What are people saying?" │    │   "What should we build?"   │    │
-│  │                             │    │                             │    │
-│  │  ┌───────────────────────┐  │    │  ┌───────────────────────┐  │    │
-│  │  │  Search 7 platforms   │  │    │  │  Plan with context    │  │    │
-│  │  │  Extract comments     │  │    │  │  Execute with agents  │  │    │
-│  │  │  Cluster opinions     │  │    │  │  Capture learnings    │  │    │
-│  │  │  Analyze sentiment    │  │    │  │  Compound knowledge   │  │    │
-│  │  └───────────────────────┘  │    │  └───────────────────────┘  │    │
-│  │                             │    │                             │    │
-│  │  Reddit · YouTube · TikTok  │    │  Tasks → Plans → Knowledge  │    │
-│  │  Twitter · Instagram · more │    │  Cloud-synced across agents │    │
-│  └──────────────┬──────────────┘    └──────────────┬──────────────┘    │
-│                 │                                   │                   │
-│                 │    ┌─────────────────────────┐    │                   │
-│                 └───►│   Your AI Agent          │◄───┘                   │
-│                      │   (Claude Code, Cursor,  │                       │
-│                      │    Gemini CLI, Codex...) │                       │
-│                      └─────────────────────────┘                       │
-│                                                                         │
-│                 npx @crowdlisten/planner login                          │
-│                 One command installs both.                               │
-└──────────────────────────────────────────────────────────────────────────┘
+```json
+{
+  "mcpServers": {
+    "crowdlisten/planner": {
+      "command": "npx",
+      "args": ["-y", "@crowdlisten/planner"]
+    }
+  }
+}
 ```
 
-**Insights** discovers what audiences are saying across social platforms. **Planner** turns that signal into planned, tracked work — with context that compounds across every task. Together, your agent can research a topic, plan a response, execute it, and remember what it learned for next time.
+Or sign in at [crowdlisten.com](https://crowdlisten.com) and your agent can read [AGENTS.md](AGENTS.md) for the full tool reference.
 
-## What This Does
+## How It Works
 
-A planning harness for AI agents -- not a task board that happens to have plans, but a planning system that happens to have tasks. Plan, get feedback, execute with context, capture learnings, and the next task is smarter. Cloud-synced knowledge base means context follows you across agents.
+CrowdListen Planner is an MCP server — your agent calls its 20 tools directly, the same way it calls any other MCP tool. The typical workflow looks like this:
 
-## Interfaces
+1. **Pick up a task.** Your agent calls `list_tasks` to see what's available, then `claim_task` to start work. When it claims a task, it receives the full context: relevant knowledge base entries, existing plans, and a semantic map of related decisions.
 
-| Interface | How to use | Best for |
-|-----------|-----------|----------|
-| **MCP** | Add to agent config, agents call 20 tools directly | AI agents (Claude Code, Cursor, Gemini CLI, etc.) |
-| **CLI** | `npx @crowdlisten/planner login/setup/logout/whoami` | Authentication and agent configuration |
+2. **Plan before you build.** For non-trivial work, the agent calls `create_plan` to draft an approach with assumptions, risks, and success criteria. You review the plan, leave feedback, and the agent iterates until you approve. Every version is archived.
 
-The MCP server is the primary interface — agents call tools to manage tasks, plans, and knowledge. The CLI handles login/setup only.
+3. **Execute with context.** While working, the agent logs progress and records decisions with `add_context`. These aren't throwaway notes — they become searchable knowledge that future tasks can query.
 
-## Core Workflow
+4. **Capture what you learned.** When the task is done, the agent calls `record_learning` to crystallize what it discovered. Promote a learning to project scope and every future agent session can find it.
 
+5. **The next task is smarter.** When the next task starts, `query_context` searches across all accumulated decisions, patterns, and learnings. Your agent doesn't start from scratch — it starts from everything that came before.
+
+Plans are optional. Quick tasks can skip straight to execution. But the knowledge capture always applies, so even small tasks contribute to the growing context.
+
+## The CrowdListen Ecosystem
+
+CrowdListen is two MCP servers that work together:
+
+**Insights** discovers what audiences are saying across social platforms — Reddit, YouTube, TikTok, Twitter, Instagram, Xiaohongshu, and more. **Planner** turns that signal into planned, tracked work with a knowledge base that compounds across every task. Together, your agent can research a topic, plan a response, execute it, and remember what it learned for next time.
+
+```bash
+# Install both with one command
+npx @crowdlisten/planner login
 ```
-list_tasks → claim_task → query_context → create_plan → [human review] → execute → record_learning → complete_task
-```
 
-1. **list_tasks** — See what work is available
-2. **claim_task** — Start work, get context (semantic map + knowledge base + existing plan)
-3. **query_context** — Check existing decisions, patterns, learnings
-4. **create_plan** — Draft approach, assumptions, risks, success criteria
-5. **update_plan(status='review')** — Submit for human review → human approves or leaves feedback
-6. **Execute** — Do the work, log_progress along the way, add_context for decisions
-7. **record_learning** — Capture what you learned (promote=true for project-wide visibility)
-8. **complete_task** — Mark done, plan auto-completed
+## MCP Tools
 
-Plans are optional. Quick tasks can skip straight to execution. Knowledge capture still applies.
+### Task Management
 
-## Tool Categories
-
-### Core Tools (15)
-
-**Task Management:**
 | Tool | What it does |
 |------|-------------|
 | `list_tasks` | List tasks on the board (call first) |
@@ -110,14 +93,16 @@ Plans are optional. Quick tasks can skip straight to execution. Knowledge captur
 | `delete_task` | Permanently remove a task |
 | `log_progress` | Log a note to the execution session |
 
-**Planning:**
+### Planning
+
 | Tool | What it does |
 |------|-------------|
 | `create_plan` | Create execution plan (approach, assumptions, risks) |
 | `get_plan` | Get plan with version history and feedback |
 | `update_plan` | Iterate: update approach, status, or add feedback |
 
-**Knowledge Base:**
+### Knowledge Base
+
 | Tool | What it does |
 |------|-------------|
 | `query_context` | Search decisions, patterns, learnings |
@@ -125,7 +110,7 @@ Plans are optional. Quick tasks can skip straight to execution. Knowledge captur
 | `record_learning` | Capture outcome, optionally promote to project scope |
 | `get_or_create_global_board` | Get your global board |
 
-### Advanced Tools (3) — Parallel Sessions
+### Multi-Agent Sessions
 
 | Tool | What it does |
 |------|-------------|
@@ -133,7 +118,7 @@ Plans are optional. Quick tasks can skip straight to execution. Knowledge captur
 | `list_sessions` | List sessions for a task |
 | `update_session` | Update session status/focus |
 
-### Setup Tools (2) — Board Management
+### Board Management
 
 | Tool | What it does |
 |------|-------------|
@@ -143,98 +128,6 @@ Plans are optional. Quick tasks can skip straight to execution. Knowledge captur
 | `migrate_to_global_board` | Move all tasks to global board |
 
 Full parameter details: [docs/TOOLS.md](docs/TOOLS.md)
-
-## Agent Onboarding
-
-**Path 1 — One command (recommended):**
-```bash
-npx @crowdlisten/planner login
-```
-Opens browser, sign in, auto-configures MCP for 7 agents. Installs both Planner and Insights.
-
-**Path 2 — Manual config:**
-```json
-{
-  "mcpServers": {
-    "crowdlisten/harness": {
-      "command": "npx",
-      "args": ["-y", "@crowdlisten/planner"]
-    }
-  }
-}
-```
-
-**Path 3 — Web:**
-Sign in at [crowdlisten.com](https://crowdlisten.com). Your agent can read [AGENTS.md](AGENTS.md) for tool reference.
-
-## Architecture
-
-```mermaid
-graph TD
-    subgraph Human["Human Layer"]
-        H_Create["Create Task"]
-        H_Review["Review Plan"]
-        H_Feedback["Leave Feedback"]
-        H_Approve["Approve Plan"]
-    end
-
-    subgraph Pipeline["Agent Pipeline"]
-        Claim["claim_task<br/>← semantic map<br/>← knowledge base<br/>← existing plan"]
-        Query["query_context<br/>Search decisions, patterns,<br/>constraints, learnings"]
-        Plan["create_plan<br/>approach, assumptions,<br/>success criteria, risks"]
-        Review["update_plan → status: review"]
-        Iterate["update_plan<br/>Incorporate feedback,<br/>version archived"]
-        Execute["update_plan → status: executing<br/>Agent works on task"]
-        Capture["add_context + record_learning<br/>Decisions, patterns, learnings"]
-        Complete["complete_task<br/>Plan auto-completed"]
-    end
-
-    subgraph Knowledge["Knowledge Base (Supabase)"]
-        KB["planning_context<br/>──────────────<br/>decisions │ constraints<br/>preferences │ patterns<br/>learnings │ principles"]
-        Versions["planning_context_versions<br/>──────────────<br/>Immutable snapshots<br/>of every plan revision"]
-    end
-
-    H_Create --> Claim
-    Claim --> Query
-    Query --> Plan
-    Plan --> Review
-    Review --> H_Review
-    H_Review --> H_Feedback
-    H_Feedback --> Iterate
-    H_Review --> H_Approve
-    H_Approve --> Execute
-    Iterate --> Review
-    Execute --> Capture
-    Capture --> Complete
-
-    KB -.->|context flows in| Claim
-    KB -.->|search| Query
-    Capture -.->|knowledge flows out| KB
-    Plan -.->|stored as| KB
-    Iterate -.->|archived to| Versions
-    Complete -.->|next task inherits| KB
-```
-
-### Three Layers
-
-```
-┌─────────────────────────────────────────────────┐
-│  KNOWLEDGE BASE                                 │
-│  Decisions, constraints, patterns, principles,  │
-│  learnings — persists across all tasks           │
-├─────────────────────────────────────────────────┤
-│  PLANS                                          │
-│  First-class artifacts with lifecycle:           │
-│  draft → review → approved → executing → done   │
-├─────────────────────────────────────────────────┤
-│  TASKS                                          │
-│  Executable work units with status tracking     │
-└─────────────────────────────────────────────────┘
-```
-
-## For Agents
-
-See [AGENTS.md](AGENTS.md) for machine-readable capability descriptions, MCP config, and example workflows.
 
 ## Supported Agents
 
@@ -251,6 +144,10 @@ npx @crowdlisten/planner logout   # Clear credentials
 npx @crowdlisten/planner whoami   # Check current user
 ```
 
+## For Agents
+
+See [AGENTS.md](AGENTS.md) for machine-readable capability descriptions, MCP config, and example workflows.
+
 ## Development
 
 ```bash
@@ -262,6 +159,4 @@ npm test    # 210 tests via Vitest
 
 ## License
 
-MIT
-
-Get the whole system, and more, deployed for you at [crowdlisten.com](https://crowdlisten.com).
+MIT — [crowdlisten.com](https://crowdlisten.com)
