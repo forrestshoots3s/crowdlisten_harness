@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import UploadZone from "./components/UploadZone";
+import ImportModal from "./components/ImportModal";
 import PiiPreview from "./components/PiiPreview";
 import BlockList from "./components/BlockList";
 import SkillPanel from "./components/SkillPanel";
@@ -37,6 +38,7 @@ export default function App() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   useEffect(() => {
     fetch("/api/config")
@@ -63,6 +65,7 @@ export default function App() {
 
       const data: PipelineResult = await res.json();
       setResult(data);
+      setShowImport(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -131,11 +134,18 @@ export default function App() {
           <ConfigPanel onSaved={handleConfigSaved} />
         )}
 
-        {/* Upload zone */}
+        {/* Import card — one-liner like Claude's memory import */}
         <UploadZone
+          onStartImport={() => setShowImport(true)}
+          disabled={!configStatus?.configured}
+        />
+
+        {/* Import modal */}
+        <ImportModal
+          open={showImport}
+          onClose={() => setShowImport(false)}
           onProcess={handleProcess}
           processing={processing}
-          disabled={!configStatus?.configured}
         />
 
         {/* Error */}
@@ -173,18 +183,6 @@ export default function App() {
                 <SkillPanel skills={result.skills} />
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!result && configStatus?.configured && !showConfig && (
-          <div className="text-center py-16" style={{ color: "var(--cl-fg-muted)" }}>
-            <p className="text-sm">
-              Upload a chat export to extract context blocks and skill recommendations.
-            </p>
-            <p className="text-xs mt-2" style={{ color: "var(--cl-border)" }}>
-              PII is redacted locally before any LLM call.
-            </p>
           </div>
         )}
       </main>
