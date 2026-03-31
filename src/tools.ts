@@ -11,6 +11,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import { execSync } from "child_process";
+import { runPipeline } from "./context/pipeline.js";
+import { getBlocks } from "./context/store.js";
+import { matchSkills } from "./context/matcher.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -543,6 +546,44 @@ export const TOOLS = [
       },
       required: ["task_id", "title", "body"],
     },
+  },
+  // ─── Context Extraction Tools ──────────────────────────────────────────────
+  {
+    name: "process_transcript",
+    description:
+      "[Context] Process text through the context extraction pipeline: PII redaction → LLM extraction → skill matching. Returns extracted context blocks and recommended skills. Requires LLM provider to be configured (run setup-context).",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        text: {
+          type: "string",
+          description:
+            "The transcript/chat text to process. PII will be redacted before LLM sees it.",
+        },
+        source: {
+          type: "string",
+          description: "Label for the source (e.g. 'slack-export', 'chat-history'). Defaults to 'mcp'.",
+        },
+        is_chat: {
+          type: "boolean",
+          description:
+            "Whether the text is chat history (uses 4-type extraction: style/insight/pattern/preference). Default true.",
+        },
+      },
+      required: ["text"],
+    },
+  },
+  {
+    name: "get_context_blocks",
+    description:
+      "[Context] Retrieve locally-stored context blocks from previous extractions. Blocks are stored in ~/.crowdlisten/context.json.",
+    inputSchema: { type: "object" as const, properties: {} },
+  },
+  {
+    name: "recommend_skills",
+    description:
+      "[Context] Get CrowdListen skill recommendations based on stored context blocks. Matches block content against the skill catalog using keyword overlap scoring.",
+    inputSchema: { type: "object" as const, properties: {} },
   },
 ];
 
@@ -1483,6 +1524,34 @@ export async function handleTool(
       }
 
       return json({ learning_id: learning!.id, promoted_id: promotedId });
+    }
+
+    // ─── Context Extraction Tools ────────────────────────────────────────────
+    case "process_transcript": {
+      const text = args.text as string;
+      const source = (args.source as string) || "mcp";
+      const isChat = args.is_chat !== false;
+
+      const result = await runPipeline({ text, source, isChat });
+      return json({
+        blocks_extracted: result.blocks.length,
+        blocks: result.blocks,
+        skills: result.skills,
+        redaction_stats: result.redactionStats,
+        total_redactions: result.totalRedactions,
+        chunks_processed: result.chunkCount,
+      });
+    }
+
+    case "get_context_blocks": {
+      const blocks = getBlocks();
+      return json({ count: blocks.length, blocks });
+    }
+
+    case "recommend_skills": {
+      const blocks = getBlocks();
+      const skills = await matchSkills(blocks);
+      return json({ skills });
     }
 
     default:

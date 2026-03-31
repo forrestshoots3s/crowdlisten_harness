@@ -53,7 +53,7 @@ Or sign in at [crowdlisten.com](https://crowdlisten.com) and your agent can read
 
 ## How It Works
 
-CrowdListen Harness is an MCP server — your agent calls its 22 tools directly, the same way it calls any other MCP tool. The typical workflow looks like this:
+CrowdListen Harness is an MCP server — your agent calls its 25 tools directly, the same way it calls any other MCP tool. The typical workflow looks like this:
 
 1. **Pick up a task.** Your agent calls `list_tasks` to see what's available, then `claim_task` to start work. When it claims a task, it receives the full context: relevant knowledge base entries, existing plans, and a semantic map of related decisions.
 
@@ -127,6 +127,14 @@ npx @crowdlisten/planner login
 | `create_board` | Create board with default columns |
 | `migrate_to_global_board` | Move all tasks to global board |
 
+### Context Extraction
+
+| Tool | What it does |
+|------|-------------|
+| `process_transcript` | Extract context blocks from text (PII redacted first) |
+| `get_context_blocks` | Retrieve locally-stored context blocks |
+| `recommend_skills` | Get skill recommendations from stored context |
+
 Full parameter details: [docs/TOOLS.md](docs/TOOLS.md)
 
 ## Supported Agents
@@ -135,13 +143,54 @@ Full parameter details: [docs/TOOLS.md](docs/TOOLS.md)
 
 **Also works with (manual config):** Copilot, Droid, Qwen Code, OpenCode
 
+## Context Extraction
+
+Upload chat transcripts, get reusable context blocks and skill recommendations. PII is redacted locally before anything reaches an LLM.
+
+```
+Upload → Parse → PII Redact → Chunk → LLM Extract → Skill Match → Store
+(local)  (local)  (local)     (local)  (user's key)  (local)     (local)
+```
+
+### Quick Start
+
+```bash
+npx @crowdlisten/planner setup-context    # Configure your LLM API key
+npx @crowdlisten/planner context chat.json # Process a ChatGPT/Claude export
+npx @crowdlisten/planner context           # Launch web UI at localhost:3847
+```
+
+### Supported Formats
+
+- `.json` — ChatGPT exports, Claude exports (auto-detected)
+- `.zip` — ZIP archives containing JSON exports
+- `.txt` / `.md` — Plain text or markdown
+- `.pdf` — PDF documents
+
+### LLM Providers
+
+- **OpenAI** — gpt-4o-mini default, supports embeddings
+- **Anthropic** — Claude Sonnet default
+- **Ollama** — Local models, no API key needed
+
+### Privacy
+
+- PII is redacted locally using regex before any LLM call
+- Your API key is stored in `~/.crowdlisten/config.json`
+- Context blocks are stored in `~/.crowdlisten/context.json`
+- No data syncs to CrowdListen unless you explicitly click Sync
+- Everything is MIT open-source and inspectable
+
 ## Commands
 
 ```bash
-npx @crowdlisten/planner login    # Sign in + auto-configure agents
-npx @crowdlisten/planner setup    # Re-run auto-configure
-npx @crowdlisten/planner logout   # Clear credentials
-npx @crowdlisten/planner whoami   # Check current user
+npx @crowdlisten/planner login          # Sign in + auto-configure agents
+npx @crowdlisten/planner setup          # Re-run auto-configure
+npx @crowdlisten/planner logout         # Clear credentials
+npx @crowdlisten/planner whoami         # Check current user
+npx @crowdlisten/planner context        # Launch context extraction web UI
+npx @crowdlisten/planner context <file> # Process file via CLI
+npx @crowdlisten/planner setup-context  # Configure LLM provider
 ```
 
 ## For Agents

@@ -32,8 +32,9 @@ Auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, OpenClaw.
 
 | Interface | Access | Best for |
 |-----------|--------|----------|
-| MCP (this server) | Agents call 22 tools via stdio | AI agents — task management, planning, knowledge |
-| CLI | `npx @crowdlisten/planner login/setup/logout/whoami` | Authentication and agent config only |
+| MCP (this server) | Agents call 25 tools via stdio | AI agents — task management, planning, knowledge, context extraction |
+| CLI | `npx @crowdlisten/planner login/setup/logout/whoami/context` | Authentication, agent config, context extraction |
+| Web UI | `npx @crowdlisten/planner context` → localhost:3847 | Visual context extraction with drag-and-drop |
 
 ## Core Workflow (7 steps)
 
@@ -87,6 +88,14 @@ For multi-agent coordination on a single task. claim_task already creates one se
 - **list_sessions**(task_id, status?) — List sessions showing status and focus.
 - **update_session**(session_id, status?, focus?) — Update session: idle, running, completed, failed, stopped.
 
+## Context Extraction Tools (3)
+
+Extract reusable context blocks from chat transcripts and documents. PII is redacted locally before LLM processing. Requires LLM provider configuration (`npx @crowdlisten/planner setup-context`).
+
+- **process_transcript**(text, source?, is_chat?) — Process text through the full pipeline: PII redaction → chunking → LLM extraction → skill matching. Returns extracted blocks (style/insight/pattern/preference) and recommended CrowdListen skills.
+- **get_context_blocks**() — Retrieve locally-stored context blocks from previous extractions (~/.crowdlisten/context.json).
+- **recommend_skills**() — Get CrowdListen skill recommendations based on stored context. Uses keyword overlap against the skill catalog.
+
 ## Setup Tools (4) — Board Management
 
 Rarely needed — get_or_create_global_board handles most cases.
@@ -131,3 +140,26 @@ record_learning(task_id="abc-123", title="httpOnly cookies need CORS credentials
 # 10. Complete
 complete_task(task_id="abc-123", summary="JWT auth with refresh tokens implemented")
 ```
+
+## Context Extraction Example
+
+```
+# 1. Process a chat transcript (PII redacted automatically)
+process_transcript(text="User: I prefer TypeScript with strict mode...", source="slack-export")
+  → returns: blocks (style/insight/pattern/preference), skill matches, redaction stats
+
+# 2. Check what context has been extracted
+get_context_blocks()
+  → returns: all stored blocks from previous extractions
+
+# 3. Get skill recommendations based on accumulated context
+recommend_skills()
+  → returns: ranked CrowdListen skills matching the user's patterns
+```
+
+### Privacy Model
+
+- PII redacted locally (regex) before any LLM call
+- User's own API key used for extraction (OpenAI/Anthropic/Ollama)
+- Context blocks stored locally in `~/.crowdlisten/context.json`
+- No data syncs without explicit user action

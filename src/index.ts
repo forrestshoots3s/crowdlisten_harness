@@ -34,6 +34,11 @@ import {
   AUTH_FILE,
   type StoredAuth,
 } from "./tools.js";
+import {
+  runSetupContext,
+  runContextCLI,
+  runContextWeb,
+} from "./context/cli.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -237,16 +242,28 @@ if (command === "login") {
     }
     process.exit(0);
   });
+} else if (command === "context") {
+  const fileArg = process.argv[3];
+  if (fileArg) {
+    runContextCLI(fileArg).then(() => process.exit(0));
+  } else {
+    runContextWeb();
+  }
+} else if (command === "setup-context") {
+  runSetupContext().then(() => process.exit(0));
 } else if (command === "help" || command === "--help" || command === "-h") {
   console.error(`
 CrowdListen Planner CLI
 
 COMMANDS:
-  login     Sign in + auto-configure your coding agents
-  setup     Re-run auto-configure for agent MCP configs
-  logout    Clear saved credentials
-  whoami    Show current user
-  help      Show this help
+  login          Sign in + auto-configure your coding agents
+  setup          Re-run auto-configure for agent MCP configs
+  logout         Clear saved credentials
+  whoami         Show current user
+  context        Launch context extraction web UI (port 3847)
+  context <file> Process a file through the context pipeline (CLI mode)
+  setup-context  Configure LLM provider for context extraction
+  help           Show this help
 
 QUICK START:
 
@@ -256,6 +273,12 @@ QUICK START:
   Cursor, Gemini CLI, Codex, and Amp. Just restart your agent.
 
   Works with any MCP-compatible agent including OpenClaw.
+
+CONTEXT EXTRACTION:
+
+  npx @crowdlisten/planner setup-context    # Configure your LLM API key
+  npx @crowdlisten/planner context chat.json # Extract context from a file
+  npx @crowdlisten/planner context           # Launch web UI
 `);
   process.exit(0);
 } else {
