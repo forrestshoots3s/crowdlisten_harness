@@ -1,0 +1,4202 @@
+[
+  {
+    "id": "comm-code-review",
+    "name": "Code Review",
+    "description": "Automated code review with best practices, design patterns, and security checks",
+    "keywords": [
+      "code",
+      "review",
+      "quality",
+      "lint",
+      "refactor",
+      "patterns",
+      "security",
+      "best-practices"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/code-review/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-typescript-expert",
+    "name": "TypeScript Expert",
+    "description": "Advanced TypeScript type engineering, generics, conditional types, and type-safe patterns",
+    "keywords": [
+      "typescript",
+      "types",
+      "generics",
+      "conditional",
+      "type-safe",
+      "inference",
+      "utility"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/typescript/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-testing-expert",
+    "name": "Testing Expert",
+    "description": "Comprehensive test writing with unit, integration, and e2e testing best practices",
+    "keywords": [
+      "testing",
+      "unit",
+      "integration",
+      "e2e",
+      "vitest",
+      "jest",
+      "test-driven",
+      "coverage"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/testing/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-react-expert",
+    "name": "React Expert",
+    "description": "React component design, hooks patterns, performance optimization, and state management",
+    "keywords": [
+      "react",
+      "hooks",
+      "components",
+      "state",
+      "performance",
+      "rendering",
+      "jsx",
+      "frontend"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/react/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-nextjs-expert",
+    "name": "Next.js Expert",
+    "description": "Next.js App Router, server components, data fetching, caching, and deployment patterns",
+    "keywords": [
+      "nextjs",
+      "react",
+      "server-components",
+      "app-router",
+      "ssr",
+      "ssg",
+      "vercel",
+      "routing"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/nextjs/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-css-expert",
+    "name": "CSS Expert",
+    "description": "Modern CSS, Tailwind, animations, responsive design, and layout patterns",
+    "keywords": [
+      "css",
+      "tailwind",
+      "responsive",
+      "animations",
+      "layout",
+      "flexbox",
+      "grid",
+      "styling"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/css/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-git-expert",
+    "name": "Git Expert",
+    "description": "Git workflows, branching strategies, rebasing, conflict resolution, and commit conventions",
+    "keywords": [
+      "git",
+      "version-control",
+      "branching",
+      "rebase",
+      "merge",
+      "commit",
+      "workflow"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/git/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-debugging",
+    "name": "Debugging Expert",
+    "description": "Systematic debugging strategies, error diagnosis, and root cause analysis",
+    "keywords": [
+      "debugging",
+      "errors",
+      "diagnosis",
+      "root-cause",
+      "troubleshooting",
+      "logging",
+      "stack-trace"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/debugging/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-refactoring",
+    "name": "Refactoring Expert",
+    "description": "Code refactoring patterns, clean code principles, and technical debt reduction",
+    "keywords": [
+      "refactoring",
+      "clean-code",
+      "technical-debt",
+      "patterns",
+      "solid",
+      "maintainability"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/refactoring/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-node-expert",
+    "name": "Node.js Expert",
+    "description": "Node.js backend development, APIs, streams, file system, and server patterns",
+    "keywords": [
+      "nodejs",
+      "backend",
+      "apis",
+      "express",
+      "streams",
+      "server",
+      "runtime",
+      "npm"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/mattpocock/skills/main/node/SKILL.md",
+    "source": "mattpocock/skills",
+    "author": "Matt Pocock"
+  },
+  {
+    "id": "comm-api-design",
+    "name": "API Design",
+    "description": "RESTful API design, OpenAPI specs, versioning, error handling, and documentation",
+    "keywords": [
+      "api",
+      "rest",
+      "openapi",
+      "endpoints",
+      "versioning",
+      "documentation",
+      "http"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/api-design/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-docker-dev",
+    "name": "Docker Development",
+    "description": "Docker containerization, Compose, multi-stage builds, and container orchestration",
+    "keywords": [
+      "docker",
+      "containers",
+      "compose",
+      "kubernetes",
+      "devops",
+      "deployment",
+      "images"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/docker-development/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ci-cd-pipeline",
+    "name": "CI/CD Pipeline Builder",
+    "description": "Build CI/CD pipelines with GitHub Actions, GitLab CI, Jenkins, and deployment automation",
+    "keywords": [
+      "cicd",
+      "pipeline",
+      "github-actions",
+      "deployment",
+      "automation",
+      "continuous-integration"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/ci-cd-pipeline-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-database-designer",
+    "name": "Database Designer",
+    "description": "Database schema design, normalization, indexing, query optimization, and migrations",
+    "keywords": [
+      "database",
+      "schema",
+      "sql",
+      "postgres",
+      "mysql",
+      "indexing",
+      "migrations",
+      "normalization"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/database-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-terraform",
+    "name": "Terraform Patterns",
+    "description": "Infrastructure as code with Terraform \u2014 modules, state management, and cloud provisioning",
+    "keywords": [
+      "terraform",
+      "infrastructure",
+      "iac",
+      "cloud",
+      "provisioning",
+      "modules",
+      "state"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/terraform-patterns/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-aws-architect",
+    "name": "AWS Solution Architect",
+    "description": "AWS architecture design, service selection, cost optimization, and best practices",
+    "keywords": [
+      "aws",
+      "cloud",
+      "architecture",
+      "lambda",
+      "s3",
+      "ec2",
+      "serverless",
+      "cost"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/aws-solution-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-gcp-architect",
+    "name": "GCP Cloud Architect",
+    "description": "Google Cloud Platform architecture, BigQuery, Cloud Run, and GCP service patterns",
+    "keywords": [
+      "gcp",
+      "google-cloud",
+      "bigquery",
+      "cloud-run",
+      "firebase",
+      "cloud",
+      "architecture"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/gcp-cloud-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-azure-architect",
+    "name": "Azure Cloud Architect",
+    "description": "Microsoft Azure architecture, Azure Functions, Cosmos DB, and cloud-native patterns",
+    "keywords": [
+      "azure",
+      "microsoft",
+      "cloud",
+      "functions",
+      "cosmos-db",
+      "architecture",
+      "devops"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/azure-cloud-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-security-pentesting",
+    "name": "Security Pen Testing",
+    "description": "Penetration testing, vulnerability assessment, OWASP guidelines, and security hardening",
+    "keywords": [
+      "security",
+      "pentesting",
+      "vulnerability",
+      "owasp",
+      "hardening",
+      "assessment",
+      "ethical-hacking"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/security-pen-testing/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-performance-profiler",
+    "name": "Performance Profiler",
+    "description": "Application performance profiling, bottleneck identification, and optimization strategies",
+    "keywords": [
+      "performance",
+      "profiling",
+      "optimization",
+      "bottleneck",
+      "latency",
+      "throughput",
+      "benchmarking"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/performance-profiler/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-frontend",
+    "name": "Senior Frontend Engineer",
+    "description": "Frontend architecture, component systems, accessibility, and modern web development",
+    "keywords": [
+      "frontend",
+      "web",
+      "accessibility",
+      "components",
+      "architecture",
+      "spa",
+      "responsive"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-frontend/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-backend",
+    "name": "Senior Backend Engineer",
+    "description": "Backend architecture, microservices, API design, caching, and scalability patterns",
+    "keywords": [
+      "backend",
+      "microservices",
+      "api",
+      "caching",
+      "scalability",
+      "architecture",
+      "server"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-backend/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-fullstack",
+    "name": "Senior Fullstack Engineer",
+    "description": "Full-stack development with frontend-backend integration, deployment, and system design",
+    "keywords": [
+      "fullstack",
+      "frontend",
+      "backend",
+      "integration",
+      "deployment",
+      "system-design"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-fullstack/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-devops",
+    "name": "Senior DevOps Engineer",
+    "description": "DevOps practices, infrastructure automation, monitoring, and SRE principles",
+    "keywords": [
+      "devops",
+      "infrastructure",
+      "monitoring",
+      "sre",
+      "automation",
+      "reliability",
+      "operations"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-devops/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-architect",
+    "name": "Senior Architect",
+    "description": "System architecture, design patterns, scalability, and technical decision-making",
+    "keywords": [
+      "architecture",
+      "design-patterns",
+      "scalability",
+      "system-design",
+      "technical-leadership"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-data-scientist",
+    "name": "Senior Data Scientist",
+    "description": "Data science workflows, statistical analysis, machine learning, and data visualization",
+    "keywords": [
+      "data-science",
+      "statistics",
+      "machine-learning",
+      "visualization",
+      "analysis",
+      "python",
+      "pandas"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-data-scientist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-data-engineer",
+    "name": "Senior Data Engineer",
+    "description": "Data pipelines, ETL processes, data warehousing, and big data architecture",
+    "keywords": [
+      "data-engineering",
+      "etl",
+      "pipelines",
+      "warehousing",
+      "big-data",
+      "spark",
+      "airflow"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-data-engineer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-ml-engineer",
+    "name": "Senior ML Engineer",
+    "description": "ML model development, training pipelines, deployment, and MLOps practices",
+    "keywords": [
+      "machine-learning",
+      "ml",
+      "model",
+      "training",
+      "deployment",
+      "mlops",
+      "deep-learning"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-ml-engineer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-qa",
+    "name": "Senior QA Engineer",
+    "description": "Quality assurance, test strategy, automation frameworks, and continuous testing",
+    "keywords": [
+      "qa",
+      "quality",
+      "testing",
+      "automation",
+      "test-strategy",
+      "regression",
+      "acceptance"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-qa/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-security",
+    "name": "Senior Security Engineer",
+    "description": "Application security, threat modeling, secure coding, and compliance frameworks",
+    "keywords": [
+      "security",
+      "threat-modeling",
+      "secure-coding",
+      "compliance",
+      "encryption",
+      "authentication"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-security/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-prompt-engineer",
+    "name": "Senior Prompt Engineer",
+    "description": "Prompt engineering, LLM optimization, chain-of-thought, and AI interaction design",
+    "keywords": [
+      "prompt",
+      "llm",
+      "ai",
+      "optimization",
+      "chain-of-thought",
+      "engineering",
+      "gpt"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-prompt-engineer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-computer-vision",
+    "name": "Computer Vision Engineer",
+    "description": "Computer vision, image processing, object detection, and visual AI systems",
+    "keywords": [
+      "computer-vision",
+      "image",
+      "detection",
+      "opencv",
+      "visual",
+      "recognition",
+      "neural-network"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-computer-vision/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-incident-response",
+    "name": "Incident Response",
+    "description": "Incident management, runbook execution, post-mortem analysis, and recovery procedures",
+    "keywords": [
+      "incident",
+      "response",
+      "recovery",
+      "post-mortem",
+      "runbook",
+      "outage",
+      "alerting"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/incident-response/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-playwright-pro",
+    "name": "Playwright Pro",
+    "description": "Browser automation and E2E testing with Playwright \u2014 selectors, fixtures, and CI integration",
+    "keywords": [
+      "playwright",
+      "e2e",
+      "browser",
+      "automation",
+      "testing",
+      "selectors",
+      "fixtures"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/playwright-pro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-tdd-guide",
+    "name": "TDD Guide",
+    "description": "Test-driven development methodology \u2014 red-green-refactor, test-first design patterns",
+    "keywords": [
+      "tdd",
+      "test-driven",
+      "red-green-refactor",
+      "testing",
+      "methodology",
+      "development"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/tdd-guide/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-a11y-audit",
+    "name": "Accessibility Audit",
+    "description": "WCAG compliance auditing, screen reader testing, and accessibility improvements",
+    "keywords": [
+      "accessibility",
+      "a11y",
+      "wcag",
+      "screen-reader",
+      "aria",
+      "compliance",
+      "audit"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/a11y-audit/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-mcp-server-builder",
+    "name": "MCP Server Builder",
+    "description": "Build Model Context Protocol servers \u2014 tool definitions, transports, and MCP patterns",
+    "keywords": [
+      "mcp",
+      "server",
+      "protocol",
+      "tools",
+      "transport",
+      "ai",
+      "integration",
+      "model-context"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/mcp-server-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-rag-architect",
+    "name": "RAG Architect",
+    "description": "Retrieval-augmented generation design, vector databases, embeddings, and search optimization",
+    "keywords": [
+      "rag",
+      "retrieval",
+      "embeddings",
+      "vector",
+      "search",
+      "llm",
+      "knowledge-base"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/rag-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-agent-designer",
+    "name": "Agent Designer",
+    "description": "AI agent architecture, tool design, reasoning loops, and multi-agent coordination",
+    "keywords": [
+      "agent",
+      "ai",
+      "tool-design",
+      "reasoning",
+      "multi-agent",
+      "orchestration",
+      "autonomous"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/agent-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-browser-automation",
+    "name": "Browser Automation",
+    "description": "Web scraping, browser automation, headless browsers, and data extraction from websites",
+    "keywords": [
+      "browser",
+      "scraping",
+      "automation",
+      "headless",
+      "puppeteer",
+      "extraction",
+      "web"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/browser-automation/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-changelog-generator",
+    "name": "Changelog Generator",
+    "description": "Automated changelog generation from git commits with conventional commit parsing",
+    "keywords": [
+      "changelog",
+      "git",
+      "commits",
+      "versioning",
+      "release-notes",
+      "conventional-commits"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/changelog-generator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-dependency-auditor",
+    "name": "Dependency Auditor",
+    "description": "Audit npm/pip/gem dependencies for vulnerabilities, outdated packages, and license issues",
+    "keywords": [
+      "dependencies",
+      "audit",
+      "vulnerabilities",
+      "npm",
+      "outdated",
+      "license",
+      "security"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/dependency-auditor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-migration-architect",
+    "name": "Migration Architect",
+    "description": "Framework and language migrations, version upgrades, and codebase modernization",
+    "keywords": [
+      "migration",
+      "upgrade",
+      "modernization",
+      "framework",
+      "legacy",
+      "refactoring"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/migration-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-observability",
+    "name": "Observability Designer",
+    "description": "Logging, metrics, tracing, and monitoring system design with Datadog, Grafana, etc.",
+    "keywords": [
+      "observability",
+      "monitoring",
+      "logging",
+      "metrics",
+      "tracing",
+      "grafana",
+      "datadog"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/observability-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-release-manager",
+    "name": "Release Manager",
+    "description": "Release planning, versioning, deployment coordination, and rollback strategies",
+    "keywords": [
+      "release",
+      "versioning",
+      "deployment",
+      "rollback",
+      "semver",
+      "coordination"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/release-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-monorepo-navigator",
+    "name": "Monorepo Navigator",
+    "description": "Monorepo management with Turborepo, Nx, or Lerna \u2014 workspace navigation and build optimization",
+    "keywords": [
+      "monorepo",
+      "turborepo",
+      "nx",
+      "lerna",
+      "workspace",
+      "build",
+      "packages"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/monorepo-navigator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-tech-debt-tracker",
+    "name": "Tech Debt Tracker",
+    "description": "Identify, quantify, and prioritize technical debt for systematic reduction",
+    "keywords": [
+      "tech-debt",
+      "technical-debt",
+      "tracking",
+      "prioritization",
+      "refactoring",
+      "quality"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/tech-debt-tracker/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-sql-assistant",
+    "name": "SQL Database Assistant",
+    "description": "SQL query writing, optimization, database administration, and data analysis",
+    "keywords": [
+      "sql",
+      "database",
+      "queries",
+      "optimization",
+      "postgres",
+      "mysql",
+      "data-analysis"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/sql-database-assistant/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-helm-chart",
+    "name": "Helm Chart Builder",
+    "description": "Kubernetes Helm charts, templates, values management, and chart best practices",
+    "keywords": [
+      "helm",
+      "kubernetes",
+      "k8s",
+      "charts",
+      "templates",
+      "deployment",
+      "orchestration"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/helm-chart-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-pr-review",
+    "name": "PR Review Expert",
+    "description": "Pull request review with code quality checks, security analysis, and constructive feedback",
+    "keywords": [
+      "pull-request",
+      "review",
+      "code-quality",
+      "feedback",
+      "github",
+      "approval"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/pr-review-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-llm-cost-optimizer",
+    "name": "LLM Cost Optimizer",
+    "description": "Optimize LLM API costs through caching, prompt compression, model selection, and batching",
+    "keywords": [
+      "llm",
+      "cost",
+      "optimization",
+      "api",
+      "caching",
+      "tokens",
+      "model-selection"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/llm-cost-optimizer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-env-secrets",
+    "name": "Env & Secrets Manager",
+    "description": "Environment variable management, secrets rotation, and secure configuration patterns",
+    "keywords": [
+      "environment",
+      "secrets",
+      "env",
+      "configuration",
+      "vault",
+      "security",
+      "dotenv"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/env-secrets-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-stripe-integration",
+    "name": "Stripe Integration Expert",
+    "description": "Stripe payments, subscriptions, webhooks, and billing system implementation",
+    "keywords": [
+      "stripe",
+      "payments",
+      "subscriptions",
+      "webhooks",
+      "billing",
+      "checkout",
+      "fintech"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/stripe-integration-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-snowflake",
+    "name": "Snowflake Development",
+    "description": "Snowflake data warehouse queries, data modeling, and analytics engineering",
+    "keywords": [
+      "snowflake",
+      "data-warehouse",
+      "analytics",
+      "sql",
+      "dbt",
+      "data-modeling"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/snowflake-development/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-tech-stack-evaluator",
+    "name": "Tech Stack Evaluator",
+    "description": "Evaluate and compare technology stacks for projects \u2014 frameworks, databases, and infrastructure",
+    "keywords": [
+      "tech-stack",
+      "evaluation",
+      "comparison",
+      "frameworks",
+      "selection",
+      "architecture"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/tech-stack-evaluator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-red-team",
+    "name": "Red Team Security",
+    "description": "Red team exercises, attack simulation, and adversarial security testing",
+    "keywords": [
+      "red-team",
+      "security",
+      "attack",
+      "simulation",
+      "adversarial",
+      "offensive"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/red-team/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ai-security",
+    "name": "AI Security",
+    "description": "AI/ML security, prompt injection defense, model safety, and AI risk mitigation",
+    "keywords": [
+      "ai-security",
+      "prompt-injection",
+      "model-safety",
+      "risk",
+      "defense",
+      "guardrails"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/ai-security/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-threat-detection",
+    "name": "Threat Detection",
+    "description": "Security threat detection, anomaly identification, and SIEM integration patterns",
+    "keywords": [
+      "threat",
+      "detection",
+      "anomaly",
+      "siem",
+      "security",
+      "monitoring",
+      "alerts"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/threat-detection/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cloud-security",
+    "name": "Cloud Security",
+    "description": "Cloud security posture management, IAM policies, and compliance automation",
+    "keywords": [
+      "cloud-security",
+      "iam",
+      "compliance",
+      "posture",
+      "aws",
+      "azure",
+      "gcp"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/cloud-security/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-seo-audit",
+    "name": "SEO Audit",
+    "description": "Technical SEO auditing, site performance, meta tags, structured data, and search rankings",
+    "keywords": [
+      "seo",
+      "audit",
+      "meta-tags",
+      "structured-data",
+      "search",
+      "rankings",
+      "performance"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/seo-audit/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-content-strategy",
+    "name": "Content Strategy",
+    "description": "Content planning, editorial calendars, topic research, and content distribution",
+    "keywords": [
+      "content",
+      "strategy",
+      "editorial",
+      "planning",
+      "topics",
+      "distribution",
+      "calendar"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/content-strategy/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-copywriting",
+    "name": "Copywriting",
+    "description": "Persuasive copywriting, headlines, CTAs, landing pages, and conversion-focused writing",
+    "keywords": [
+      "copywriting",
+      "headlines",
+      "cta",
+      "landing-page",
+      "conversion",
+      "persuasive",
+      "writing"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/copywriting/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-email-sequence",
+    "name": "Email Sequence Builder",
+    "description": "Email marketing sequences, drip campaigns, nurture flows, and email automation",
+    "keywords": [
+      "email",
+      "sequence",
+      "drip",
+      "campaigns",
+      "nurture",
+      "automation",
+      "marketing"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/email-sequence/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-social-media-manager",
+    "name": "Social Media Manager",
+    "description": "Social media strategy, post creation, engagement tactics, and platform-specific content",
+    "keywords": [
+      "social-media",
+      "posts",
+      "engagement",
+      "twitter",
+      "linkedin",
+      "instagram",
+      "community"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/social-media-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-social-media-analyzer",
+    "name": "Social Media Analyzer",
+    "description": "Social media analytics, sentiment analysis, engagement metrics, and audience insights",
+    "keywords": [
+      "social-media",
+      "analytics",
+      "sentiment",
+      "engagement",
+      "metrics",
+      "audience"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/social-media-analyzer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-paid-ads",
+    "name": "Paid Ads Expert",
+    "description": "Google Ads, Facebook Ads, PPC campaign management, and ad copy optimization",
+    "keywords": [
+      "ads",
+      "ppc",
+      "google-ads",
+      "facebook-ads",
+      "campaigns",
+      "budget",
+      "targeting"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/paid-ads/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-pricing-strategy",
+    "name": "Pricing Strategy",
+    "description": "Pricing models, competitive pricing analysis, and monetization strategy",
+    "keywords": [
+      "pricing",
+      "monetization",
+      "strategy",
+      "models",
+      "competitive",
+      "revenue",
+      "subscription"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/pricing-strategy/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ab-testing",
+    "name": "A/B Test Setup",
+    "description": "A/B testing experiment design, statistical significance, and conversion optimization",
+    "keywords": [
+      "ab-testing",
+      "experiments",
+      "statistics",
+      "conversion",
+      "optimization",
+      "testing"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/ab-test-setup/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ad-creative",
+    "name": "Ad Creative",
+    "description": "Ad creative development, visual guidelines, copy frameworks, and brand consistency",
+    "keywords": [
+      "ad-creative",
+      "visual",
+      "copy",
+      "brand",
+      "creative",
+      "design",
+      "advertising"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/ad-creative/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-launch-strategy",
+    "name": "Launch Strategy",
+    "description": "Product launch planning, go-to-market strategy, launch checklists, and launch analytics",
+    "keywords": [
+      "launch",
+      "go-to-market",
+      "product",
+      "strategy",
+      "planning",
+      "gtm",
+      "checklist"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/launch-strategy/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cold-email",
+    "name": "Cold Email",
+    "description": "Cold outreach email templates, personalization, follow-up sequences, and deliverability",
+    "keywords": [
+      "cold-email",
+      "outreach",
+      "personalization",
+      "follow-up",
+      "deliverability",
+      "sales"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/cold-email/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-brand-guidelines",
+    "name": "Brand Guidelines",
+    "description": "Brand identity documentation, style guides, tone of voice, and visual standards",
+    "keywords": [
+      "brand",
+      "guidelines",
+      "identity",
+      "style-guide",
+      "tone",
+      "visual",
+      "standards"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/brand-guidelines/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-schema-markup",
+    "name": "Schema Markup",
+    "description": "JSON-LD structured data, rich snippets, and schema.org implementation for SEO",
+    "keywords": [
+      "schema",
+      "structured-data",
+      "json-ld",
+      "rich-snippets",
+      "seo",
+      "markup"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/schema-markup/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-programmatic-seo",
+    "name": "Programmatic SEO",
+    "description": "Automated SEO at scale \u2014 template pages, data-driven content, and programmatic indexing",
+    "keywords": [
+      "programmatic",
+      "seo",
+      "automated",
+      "templates",
+      "indexing",
+      "scale",
+      "content"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/programmatic-seo/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-marketing-strategy",
+    "name": "Marketing Strategy (PMM)",
+    "description": "Product marketing, positioning, messaging frameworks, and market analysis",
+    "keywords": [
+      "marketing",
+      "strategy",
+      "positioning",
+      "messaging",
+      "product-marketing",
+      "pmm"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/marketing-strategy-pmm/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-marketing-ops",
+    "name": "Marketing Ops",
+    "description": "Marketing operations, martech stack management, lead scoring, and workflow automation",
+    "keywords": [
+      "marketing-ops",
+      "martech",
+      "lead-scoring",
+      "automation",
+      "workflows",
+      "operations"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/marketing-ops/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-churn-prevention",
+    "name": "Churn Prevention",
+    "description": "Customer retention strategies, churn prediction, and win-back campaign design",
+    "keywords": [
+      "churn",
+      "retention",
+      "prediction",
+      "win-back",
+      "customer",
+      "loyalty",
+      "engagement"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/churn-prevention/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-referral-program",
+    "name": "Referral Program",
+    "description": "Referral program design, incentive structures, viral loops, and growth mechanics",
+    "keywords": [
+      "referral",
+      "viral",
+      "growth",
+      "incentives",
+      "program",
+      "acquisition",
+      "word-of-mouth"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/referral-program/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-video-content",
+    "name": "Video Content Strategist",
+    "description": "Video content planning, scripting, YouTube SEO, and short-form video strategy",
+    "keywords": [
+      "video",
+      "content",
+      "youtube",
+      "scripting",
+      "short-form",
+      "tiktok",
+      "reels"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/video-content-strategist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-x-twitter-growth",
+    "name": "X/Twitter Growth",
+    "description": "Twitter/X growth strategies, thread writing, engagement optimization, and audience building",
+    "keywords": [
+      "twitter",
+      "x",
+      "growth",
+      "threads",
+      "engagement",
+      "audience",
+      "social"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/x-twitter-growth/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-content-humanizer",
+    "name": "Content Humanizer",
+    "description": "Make AI-generated content sound natural and human \u2014 tone adjustment and authenticity",
+    "keywords": [
+      "humanizer",
+      "ai-content",
+      "natural",
+      "tone",
+      "authenticity",
+      "writing",
+      "voice"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/content-humanizer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-copy-editing",
+    "name": "Copy Editing",
+    "description": "Professional copy editing, grammar, style consistency, and readability improvement",
+    "keywords": [
+      "editing",
+      "grammar",
+      "style",
+      "readability",
+      "proofreading",
+      "writing",
+      "clarity"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/copy-editing/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-app-store-optimization",
+    "name": "App Store Optimization",
+    "description": "ASO for iOS and Android \u2014 keywords, screenshots, descriptions, and ranking optimization",
+    "keywords": [
+      "aso",
+      "app-store",
+      "optimization",
+      "ios",
+      "android",
+      "keywords",
+      "rankings"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/app-store-optimization/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-campaign-analytics",
+    "name": "Campaign Analytics",
+    "description": "Marketing campaign measurement, attribution modeling, and ROI analysis",
+    "keywords": [
+      "campaign",
+      "analytics",
+      "attribution",
+      "roi",
+      "measurement",
+      "kpi",
+      "reporting"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/campaign-analytics/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-form-cro",
+    "name": "Form CRO",
+    "description": "Form conversion rate optimization \u2014 field reduction, UX patterns, and validation design",
+    "keywords": [
+      "form",
+      "cro",
+      "conversion",
+      "optimization",
+      "ux",
+      "validation",
+      "signup"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/form-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-onboarding-cro",
+    "name": "Onboarding CRO",
+    "description": "User onboarding optimization \u2014 activation flows, tooltips, and first-run experience",
+    "keywords": [
+      "onboarding",
+      "cro",
+      "activation",
+      "first-run",
+      "tooltips",
+      "ux",
+      "retention"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/onboarding-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-page-cro",
+    "name": "Landing Page CRO",
+    "description": "Landing page optimization \u2014 above-the-fold, social proof, and conversion elements",
+    "keywords": [
+      "landing-page",
+      "cro",
+      "conversion",
+      "above-fold",
+      "social-proof",
+      "optimization"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/page-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-marketing-psychology",
+    "name": "Marketing Psychology",
+    "description": "Behavioral psychology in marketing \u2014 cognitive biases, persuasion, and decision frameworks",
+    "keywords": [
+      "psychology",
+      "behavioral",
+      "biases",
+      "persuasion",
+      "marketing",
+      "decision",
+      "influence"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/marketing-psychology/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-demand-acquisition",
+    "name": "Demand & Acquisition",
+    "description": "Demand generation, lead acquisition, funnel optimization, and growth marketing",
+    "keywords": [
+      "demand",
+      "acquisition",
+      "funnel",
+      "leads",
+      "growth",
+      "marketing",
+      "generation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/marketing-demand-acquisition/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ai-seo",
+    "name": "AI-Powered SEO",
+    "description": "AI-driven SEO strategies, content optimization, and search intent analysis",
+    "keywords": [
+      "ai",
+      "seo",
+      "search-intent",
+      "content",
+      "optimization",
+      "ai-powered",
+      "ranking"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/ai-seo/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-email-template",
+    "name": "Email Template Builder",
+    "description": "HTML email templates, responsive design, cross-client compatibility, and dark mode",
+    "keywords": [
+      "email",
+      "template",
+      "html",
+      "responsive",
+      "cross-client",
+      "dark-mode",
+      "design"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/email-template-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-epic-design",
+    "name": "Epic Design",
+    "description": "Feature epic design with user stories, acceptance criteria, and implementation planning",
+    "keywords": [
+      "epic",
+      "design",
+      "user-stories",
+      "acceptance-criteria",
+      "planning",
+      "agile",
+      "product"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/epic-design/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-interview-system",
+    "name": "Interview System Designer",
+    "description": "Technical interview question design, rubrics, and structured evaluation systems",
+    "keywords": [
+      "interview",
+      "hiring",
+      "questions",
+      "rubric",
+      "evaluation",
+      "technical",
+      "recruiting"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/interview-system-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-codebase-onboarding",
+    "name": "Codebase Onboarding",
+    "description": "New developer onboarding \u2014 codebase walkthroughs, architecture docs, and getting-started guides",
+    "keywords": [
+      "onboarding",
+      "codebase",
+      "documentation",
+      "walkthrough",
+      "architecture",
+      "getting-started"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/codebase-onboarding/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-runbook-generator",
+    "name": "Runbook Generator",
+    "description": "Operations runbooks, troubleshooting guides, and incident response documentation",
+    "keywords": [
+      "runbook",
+      "operations",
+      "troubleshooting",
+      "incident",
+      "documentation",
+      "sre"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/runbook-generator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-spec-driven",
+    "name": "Spec-Driven Workflow",
+    "description": "Specification-first development with clear contracts, schemas, and implementation planning",
+    "keywords": [
+      "spec",
+      "specification",
+      "contracts",
+      "schema",
+      "planning",
+      "documentation",
+      "workflow"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/spec-driven-workflow/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-self-improving-agent",
+    "name": "Self-Improving Agent",
+    "description": "Agent self-improvement loops, reflection, and meta-cognitive optimization patterns",
+    "keywords": [
+      "self-improving",
+      "agent",
+      "reflection",
+      "meta-cognitive",
+      "optimization",
+      "learning"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/self-improving-agent/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-github-actions",
+    "name": "GitHub Actions Expert",
+    "description": "GitHub Actions workflows, custom actions, matrix builds, and CI/CD automation",
+    "keywords": [
+      "github-actions",
+      "ci",
+      "workflows",
+      "actions",
+      "automation",
+      "yaml",
+      "pipelines"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/github-actions/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-python-expert",
+    "name": "Python Expert",
+    "description": "Python best practices, async patterns, type hints, packaging, and Pythonic idioms",
+    "keywords": [
+      "python",
+      "async",
+      "type-hints",
+      "packaging",
+      "pip",
+      "pytest",
+      "pythonic"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/python/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-rust-expert",
+    "name": "Rust Expert",
+    "description": "Rust ownership, lifetimes, error handling, async patterns, and systems programming",
+    "keywords": [
+      "rust",
+      "ownership",
+      "lifetimes",
+      "cargo",
+      "systems",
+      "memory-safety",
+      "concurrency"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/rust/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-go-expert",
+    "name": "Go Expert",
+    "description": "Go development \u2014 goroutines, channels, interfaces, error handling, and idiomatic Go",
+    "keywords": [
+      "golang",
+      "goroutines",
+      "channels",
+      "interfaces",
+      "concurrency",
+      "idiomatic"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/go/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-graphql-expert",
+    "name": "GraphQL Expert",
+    "description": "GraphQL schema design, resolvers, subscriptions, and client-server integration",
+    "keywords": [
+      "graphql",
+      "schema",
+      "resolvers",
+      "subscriptions",
+      "apollo",
+      "queries",
+      "mutations"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/graphql/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-supabase-expert",
+    "name": "Supabase Expert",
+    "description": "Supabase auth, RLS policies, Edge Functions, realtime subscriptions, and database design",
+    "keywords": [
+      "supabase",
+      "auth",
+      "rls",
+      "edge-functions",
+      "realtime",
+      "postgres",
+      "baas"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/supabase/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-firebase-expert",
+    "name": "Firebase Expert",
+    "description": "Firebase Auth, Firestore, Cloud Functions, hosting, and real-time database patterns",
+    "keywords": [
+      "firebase",
+      "firestore",
+      "cloud-functions",
+      "hosting",
+      "realtime",
+      "google",
+      "baas"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/firebase/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-vue-expert",
+    "name": "Vue.js Expert",
+    "description": "Vue 3 Composition API, reactivity, Pinia, Nuxt, and component architecture",
+    "keywords": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "pinia",
+      "nuxt",
+      "components",
+      "frontend"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/vue/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-svelte-expert",
+    "name": "Svelte Expert",
+    "description": "Svelte 5 runes, SvelteKit, server-side rendering, and reactive programming patterns",
+    "keywords": [
+      "svelte",
+      "sveltekit",
+      "runes",
+      "reactive",
+      "ssr",
+      "frontend",
+      "components"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/svelte/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-tailwind-expert",
+    "name": "Tailwind CSS Expert",
+    "description": "Tailwind utility classes, custom configurations, responsive design, and component patterns",
+    "keywords": [
+      "tailwind",
+      "css",
+      "utility",
+      "responsive",
+      "configuration",
+      "design-system"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/tailwind/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-prisma-expert",
+    "name": "Prisma Expert",
+    "description": "Prisma ORM, schema modeling, migrations, queries, and database best practices",
+    "keywords": [
+      "prisma",
+      "orm",
+      "schema",
+      "migrations",
+      "database",
+      "queries",
+      "typescript"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/prisma/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-redis-expert",
+    "name": "Redis Expert",
+    "description": "Redis caching, pub/sub, streams, data structures, and performance patterns",
+    "keywords": [
+      "redis",
+      "caching",
+      "pub-sub",
+      "streams",
+      "data-structures",
+      "performance"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/redis/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-elasticsearch",
+    "name": "Elasticsearch Expert",
+    "description": "Elasticsearch queries, indexing, mappings, aggregations, and search optimization",
+    "keywords": [
+      "elasticsearch",
+      "search",
+      "indexing",
+      "queries",
+      "aggregations",
+      "full-text"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/elasticsearch/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-data-visualization",
+    "name": "Data Visualization",
+    "description": "Charts, dashboards, D3.js, and data storytelling through visual representations",
+    "keywords": [
+      "visualization",
+      "charts",
+      "dashboards",
+      "d3",
+      "data",
+      "graphs",
+      "reporting"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/data-visualization/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-web-scraping",
+    "name": "Web Scraping",
+    "description": "Web scraping with ethical practices, anti-detection, rate limiting, and data extraction",
+    "keywords": [
+      "scraping",
+      "web",
+      "extraction",
+      "crawling",
+      "parsing",
+      "automation",
+      "data"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/web-scraping/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-cli-builder",
+    "name": "CLI Builder",
+    "description": "Command-line tool design, argument parsing, interactive prompts, and CLI UX patterns",
+    "keywords": [
+      "cli",
+      "command-line",
+      "terminal",
+      "arguments",
+      "prompts",
+      "tool",
+      "commander"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/cli/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-oauth-integration",
+    "name": "OAuth Integration",
+    "description": "OAuth 2.0/OIDC implementation, token management, and third-party authentication flows",
+    "keywords": [
+      "oauth",
+      "authentication",
+      "oidc",
+      "tokens",
+      "authorization",
+      "login",
+      "sso"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/oauth/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-websocket-expert",
+    "name": "WebSocket Expert",
+    "description": "Real-time communication with WebSockets, Socket.io, and server-sent events",
+    "keywords": [
+      "websocket",
+      "real-time",
+      "socket-io",
+      "sse",
+      "streaming",
+      "bidirectional"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/websocket/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-markdown-docs",
+    "name": "Documentation Writer",
+    "description": "Technical documentation, API docs, READMEs, and developer-facing content",
+    "keywords": [
+      "documentation",
+      "readme",
+      "api-docs",
+      "technical-writing",
+      "markdown",
+      "guides"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/documentation/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-regex-expert",
+    "name": "Regex Expert",
+    "description": "Regular expressions \u2014 pattern matching, lookaheads, capture groups, and validation",
+    "keywords": [
+      "regex",
+      "regular-expressions",
+      "pattern",
+      "matching",
+      "validation",
+      "parsing"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/regex/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-bash-scripting",
+    "name": "Bash Scripting",
+    "description": "Shell scripting, process automation, file manipulation, and system administration",
+    "keywords": [
+      "bash",
+      "shell",
+      "scripting",
+      "automation",
+      "linux",
+      "system-admin",
+      "cli"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/bash/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-figma-to-code",
+    "name": "Figma to Code",
+    "description": "Convert Figma designs to production code \u2014 component mapping and design token extraction",
+    "keywords": [
+      "figma",
+      "design-to-code",
+      "components",
+      "design-tokens",
+      "ui",
+      "frontend"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/ComposioHQ/awesome-claude-skills/main/figma-to-code/SKILL.md",
+    "source": "ComposioHQ/awesome-claude-skills",
+    "author": "ComposioHQ"
+  },
+  {
+    "id": "comm-git-worktree",
+    "name": "Git Worktree Manager",
+    "description": "Git worktree management for parallel development \u2014 branch isolation and workspace handling",
+    "keywords": [
+      "git",
+      "worktree",
+      "parallel",
+      "branches",
+      "workspace",
+      "isolation"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/git-worktree-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-api-test-suite",
+    "name": "API Test Suite Builder",
+    "description": "API testing suites with request chains, assertions, and environment management",
+    "keywords": [
+      "api",
+      "testing",
+      "suite",
+      "assertions",
+      "postman",
+      "requests",
+      "integration"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/api-test-suite-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-autoresearch",
+    "name": "Auto-Research Agent",
+    "description": "Automated research workflows \u2014 source discovery, summarization, and knowledge synthesis",
+    "keywords": [
+      "research",
+      "automated",
+      "summarization",
+      "knowledge",
+      "synthesis",
+      "discovery"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/autoresearch-agent/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-focused-fix",
+    "name": "Focused Fix",
+    "description": "Targeted bug fixing \u2014 reproduce, isolate, fix, and verify with minimal scope creep",
+    "keywords": [
+      "bug-fix",
+      "focused",
+      "debugging",
+      "reproduce",
+      "isolate",
+      "verify",
+      "targeted"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/focused-fix/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-self-eval",
+    "name": "Self-Evaluation",
+    "description": "Code self-evaluation and quality assessment before submission",
+    "keywords": [
+      "self-eval",
+      "quality",
+      "assessment",
+      "review",
+      "evaluation",
+      "checklist"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/self-eval/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-skill-tester",
+    "name": "Skill Tester",
+    "description": "Test and validate SKILL.md files \u2014 syntax checking, capability verification",
+    "keywords": [
+      "skill",
+      "testing",
+      "validation",
+      "skill-md",
+      "verification",
+      "quality"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/skill-tester/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-prompt-governance",
+    "name": "Prompt Governance",
+    "description": "Prompt management, versioning, quality control, and prompt engineering governance",
+    "keywords": [
+      "prompt",
+      "governance",
+      "versioning",
+      "quality",
+      "management",
+      "engineering"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/prompt-governance/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-skill-security-auditor",
+    "name": "Skill Security Auditor",
+    "description": "Security audit for SKILL.md files \u2014 permission checking and risk assessment",
+    "keywords": [
+      "security",
+      "audit",
+      "skill",
+      "permissions",
+      "risk",
+      "assessment"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/skill-security-auditor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-api-design-reviewer",
+    "name": "API Design Reviewer",
+    "description": "Review API designs for consistency, RESTful conventions, and developer experience",
+    "keywords": [
+      "api",
+      "design",
+      "review",
+      "rest",
+      "conventions",
+      "dx",
+      "consistency"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/api-design-reviewer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-adversarial-reviewer",
+    "name": "Adversarial Reviewer",
+    "description": "Devil's advocate code review \u2014 find edge cases, race conditions, and failure modes",
+    "keywords": [
+      "adversarial",
+      "review",
+      "edge-cases",
+      "race-conditions",
+      "failure",
+      "stress-test"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/adversarial-reviewer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-incident-commander",
+    "name": "Incident Commander",
+    "description": "Incident command leadership \u2014 triage, coordination, communication, and resolution",
+    "keywords": [
+      "incident",
+      "commander",
+      "triage",
+      "coordination",
+      "communication",
+      "resolution"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/incident-commander/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-google-workspace",
+    "name": "Google Workspace CLI",
+    "description": "Google Workspace automation \u2014 Docs, Sheets, Drive, and Gmail integration patterns",
+    "keywords": [
+      "google",
+      "workspace",
+      "docs",
+      "sheets",
+      "drive",
+      "gmail",
+      "automation"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/google-workspace-cli/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ms365-manager",
+    "name": "MS365 Tenant Manager",
+    "description": "Microsoft 365 administration, tenant management, and Office integration patterns",
+    "keywords": [
+      "microsoft",
+      "office365",
+      "ms365",
+      "tenant",
+      "admin",
+      "outlook",
+      "teams"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/ms365-tenant-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-competitor-alternatives",
+    "name": "Competitor Alternatives Analysis",
+    "description": "Competitive analysis pages \u2014 feature comparisons, alternative positioning, and differentiation",
+    "keywords": [
+      "competitor",
+      "alternatives",
+      "comparison",
+      "positioning",
+      "differentiation",
+      "analysis"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/competitor-alternatives/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-free-tool-strategy",
+    "name": "Free Tool Strategy",
+    "description": "Build free tools for lead generation \u2014 calculators, analyzers, and conversion funnels",
+    "keywords": [
+      "free-tool",
+      "lead-generation",
+      "calculator",
+      "conversion",
+      "strategy",
+      "growth"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/free-tool-strategy/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-content-production",
+    "name": "Content Production",
+    "description": "Scalable content production workflows, editorial processes, and quality standards",
+    "keywords": [
+      "content",
+      "production",
+      "editorial",
+      "workflow",
+      "quality",
+      "publishing",
+      "scale"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/content-production/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-analytics-tracking",
+    "name": "Analytics Tracking Setup",
+    "description": "Analytics implementation \u2014 GA4, event tracking, conversion tracking, and data layers",
+    "keywords": [
+      "analytics",
+      "tracking",
+      "ga4",
+      "events",
+      "conversion",
+      "data-layer",
+      "measurement"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/analytics-tracking/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-marketing-ideas",
+    "name": "Marketing Ideas Generator",
+    "description": "Creative marketing idea generation, brainstorming frameworks, and campaign concepts",
+    "keywords": [
+      "marketing",
+      "ideas",
+      "brainstorming",
+      "creative",
+      "campaigns",
+      "generation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/marketing-ideas/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-site-architecture",
+    "name": "Site Architecture",
+    "description": "Website information architecture, navigation, sitemaps, and URL structure",
+    "keywords": [
+      "site-architecture",
+      "navigation",
+      "sitemap",
+      "url-structure",
+      "information-architecture"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/site-architecture/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-secrets-vault",
+    "name": "Secrets Vault Manager",
+    "description": "HashiCorp Vault, AWS Secrets Manager, and secure credential management",
+    "keywords": [
+      "vault",
+      "secrets",
+      "hashicorp",
+      "credentials",
+      "secure",
+      "management",
+      "rotation"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/secrets-vault-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-database-schema",
+    "name": "Database Schema Designer",
+    "description": "Database schema design with ERD diagrams, relationships, and normalization patterns",
+    "keywords": [
+      "database",
+      "schema",
+      "erd",
+      "relationships",
+      "normalization",
+      "design",
+      "models"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/database-schema-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-agent-workflow",
+    "name": "Agent Workflow Designer",
+    "description": "Design multi-step agent workflows \u2014 state machines, error recovery, and orchestration",
+    "keywords": [
+      "agent",
+      "workflow",
+      "state-machine",
+      "orchestration",
+      "multi-step",
+      "design"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/agent-workflow-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-agenthub",
+    "name": "AgentHub",
+    "description": "Agent marketplace and registry \u2014 publish, discover, and manage AI agent skills",
+    "keywords": [
+      "agent",
+      "hub",
+      "marketplace",
+      "registry",
+      "publish",
+      "discover",
+      "manage"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering/agenthub/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-popup-cro",
+    "name": "Popup CRO",
+    "description": "Popup and modal optimization \u2014 timing, triggers, design, and conversion patterns",
+    "keywords": [
+      "popup",
+      "modal",
+      "cro",
+      "conversion",
+      "timing",
+      "triggers",
+      "optimization"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/popup-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-paywall-cro",
+    "name": "Paywall & Upgrade CRO",
+    "description": "Paywall design, upgrade prompts, and freemium-to-paid conversion optimization",
+    "keywords": [
+      "paywall",
+      "upgrade",
+      "cro",
+      "freemium",
+      "conversion",
+      "pricing",
+      "monetization"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/paywall-upgrade-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-signup-flow-cro",
+    "name": "Signup Flow CRO",
+    "description": "Signup flow optimization \u2014 friction reduction, progressive profiling, and social login",
+    "keywords": [
+      "signup",
+      "flow",
+      "cro",
+      "friction",
+      "progressive",
+      "social-login",
+      "registration"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/signup-flow-cro/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-secops",
+    "name": "Senior SecOps Engineer",
+    "description": "Security operations, SIEM management, log analysis, and security automation",
+    "keywords": [
+      "secops",
+      "security-operations",
+      "siem",
+      "log-analysis",
+      "automation",
+      "soc"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/engineering-team/senior-secops/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-research-summarizer",
+    "name": "Research Summarizer",
+    "description": "Summarize research papers, reports, and technical documents into actionable insights",
+    "keywords": [
+      "research",
+      "summarize",
+      "papers",
+      "reports",
+      "technical",
+      "academic",
+      "literature",
+      "synthesis"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/research-summarizer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-product-analytics",
+    "name": "Product Analytics",
+    "description": "Product analytics setup, event tracking, funnel analysis, and data-driven decision making",
+    "keywords": [
+      "analytics",
+      "product",
+      "tracking",
+      "events",
+      "funnel",
+      "metrics",
+      "data-driven",
+      "mixpanel"
+    ],
+    "tier": "community",
+    "category": "data",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/product-analytics/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-experiment-designer",
+    "name": "Experiment Designer",
+    "description": "Design A/B tests and experiments with statistical rigor and hypothesis frameworks",
+    "keywords": [
+      "experiment",
+      "ab-test",
+      "hypothesis",
+      "statistics",
+      "testing",
+      "sample-size",
+      "significance"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/experiment-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-competitive-teardown",
+    "name": "Competitive Teardown",
+    "description": "Deep competitive analysis and product teardown methodology for feature comparison",
+    "keywords": [
+      "competitive",
+      "teardown",
+      "analysis",
+      "comparison",
+      "features",
+      "market",
+      "positioning"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/competitive-teardown/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ui-design-system",
+    "name": "UI Design System",
+    "description": "Design system creation, component library management, and design token architecture",
+    "keywords": [
+      "design-system",
+      "components",
+      "tokens",
+      "ui",
+      "library",
+      "figma",
+      "storybook",
+      "patterns"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/ui-design-system/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ux-researcher-designer",
+    "name": "UX Researcher Designer",
+    "description": "User experience research, usability testing, persona development, and design recommendations",
+    "keywords": [
+      "ux",
+      "research",
+      "usability",
+      "testing",
+      "personas",
+      "user-interviews",
+      "journey-maps"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/ux-researcher-designer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-landing-page-generator",
+    "name": "Landing Page Generator",
+    "description": "Generate high-converting landing pages with best practices for copy, layout, and CTA optimization",
+    "keywords": [
+      "landing-page",
+      "conversion",
+      "cta",
+      "copy",
+      "layout",
+      "design",
+      "optimization"
+    ],
+    "tier": "community",
+    "category": "design",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/landing-page-generator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-product-manager-toolkit",
+    "name": "Product Manager Toolkit",
+    "description": "Full product management toolkit with roadmapping, prioritization, and stakeholder management",
+    "keywords": [
+      "product-management",
+      "roadmap",
+      "prioritization",
+      "stakeholders",
+      "backlog",
+      "strategy"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/product-manager-toolkit/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-product-strategist",
+    "name": "Product Strategist",
+    "description": "Product strategy development, market positioning, competitive moats, and growth planning",
+    "keywords": [
+      "product-strategy",
+      "positioning",
+      "market",
+      "growth",
+      "moat",
+      "planning",
+      "vision"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/product-strategist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-agile-product-owner",
+    "name": "Agile Product Owner",
+    "description": "Agile product ownership, backlog management, sprint planning, and user story writing",
+    "keywords": [
+      "agile",
+      "product-owner",
+      "backlog",
+      "sprint",
+      "user-stories",
+      "scrum",
+      "kanban"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/agile-product-owner/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-code-to-prd",
+    "name": "Code to PRD",
+    "description": "Reverse-engineer a codebase into a product requirements document with feature inventory",
+    "keywords": [
+      "prd",
+      "requirements",
+      "codebase",
+      "documentation",
+      "reverse-engineer",
+      "features",
+      "specification"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/code-to-prd/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-roadmap-communicator",
+    "name": "Roadmap Communicator",
+    "description": "Communicate product roadmaps effectively to stakeholders, teams, and executives",
+    "keywords": [
+      "roadmap",
+      "communication",
+      "stakeholders",
+      "presentation",
+      "planning",
+      "alignment"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/roadmap-communicator/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-saas-scaffolder",
+    "name": "SaaS Scaffolder",
+    "description": "Scaffold SaaS application boilerplate with auth, billing, multi-tenancy, and core features",
+    "keywords": [
+      "saas",
+      "scaffold",
+      "boilerplate",
+      "auth",
+      "billing",
+      "stripe",
+      "multi-tenant",
+      "starter"
+    ],
+    "tier": "community",
+    "category": "development",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/saas-scaffolder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-product-discovery",
+    "name": "Product Discovery",
+    "description": "Product discovery facilitation, user interviews, opportunity identification, and validation",
+    "keywords": [
+      "discovery",
+      "user-interviews",
+      "opportunity",
+      "validation",
+      "customer",
+      "problem-space"
+    ],
+    "tier": "community",
+    "category": "research",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/product-team/product-discovery/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-customer-success-manager",
+    "name": "Customer Success Manager",
+    "description": "Customer success operations, onboarding playbooks, retention strategies, and health scoring",
+    "keywords": [
+      "customer-success",
+      "onboarding",
+      "retention",
+      "churn",
+      "health-score",
+      "nps",
+      "csm"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/business-growth/customer-success-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-sales-engineer",
+    "name": "Sales Engineer",
+    "description": "Technical sales support, demo preparation, solution engineering, and proof of concept",
+    "keywords": [
+      "sales",
+      "engineer",
+      "demo",
+      "poc",
+      "solution",
+      "technical-sales",
+      "pre-sales"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/business-growth/sales-engineer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-revenue-operations",
+    "name": "Revenue Operations",
+    "description": "Revenue pipeline management, operations optimization, and go-to-market alignment",
+    "keywords": [
+      "revenue",
+      "operations",
+      "pipeline",
+      "gtm",
+      "sales-ops",
+      "forecasting",
+      "revops"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/business-growth/revenue-operations/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-contract-proposal-writer",
+    "name": "Contract & Proposal Writer",
+    "description": "Contract drafting, proposal creation, RFP responses, and business document writing",
+    "keywords": [
+      "contract",
+      "proposal",
+      "rfp",
+      "writing",
+      "legal",
+      "business-documents",
+      "sow"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/business-growth/contract-and-proposal-writer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-financial-analyst",
+    "name": "Financial Analyst",
+    "description": "DCF analysis, budgeting, forecasting, financial modeling, and investment evaluation",
+    "keywords": [
+      "finance",
+      "dcf",
+      "budgeting",
+      "forecasting",
+      "modeling",
+      "investment",
+      "valuation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/finance/financial-analyst/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-saas-metrics-coach",
+    "name": "SaaS Metrics Coach",
+    "description": "SaaS business metrics coaching covering ARR, MRR, churn, LTV, CAC, and unit economics",
+    "keywords": [
+      "saas",
+      "metrics",
+      "arr",
+      "mrr",
+      "churn",
+      "ltv",
+      "cac",
+      "unit-economics"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/finance/saas-metrics-coach/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-business-investment-advisor",
+    "name": "Business Investment Advisor",
+    "description": "Investment analysis and advisory for business decisions, fundraising, and capital allocation",
+    "keywords": [
+      "investment",
+      "fundraising",
+      "capital",
+      "advisory",
+      "venture",
+      "finance",
+      "allocation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/finance/business-investment-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-senior-pm",
+    "name": "Senior PM Toolkit",
+    "description": "Senior project management with Agile, Scrum, and stakeholder coordination methodologies",
+    "keywords": [
+      "project-management",
+      "agile",
+      "scrum",
+      "stakeholder",
+      "delivery",
+      "planning",
+      "timeline"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/senior-pm/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-jira-expert",
+    "name": "Jira Expert",
+    "description": "Jira workflow optimization, JQL queries, board configuration, and automation rules",
+    "keywords": [
+      "jira",
+      "workflow",
+      "jql",
+      "boards",
+      "automation",
+      "tickets",
+      "atlassian",
+      "agile"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/jira-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-confluence-expert",
+    "name": "Confluence Expert",
+    "description": "Confluence space organization, template creation, and knowledge base management",
+    "keywords": [
+      "confluence",
+      "wiki",
+      "documentation",
+      "knowledge-base",
+      "templates",
+      "atlassian",
+      "spaces"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/confluence-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-scrum-master",
+    "name": "Scrum Master",
+    "description": "Scrum facilitation, sprint ceremonies, impediment removal, and team velocity optimization",
+    "keywords": [
+      "scrum",
+      "sprint",
+      "ceremonies",
+      "retrospective",
+      "velocity",
+      "impediments",
+      "standup"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/scrum-master/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-meeting-analyzer",
+    "name": "Meeting Analyzer",
+    "description": "Analyze meeting transcripts, extract action items, decisions, and follow-up tasks",
+    "keywords": [
+      "meeting",
+      "transcript",
+      "action-items",
+      "decisions",
+      "notes",
+      "summary",
+      "follow-up"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/meeting-analyzer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-team-communications",
+    "name": "Team Communications",
+    "description": "Team communication strategies, status updates, stakeholder reporting, and async workflows",
+    "keywords": [
+      "communication",
+      "status",
+      "reporting",
+      "async",
+      "slack",
+      "updates",
+      "stakeholder"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/team-communications/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-atlassian-admin",
+    "name": "Atlassian Admin",
+    "description": "Atlassian suite administration, permissions, integrations, and platform configuration",
+    "keywords": [
+      "atlassian",
+      "admin",
+      "jira",
+      "confluence",
+      "permissions",
+      "integrations",
+      "configuration"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/atlassian-admin/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-atlassian-templates",
+    "name": "Atlassian Templates",
+    "description": "Jira and Confluence templates for common project management scenarios and workflows",
+    "keywords": [
+      "atlassian",
+      "templates",
+      "jira",
+      "confluence",
+      "workflow",
+      "project",
+      "standard"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/project-management/atlassian-templates/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ceo-advisor",
+    "name": "CEO Advisor",
+    "description": "Strategic advisory for CEOs covering vision, leadership, board relations, and company direction",
+    "keywords": [
+      "ceo",
+      "leadership",
+      "strategy",
+      "vision",
+      "board",
+      "executive",
+      "company-direction"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/ceo-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cfo-advisor",
+    "name": "CFO Advisor",
+    "description": "Financial strategy advisory covering budgeting, forecasting, treasury, and financial reporting",
+    "keywords": [
+      "cfo",
+      "finance",
+      "budgeting",
+      "forecasting",
+      "treasury",
+      "reporting",
+      "financial-strategy"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/cfo-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cto-advisor",
+    "name": "CTO Advisor",
+    "description": "Technology strategy advisory covering architecture, engineering leadership, and tech stack decisions",
+    "keywords": [
+      "cto",
+      "technology",
+      "architecture",
+      "engineering",
+      "tech-stack",
+      "leadership",
+      "innovation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/cto-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cmo-advisor",
+    "name": "CMO Advisor",
+    "description": "Marketing strategy advisory covering brand, demand gen, channels, and marketing operations",
+    "keywords": [
+      "cmo",
+      "marketing",
+      "brand",
+      "demand-gen",
+      "channels",
+      "campaigns",
+      "marketing-strategy"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/cmo-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-coo-advisor",
+    "name": "COO Advisor",
+    "description": "Operations strategy advisory covering process optimization, scaling, and organizational efficiency",
+    "keywords": [
+      "coo",
+      "operations",
+      "process",
+      "scaling",
+      "efficiency",
+      "organizational",
+      "optimization"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/coo-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cpo-advisor",
+    "name": "CPO Advisor",
+    "description": "Product strategy advisory covering product vision, portfolio management, and product-led growth",
+    "keywords": [
+      "cpo",
+      "product",
+      "vision",
+      "portfolio",
+      "product-led",
+      "growth",
+      "product-strategy"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/cpo-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-cro-advisor",
+    "name": "CRO Advisor",
+    "description": "Revenue strategy advisory covering sales, partnerships, pricing, and revenue optimization",
+    "keywords": [
+      "cro",
+      "revenue",
+      "sales",
+      "partnerships",
+      "pricing",
+      "growth",
+      "revenue-strategy"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/cro-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ciso-advisor",
+    "name": "CISO Advisor",
+    "description": "Security strategy advisory covering cybersecurity, compliance, risk management, and incident response",
+    "keywords": [
+      "ciso",
+      "security",
+      "cybersecurity",
+      "compliance",
+      "risk",
+      "incident-response",
+      "governance"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/ciso-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-chro-advisor",
+    "name": "CHRO Advisor",
+    "description": "People strategy advisory covering talent management, culture, compensation, and organizational design",
+    "keywords": [
+      "chro",
+      "hr",
+      "talent",
+      "culture",
+      "compensation",
+      "organizational-design",
+      "people-strategy"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/chro-advisor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-chief-of-staff",
+    "name": "Chief of Staff",
+    "description": "Executive support, cross-functional coordination, strategic initiative management, and OKRs",
+    "keywords": [
+      "chief-of-staff",
+      "coordination",
+      "okrs",
+      "initiatives",
+      "executive",
+      "cross-functional"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/chief-of-staff/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-board-deck-builder",
+    "name": "Board Deck Builder",
+    "description": "Create compelling board presentation decks with metrics, narratives, and strategic frameworks",
+    "keywords": [
+      "board",
+      "deck",
+      "presentation",
+      "metrics",
+      "narrative",
+      "investor",
+      "reporting"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/board-deck-builder/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-board-meeting",
+    "name": "Board Meeting",
+    "description": "Board meeting preparation, agenda setting, minutes, and governance best practices",
+    "keywords": [
+      "board",
+      "meeting",
+      "agenda",
+      "minutes",
+      "governance",
+      "directors",
+      "corporate"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/board-meeting/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-change-management",
+    "name": "Change Management",
+    "description": "Organizational change management, communication plans, resistance handling, and adoption strategies",
+    "keywords": [
+      "change-management",
+      "transformation",
+      "adoption",
+      "communication",
+      "resistance",
+      "transition"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/change-management/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-competitive-intel-exec",
+    "name": "Competitive Intelligence (Executive)",
+    "description": "Executive-level competitive intelligence gathering, market monitoring, and strategic positioning",
+    "keywords": [
+      "competitive",
+      "intelligence",
+      "monitoring",
+      "positioning",
+      "strategy",
+      "market",
+      "executive"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/competitive-intel/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-culture-architect",
+    "name": "Culture Architect",
+    "description": "Organizational culture design, values articulation, and culture-driven transformation",
+    "keywords": [
+      "culture",
+      "values",
+      "organizational",
+      "transformation",
+      "engagement",
+      "mission",
+      "identity"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/culture-architect/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-decision-logger",
+    "name": "Decision Logger",
+    "description": "Structured decision documentation, ADRs, decision rationale tracking, and outcome analysis",
+    "keywords": [
+      "decisions",
+      "adr",
+      "documentation",
+      "rationale",
+      "tracking",
+      "outcomes",
+      "governance"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/decision-logger/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-executive-mentor",
+    "name": "Executive Mentor",
+    "description": "Executive coaching and mentorship covering leadership development, strategic thinking, and decision-making",
+    "keywords": [
+      "executive",
+      "mentor",
+      "coaching",
+      "leadership",
+      "development",
+      "strategic-thinking"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/executive-mentor/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-founder-coach",
+    "name": "Founder Coach",
+    "description": "Startup founder coaching covering fundraising, team building, pivoting, and scaling challenges",
+    "keywords": [
+      "founder",
+      "startup",
+      "coaching",
+      "fundraising",
+      "scaling",
+      "pivot",
+      "team-building"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/founder-coach/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-org-health-diagnostic",
+    "name": "Org Health Diagnostic",
+    "description": "Organizational health assessment, team dynamics evaluation, and improvement recommendations",
+    "keywords": [
+      "organizational",
+      "health",
+      "diagnostic",
+      "team",
+      "dynamics",
+      "assessment",
+      "improvement"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/org-health-diagnostic/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-scenario-war-room",
+    "name": "Scenario War Room",
+    "description": "Strategic scenario planning, war gaming, contingency analysis, and crisis preparedness",
+    "keywords": [
+      "scenario",
+      "war-room",
+      "planning",
+      "contingency",
+      "crisis",
+      "strategy",
+      "simulation"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/scenario-war-room/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-strategic-alignment",
+    "name": "Strategic Alignment",
+    "description": "Align organizational units around strategic objectives, OKRs, and cross-functional goals",
+    "keywords": [
+      "alignment",
+      "strategy",
+      "okrs",
+      "objectives",
+      "cross-functional",
+      "goals",
+      "coordination"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/strategic-alignment/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-ma-playbook",
+    "name": "M&A Playbook",
+    "description": "Mergers and acquisitions playbook covering due diligence, integration planning, and deal structuring",
+    "keywords": [
+      "mergers",
+      "acquisitions",
+      "due-diligence",
+      "integration",
+      "deal",
+      "valuation",
+      "playbook"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/ma-playbook/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-intl-expansion",
+    "name": "International Expansion",
+    "description": "International market expansion strategy, localization, compliance, and go-to-market planning",
+    "keywords": [
+      "international",
+      "expansion",
+      "localization",
+      "compliance",
+      "global",
+      "market-entry",
+      "i18n"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/c-level-advisor/intl-expansion/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-capa-officer",
+    "name": "CAPA Officer",
+    "description": "Corrective and preventive action management, root cause analysis, and quality improvement",
+    "keywords": [
+      "capa",
+      "corrective",
+      "preventive",
+      "root-cause",
+      "quality",
+      "improvement",
+      "compliance"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/capa-officer/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-fda-consultant",
+    "name": "FDA Consultant Specialist",
+    "description": "FDA regulatory compliance, 510(k) submissions, and medical device approval processes",
+    "keywords": [
+      "fda",
+      "regulatory",
+      "compliance",
+      "510k",
+      "medical-device",
+      "submission",
+      "approval"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/fda-consultant-specialist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-gdpr-dsgvo-expert",
+    "name": "GDPR/DSGVO Expert",
+    "description": "GDPR compliance, data protection impact assessments, privacy policies, and data subject rights",
+    "keywords": [
+      "gdpr",
+      "dsgvo",
+      "privacy",
+      "data-protection",
+      "compliance",
+      "dpia",
+      "consent"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/gdpr-dsgvo-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-iso27001-infosec",
+    "name": "ISO 27001 InfoSec Manager",
+    "description": "ISO 27001 information security management system implementation and certification",
+    "keywords": [
+      "iso27001",
+      "infosec",
+      "isms",
+      "security",
+      "certification",
+      "controls",
+      "risk-assessment"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/information-security-manager-iso27001/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-isms-audit-expert",
+    "name": "ISMS Audit Expert",
+    "description": "Information security management system auditing, gap analysis, and compliance verification",
+    "keywords": [
+      "isms",
+      "audit",
+      "security",
+      "gap-analysis",
+      "compliance",
+      "verification",
+      "assessment"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/isms-audit-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-mdr-745-specialist",
+    "name": "MDR 745 Specialist",
+    "description": "EU Medical Device Regulation (MDR 2017/745) compliance and technical documentation",
+    "keywords": [
+      "mdr",
+      "medical-device",
+      "regulation",
+      "eu",
+      "compliance",
+      "technical-documentation",
+      "ce-marking"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/mdr-745-specialist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-qms-audit-expert",
+    "name": "QMS Audit Expert",
+    "description": "Quality management system auditing, process evaluation, and continuous improvement",
+    "keywords": [
+      "qms",
+      "audit",
+      "quality",
+      "process",
+      "continuous-improvement",
+      "iso",
+      "assessment"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/qms-audit-expert/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-quality-documentation-manager",
+    "name": "Quality Documentation Manager",
+    "description": "Quality documentation control, SOP management, and document lifecycle governance",
+    "keywords": [
+      "quality",
+      "documentation",
+      "sop",
+      "document-control",
+      "lifecycle",
+      "governance",
+      "procedures"
+    ],
+    "tier": "community",
+    "category": "productivity",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/quality-documentation-manager/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-quality-manager-qmr",
+    "name": "Quality Manager (QMR)",
+    "description": "Quality management representative duties, quality planning, and management review",
+    "keywords": [
+      "quality",
+      "qmr",
+      "management",
+      "planning",
+      "review",
+      "kpi",
+      "improvement"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/quality-manager-qmr/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-quality-manager-iso13485",
+    "name": "Quality Manager ISO 13485",
+    "description": "ISO 13485 quality management system for medical devices, process validation, and risk management",
+    "keywords": [
+      "iso13485",
+      "medical-device",
+      "quality",
+      "validation",
+      "risk-management",
+      "qms",
+      "compliance"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/quality-manager-qms-iso13485/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-regulatory-affairs-head",
+    "name": "Regulatory Affairs Head",
+    "description": "Regulatory strategy, submissions management, and regulatory intelligence across markets",
+    "keywords": [
+      "regulatory",
+      "affairs",
+      "submissions",
+      "strategy",
+      "intelligence",
+      "compliance",
+      "approvals"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/regulatory-affairs-head/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-risk-management-specialist",
+    "name": "Risk Management Specialist",
+    "description": "Enterprise risk management, risk assessment methodologies, and mitigation strategies",
+    "keywords": [
+      "risk",
+      "management",
+      "assessment",
+      "mitigation",
+      "enterprise",
+      "iso31000",
+      "fmea"
+    ],
+    "tier": "community",
+    "category": "business",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/risk-management-specialist/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-soc2-compliance",
+    "name": "SOC 2 Compliance",
+    "description": "SOC 2 Type I/II compliance, trust service criteria, and audit preparation",
+    "keywords": [
+      "soc2",
+      "compliance",
+      "audit",
+      "trust-services",
+      "security",
+      "availability",
+      "controls"
+    ],
+    "tier": "community",
+    "category": "automation",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/ra-qm-team/soc2-compliance/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  },
+  {
+    "id": "comm-social-content",
+    "name": "Social Content Creator",
+    "description": "Social media content creation, scheduling strategies, and platform-specific content optimization",
+    "keywords": [
+      "social",
+      "content",
+      "social-media",
+      "scheduling",
+      "platforms",
+      "engagement",
+      "creative"
+    ],
+    "tier": "community",
+    "category": "content",
+    "installMethod": "copy",
+    "installTarget": "https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/marketing-skill/social-content/SKILL.md",
+    "source": "alirezarezvani/claude-skills",
+    "author": "Alireza Rezvani"
+  }
+]

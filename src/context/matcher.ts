@@ -1,38 +1,91 @@
 /**
  * Skill matching: cosine similarity on keyword overlap + TF-IDF-like scoring
- * against the skills catalog.
+ * against both native and community skill catalogs.
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import type { ContextBlock, SkillMatch, SkillCatalogEntry } from "./types.js";
+import type {
+  ContextBlock,
+  SkillMatch,
+  SkillCatalogEntry,
+  ExtendedSkillCatalogEntry,
+  ExtendedSkillMatch,
+  SkillTier,
+  SkillCategory,
+} from "./types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let catalogCache: SkillCatalogEntry[] | null = null;
+let nativeCatalogCache: ExtendedSkillCatalogEntry[] | null = null;
+let communityCatalogCache: ExtendedSkillCatalogEntry[] | null = null;
 
-function loadCatalog(): SkillCatalogEntry[] {
-  if (catalogCache) return catalogCache;
-
-  // Try loading from skills/catalog.json relative to project root
-  const candidates = [
-    path.join(__dirname, "..", "..", "skills", "catalog.json"),
-    path.join(__dirname, "..", "..", "dist", "skills", "catalog.json"),
-  ];
-
+function loadJsonFile<T>(candidates: string[]): T | null {
   for (const p of candidates) {
     try {
       const raw = fs.readFileSync(p, "utf-8");
-      catalogCache = JSON.parse(raw) as SkillCatalogEntry[];
-      return catalogCache;
+      return JSON.parse(raw) as T;
     } catch {
       continue;
     }
   }
+  return null;
+}
 
-  return [];
+/**
+ * Load native CrowdListen skills and wrap them as ExtendedSkillCatalogEntry.
+ */
+function loadNativeCatalog(): ExtendedSkillCatalogEntry[] {
+  if (nativeCatalogCache) return nativeCatalogCache;
+
+  const raw = loadJsonFile<SkillCatalogEntry[]>([
+    path.join(__dirname, "..", "..", "skills", "catalog.json"),
+    path.join(__dirname, "..", "..", "dist", "skills", "catalog.json"),
+  ]);
+
+  if (!raw) {
+    nativeCatalogCache = [];
+    return [];
+  }
+
+  nativeCatalogCache = raw.map((entry) => ({
+    ...entry,
+    tier: "crowdlisten" as SkillTier,
+    category: "research" as SkillCategory, // CrowdListen skills are research/audience intel
+    installMethod: "copy" as const,
+    installTarget: `crowdlisten:${entry.id}`,
+    source: "crowdlisten/native",
+  }));
+
+  return nativeCatalogCache;
+}
+
+/**
+ * Load community skill catalog.
+ */
+function loadCommunityCatalog(): ExtendedSkillCatalogEntry[] {
+  if (communityCatalogCache) return communityCatalogCache;
+
+  const raw = loadJsonFile<ExtendedSkillCatalogEntry[]>([
+    path.join(__dirname, "..", "..", "skills", "community-catalog.json"),
+    path.join(__dirname, "..", "..", "dist", "skills", "community-catalog.json"),
+  ]);
+
+  communityCatalogCache = raw || [];
+  return communityCatalogCache;
+}
+
+/**
+ * Load both catalogs combined. Exported for install lookups.
+ */
+export function getFullCatalog(): ExtendedSkillCatalogEntry[] {
+  return loadFullCatalog();
+}
+
+function loadFullCatalog(): ExtendedSkillCatalogEntry[] {
+  return [...loadNativeCatalog(), ...loadCommunityCatalog()];
 }
 
 /**
@@ -51,6 +104,35 @@ function extractBlockKeywords(blocks: ContextBlock[]): string[] {
   }
 
   return words;
+}
+
+/**
+ * Detect dominant category from block keywords.
+ */
+const CATEGORY_KEYWORD_MAP: Record<SkillCategory, string[]> = {
+  development: ["code", "debug", "refactor", "typescript", "javascript", "react", "component", "testing", "git", "api", "function", "class"],
+  data: ["data", "database", "sql", "analytics", "machine", "learning", "model", "statistics", "visualization", "pipeline"],
+  content: ["content", "writing", "blog", "seo", "copy", "editorial", "article", "social", "media"],
+  research: ["research", "analysis", "market", "competitive", "audience", "insights", "trends"],
+  automation: ["deploy", "docker", "kubernetes", "cicd", "pipeline", "terraform", "cloud", "monitoring", "automation"],
+  design: ["design", "ui", "ux", "accessibility", "css", "layout", "responsive", "figma"],
+  business: ["strategy", "pricing", "marketing", "sales", "growth", "funnel", "acquisition", "revenue"],
+  productivity: ["workflow", "documentation", "onboarding", "planning", "template", "organization"],
+};
+
+function categoryAffinity(blockKeywords: string[], category: SkillCategory): number {
+  const categoryKws = CATEGORY_KEYWORD_MAP[category] || [];
+  const blockSet = new Set(blockKeywords);
+  let matches = 0;
+  for (const kw of categoryKws) {
+    for (const bk of blockSet) {
+      if (bk.includes(kw) || kw.includes(bk)) {
+        matches++;
+        break;
+      }
+    }
+  }
+  return categoryKws.length > 0 ? matches / categoryKws.length : 0;
 }
 
 /**
@@ -87,37 +169,132 @@ function keywordOverlapScore(
 }
 
 /**
- * Match context blocks against the skill catalog.
+ * Match context blocks against the skill catalog (backward-compatible).
  * Returns top matching skills sorted by score.
  */
 export async function matchSkills(
   blocks: ContextBlock[],
   topN: number = 5
 ): Promise<SkillMatch[]> {
-  const catalog = loadCatalog();
+  const results = await discoverSkills(blocks, { limit: topN });
+  // Return as SkillMatch for backward compatibility
+  return results.map(({ tier, category, installMethod, installTarget, ...rest }) => rest);
+}
+
+/**
+ * Enhanced skill discovery with tier boost and category affinity.
+ * Scores against BOTH native and community catalogs.
+ */
+export async function discoverSkills(
+  blocks: ContextBlock[],
+  options: { category?: SkillCategory; tier?: SkillTier; limit?: number } = {}
+): Promise<ExtendedSkillMatch[]> {
+  let catalog = loadFullCatalog();
   if (catalog.length === 0 || blocks.length === 0) return [];
 
+  // Apply filters
+  if (options.tier) catalog = catalog.filter((s) => s.tier === options.tier);
+  if (options.category) catalog = catalog.filter((s) => s.category === options.category);
+
   const blockKeywords = extractBlockKeywords(blocks);
-  const results: SkillMatch[] = [];
+  const results: ExtendedSkillMatch[] = [];
 
   for (const skill of catalog) {
-    const { score, matchedKeywords } = keywordOverlapScore(
+    const { score: baseScore, matchedKeywords } = keywordOverlapScore(
       blockKeywords,
       skill.keywords
     );
 
-    if (score > 0.05) {
+    // Tier boost: native skills get a slight advantage
+    const tierBoost = skill.tier === "crowdlisten" ? 0.10 : 0;
+
+    // Category affinity: bonus when context keywords cluster matches skill category
+    const catBoost = categoryAffinity(blockKeywords, skill.category) * 0.05;
+
+    const finalScore = Math.min(baseScore + tierBoost + catBoost, 1);
+
+    if (finalScore > 0.05) {
       results.push({
         skillId: skill.id,
         name: skill.name,
         description: skill.description,
-        score: Math.round(score * 100) / 100,
+        score: Math.round(finalScore * 100) / 100,
         matchedKeywords,
+        tier: skill.tier,
+        category: skill.category,
+        installMethod: skill.installMethod,
+        installTarget: skill.installTarget,
       });
     }
   }
 
   // Sort by score descending
   results.sort((a, b) => b.score - a.score);
-  return results.slice(0, topN);
+  return results.slice(0, options.limit || 10);
+}
+
+/**
+ * Full-text search across both skill catalogs.
+ */
+export function searchSkills(
+  query: string,
+  options: { tier?: SkillTier; category?: SkillCategory } = {}
+): ExtendedSkillMatch[] {
+  let catalog = loadFullCatalog();
+
+  if (options.tier) catalog = catalog.filter((s) => s.tier === options.tier);
+  if (options.category) catalog = catalog.filter((s) => s.category === options.category);
+
+  const q = query.toLowerCase();
+  const results: ExtendedSkillMatch[] = [];
+
+  for (const skill of catalog) {
+    const haystack = `${skill.name} ${skill.description} ${skill.keywords.join(" ")}`.toLowerCase();
+    if (!haystack.includes(q)) continue;
+
+    // Simple relevance: how early the query appears + name match bonus
+    const nameMatch = skill.name.toLowerCase().includes(q) ? 0.3 : 0;
+    const descMatch = skill.description.toLowerCase().includes(q) ? 0.15 : 0;
+    const kwMatch = skill.keywords.some((kw) => kw.includes(q)) ? 0.1 : 0;
+    const score = Math.min(nameMatch + descMatch + kwMatch + 0.2, 1);
+
+    results.push({
+      skillId: skill.id,
+      name: skill.name,
+      description: skill.description,
+      score: Math.round(score * 100) / 100,
+      matchedKeywords: skill.keywords.filter((kw) => kw.includes(q)),
+      tier: skill.tier,
+      category: skill.category,
+      installMethod: skill.installMethod,
+      installTarget: skill.installTarget,
+    });
+  }
+
+  results.sort((a, b) => b.score - a.score);
+  return results;
+}
+
+/**
+ * Get category summary with counts.
+ */
+export function getSkillCategories(): Array<{ category: SkillCategory; count: number; nativeCount: number; communityCount: number }> {
+  const catalog = loadFullCatalog();
+  const cats: Record<string, { total: number; native: number; community: number }> = {};
+
+  for (const skill of catalog) {
+    if (!cats[skill.category]) cats[skill.category] = { total: 0, native: 0, community: 0 };
+    cats[skill.category].total++;
+    if (skill.tier === "crowdlisten") cats[skill.category].native++;
+    else cats[skill.category].community++;
+  }
+
+  return Object.entries(cats)
+    .map(([category, { total, native, community }]) => ({
+      category: category as SkillCategory,
+      count: total,
+      nativeCount: native,
+      communityCount: community,
+    }))
+    .sort((a, b) => b.count - a.count);
 }

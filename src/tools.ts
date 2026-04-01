@@ -13,7 +13,7 @@ import * as os from "os";
 import { execSync } from "child_process";
 import { runPipeline } from "./context/pipeline.js";
 import { getBlocks } from "./context/store.js";
-import { matchSkills } from "./context/matcher.js";
+import { matchSkills, discoverSkills, searchSkills, getSkillCategories, getFullCatalog } from "./context/matcher.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -584,6 +584,69 @@ export const TOOLS = [
     description:
       "[Context] Get CrowdListen skill recommendations based on stored context blocks. Matches block content against the skill catalog using keyword overlap scoring.",
     inputSchema: { type: "object" as const, properties: {} },
+  },
+
+  // ─── Skill Discovery Tools ──────────────────────────────────────────────
+  {
+    name: "discover_skills",
+    description:
+      "[Context] Context-driven skill discovery — scores all skills (native CrowdListen + 146 community skills from 4 repos) against your extracted context blocks. Returns ranked skills with install instructions. Optionally process new context text first.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        context: {
+          type: "string",
+          description:
+            "Optional: raw context text to process through extraction pipeline first. If omitted, uses stored blocks.",
+        },
+        category: {
+          type: "string",
+          description:
+            "Filter by category: development, data, content, research, automation, design, business, productivity",
+        },
+        tier: {
+          type: "string",
+          description: "Filter by tier: crowdlisten (native, need API key) or community (open source)",
+        },
+        limit: {
+          type: "number",
+          description: "Max results to return (default 10)",
+        },
+      },
+    },
+  },
+  {
+    name: "search_skills",
+    description:
+      "[Context] Text search across all 154 skills (8 native + 146 community). Browse by category or search by name/keyword. Returns matching skills with descriptions and install methods.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        query: { type: "string", description: "Search query (name, keyword, or description text)" },
+        tier: { type: "string", description: "Filter: crowdlisten or community" },
+        category: {
+          type: "string",
+          description: "Filter: development, data, content, research, automation, design, business, productivity",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "install_skill",
+    description:
+      "[Context] Install a skill by ID — copies SKILL.md content to .claude/commands/ for 'copy' type skills, or returns npx/git instructions for other install methods.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        skill_id: { type: "string", description: "Skill ID (e.g., 'comm-typescript-expert' or 'competitive-analysis')" },
+        target_dir: {
+          type: "string",
+          description: "Target directory for SKILL.md (default: .claude/commands/)",
+        },
+      },
+      required: ["skill_id"],
+    },
   },
 ];
 
@@ -1552,6 +1615,123 @@ export async function handleTool(
       const blocks = getBlocks();
       const skills = await matchSkills(blocks);
       return json({ skills });
+    }
+
+    // ─── Skill Discovery Tools ──────────────────────────────────────────────
+    case "discover_skills": {
+      let blocks = getBlocks();
+
+      // If context text provided, process it first
+      if (args.context) {
+        const result = await runPipeline({
+          text: args.context as string,
+          source: "discover",
+          isChat: true,
+        });
+        blocks = result.blocks;
+      }
+
+      if (blocks.length === 0) {
+        return json({
+          error: "No context blocks found. Process a transcript first with process_transcript, or provide context text.",
+          skills: [],
+        });
+      }
+
+      const skills = await discoverSkills(blocks, {
+        category: args.category as any,
+        tier: args.tier as any,
+        limit: (args.limit as number) || 10,
+      });
+
+      return json({
+        total_available: 154,
+        results: skills.length,
+        skills: skills.map((s) => ({
+          id: s.skillId,
+          name: s.name,
+          description: s.description,
+          score: `${Math.round(s.score * 100)}%`,
+          tier: s.tier,
+          category: s.category,
+          install: s.installMethod === "copy" ? `Copy SKILL.md from ${s.installTarget}` : s.installTarget,
+          matched_keywords: s.matchedKeywords,
+        })),
+      });
+    }
+
+    case "search_skills": {
+      const query = args.query as string;
+      if (!query) return json({ error: "Missing 'query' parameter" });
+
+      const results = searchSkills(query, {
+        tier: args.tier as any,
+        category: args.category as any,
+      });
+
+      return json({
+        query,
+        results: results.length,
+        skills: results.map((s) => ({
+          id: s.skillId,
+          name: s.name,
+          description: s.description,
+          score: `${Math.round(s.score * 100)}%`,
+          tier: s.tier,
+          category: s.category,
+          install_method: s.installMethod,
+          install_target: s.installTarget,
+        })),
+      });
+    }
+
+    case "install_skill": {
+      const skillId = args.skill_id as string;
+      if (!skillId) return json({ error: "Missing 'skill_id' parameter" });
+
+      // Search both catalogs for the skill
+      const skill = getFullCatalog().find((s) => s.id === skillId);
+
+      if (!skill) {
+        return json({ error: `Skill '${skillId}' not found. Use search_skills to find available skills.` });
+      }
+
+      if (skill.installMethod === "copy") {
+        const targetDir = (args.target_dir as string) || path.join(process.cwd(), ".claude", "commands");
+        const skillName = skill.id.replace(/^comm-/, "");
+
+        // For native CrowdListen skills, the installTarget is a crowdlisten: reference
+        if (skill.installTarget.startsWith("crowdlisten:")) {
+          return json({
+            skill: skill.name,
+            tier: skill.tier,
+            instructions: `This is a native CrowdListen skill. It requires a CROWDLISTEN_API_KEY.`,
+            install: `Add to your .claude/commands/ directory from the crowdlisten_tasks/skills/${skill.id}/ folder.`,
+          });
+        }
+
+        // Community skill — provide the raw URL
+        return json({
+          skill: skill.name,
+          tier: skill.tier,
+          install_method: "copy",
+          instructions: [
+            `1. Create directory: mkdir -p "${targetDir}"`,
+            `2. Download: curl -o "${path.join(targetDir, skillName + ".md")}" "${skill.installTarget}"`,
+            `3. Or copy the SKILL.md content from: ${skill.installTarget}`,
+          ],
+          source: skill.source,
+        });
+      }
+
+      return json({
+        skill: skill.name,
+        install_method: skill.installMethod,
+        install_target: skill.installTarget,
+        instructions: skill.installMethod === "npx"
+          ? `Run: npx ${skill.installTarget}`
+          : `Clone: git clone ${skill.installTarget}`,
+      });
     }
 
     default:

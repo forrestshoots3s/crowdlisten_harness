@@ -113,13 +113,40 @@ export default function ConfigPanel({ onSaved }: Props) {
               (optional)
             </span>
           </label>
-          <input
-            type="text"
+          <select
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            placeholder="Leave blank for default"
-            className="input-field"
-          />
+            className="select-field"
+          >
+            <option value="">Default</option>
+            {provider === "openai" && (
+              <>
+                <option value="gpt-4o">GPT-4o</option>
+                <option value="gpt-4o-mini">GPT-4o Mini</option>
+                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="o3-mini">o3-mini</option>
+              </>
+            )}
+            {provider === "anthropic" && (
+              <>
+                <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+                <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+                <option value="claude-opus-4-6">Claude Opus 4.6</option>
+                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+              </>
+            )}
+            {provider === "ollama" && (
+              <>
+                <option value="llama3.1">Llama 3.1</option>
+                <option value="llama3.2">Llama 3.2</option>
+                <option value="mistral">Mistral</option>
+                <option value="mixtral">Mixtral</option>
+                <option value="codellama">Code Llama</option>
+                <option value="qwen2.5">Qwen 2.5</option>
+              </>
+            )}
+          </select>
         </div>
       </div>
 

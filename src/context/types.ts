@@ -30,6 +30,34 @@ export interface SkillCatalogEntry {
   keywords: string[];
 }
 
+export type SkillTier = "crowdlisten" | "community";
+export type SkillCategory =
+  | "development"
+  | "data"
+  | "content"
+  | "research"
+  | "automation"
+  | "design"
+  | "business"
+  | "productivity";
+export type InstallMethod = "copy" | "npx" | "git-clone";
+
+export interface ExtendedSkillCatalogEntry extends SkillCatalogEntry {
+  tier: SkillTier;
+  category: SkillCategory;
+  installMethod: InstallMethod;
+  installTarget: string;
+  source: string;
+  author?: string;
+}
+
+export interface ExtendedSkillMatch extends SkillMatch {
+  tier: SkillTier;
+  category: SkillCategory;
+  installMethod: InstallMethod;
+  installTarget: string;
+}
+
 export interface LLMMessage {
   role: "system" | "user" | "assistant";
   content: string;

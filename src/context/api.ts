@@ -13,8 +13,8 @@ import {
   saveConfig,
   getHistory,
 } from "./store.js";
-import { matchSkills } from "./matcher.js";
-import type { ContextConfig } from "./types.js";
+import { matchSkills, discoverSkills, searchSkills, getSkillCategories } from "./matcher.js";
+import type { ContextConfig, SkillTier, SkillCategory } from "./types.js";
 
 function readBody(req: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -98,6 +98,38 @@ export async function handleApiRequest(
       const blocks = getBlocks();
       const skills = await matchSkills(blocks);
       return json(res, { skills });
+    }
+
+    // GET /api/skills/discover — Context-driven skill discovery
+    if (pathname === "/api/skills/discover" && method === "GET") {
+      const blocks = getBlocks();
+      const category = url.searchParams.get("category") as SkillCategory | undefined;
+      const tier = url.searchParams.get("tier") as SkillTier | undefined;
+      const limit = parseInt(url.searchParams.get("limit") || "10", 10);
+      const skills = await discoverSkills(blocks, {
+        category: category || undefined,
+        tier: tier || undefined,
+        limit,
+      });
+      return json(res, { skills });
+    }
+
+    // GET /api/skills/search — Full-text skill search
+    if (pathname === "/api/skills/search" && method === "GET") {
+      const q = url.searchParams.get("q") || "";
+      const tier = url.searchParams.get("tier") as SkillTier | undefined;
+      const category = url.searchParams.get("category") as SkillCategory | undefined;
+      const skills = searchSkills(q, {
+        tier: tier || undefined,
+        category: category || undefined,
+      });
+      return json(res, { skills });
+    }
+
+    // GET /api/skills/categories — List categories with counts
+    if (pathname === "/api/skills/categories" && method === "GET") {
+      const categories = getSkillCategories();
+      return json(res, { categories });
     }
 
     // GET /api/config — Get current config status (redacted)

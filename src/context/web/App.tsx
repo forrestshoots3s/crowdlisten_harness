@@ -39,12 +39,21 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [discoveredSkills, setDiscoveredSkills] = useState<PipelineResult["skills"]>([]);
 
   useEffect(() => {
     fetch("/api/config")
       .then((r) => r.json())
       .then(setConfigStatus)
       .catch(() => setConfigStatus({ configured: false }));
+
+    // Load discovered skills from stored blocks on mount
+    fetch("/api/skills/discover?limit=10")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.skills?.length > 0) setDiscoveredSkills(data.skills);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleProcess(text: string, source: string) {
@@ -66,6 +75,14 @@ export default function App() {
       const data: PipelineResult = await res.json();
       setResult(data);
       setShowImport(false);
+
+      // Refresh discovered skills with enhanced matching
+      fetch("/api/skills/discover?limit=10")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.skills?.length > 0) setDiscoveredSkills(d.skills);
+        })
+        .catch(() => {});
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -128,7 +145,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6 space-y-6">
+      <main className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Config panel (collapsible) */}
         {(showConfig || !configStatus?.configured) && (
           <ConfigPanel onSaved={handleConfigSaved} />
@@ -172,19 +189,18 @@ export default function App() {
               total={result.totalRedactions}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <BlockList
-                  blocks={result.blocks}
-                  onDelete={handleDeleteBlock}
-                />
-              </div>
-              <div>
-                <SkillPanel skills={result.skills} />
-              </div>
-            </div>
+            <BlockList
+              blocks={result.blocks}
+              onDelete={handleDeleteBlock}
+            />
           </div>
         )}
+
+        {/* Skill gallery — always visible */}
+        <SkillPanel
+          skills={discoveredSkills.length > 0 ? discoveredSkills : (result?.skills || [])}
+          hasBlocks={!!result && result.blocks.length > 0}
+        />
       </main>
 
       {/* Footer */}
