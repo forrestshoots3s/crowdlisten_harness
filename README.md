@@ -1,26 +1,22 @@
-# CrowdListen Harness
+# CrowdListen
 
-> Allow your agent to learn from experience, create an evolving library of context for agent swarms.
+> One MCP server for AI agents. Plan work, search social platforms, capture knowledge — with progressive skill disclosure so your agent only loads what it needs.
 
 [English](README.md) | [中文文档](README-CN.md)
 
-## The Problem With AI Agents Today
+## The Problem
 
-AI agents are stateless. Every time you start a new session, your agent starts from scratch. It doesn't remember what it decided yesterday, why it chose one approach over another, or what patterns it discovered in your codebase last week. You end up re-explaining the same context, correcting the same mistakes, and watching it rediscover the same solutions.
+AI agents are stateless. Every new session starts from scratch — no memory of yesterday's decisions, no awareness of what other agents discovered, no access to what your audience is actually saying online. You end up re-explaining context, missing user feedback scattered across seven platforms, and watching your agent rediscover the same solutions.
 
-This gets worse when you use multiple agents. Your Claude Code session figured out your team's deployment conventions, but when you switch to Cursor for a quick fix, that knowledge is gone. When Gemini CLI picks up a task overnight, it has no idea what happened before it arrived. Every agent is an island.
+CrowdListen fixes this with a single MCP server that closes the loop from crowd feedback to implementation:
 
-CrowdListen Harness fixes this. It gives your agents a shared, cloud-synced knowledge base that persists across sessions, across tools, and across agents. Every task your agent completes captures decisions, patterns, and learnings. The next task inherits all of it. Over time, your agents don't just execute — they get smarter.
+1. **Listens to your audience** — searches Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu — and returns structured data your agent can reason about.
+2. **Analyzes what they're saying** — clusters opinions, extracts pain points, identifies feature requests across platforms.
+3. **Generates actionable specs** — turns crowd insights into implementation specs with evidence citations, acceptance criteria, and confidence scores.
+4. **Delivers specs to coding agents** — your agent calls `get_specs`, picks a spec, calls `start_spec`, and gets a kanban task with workspace and branch ready to go.
+5. **Plans and tracks work** across agents with a shared knowledge base that compounds over time.
 
-## What You Get
-
-**A knowledge base that compounds.** When your agent makes an architectural decision, resolves a tricky bug, or discovers a pattern in your codebase, CrowdListen Harness captures it. The next time any agent works on a related task, that knowledge is surfaced automatically. You stop re-explaining context and start building on what came before.
-
-**Plans as first-class artifacts.** Most task trackers treat plans as free-text descriptions. CrowdListen Harness treats them as versioned, reviewable artifacts with a lifecycle: draft, review, approved, executing, done. Your agent drafts a plan. You review it, leave feedback. The agent incorporates your notes, archives the previous version, and proceeds. Every decision and iteration is preserved.
-
-**Context that follows you across agents.** Switch from Claude Code to Cursor to Gemini CLI — the knowledge base comes with you. Cloud-synced through Supabase, so no matter which agent picks up the work, it has the full history of what was tried, what worked, and what didn't.
-
-**Multi-agent coordination.** Run multiple agents on the same task with parallel sessions. Each agent gets shared context and can contribute learnings back. Useful for breaking large tasks into parallel workstreams without losing coherence.
+Your agent starts with 4 discovery tools. It activates skill packs on demand — planning, social listening, audience analysis, spec delivery — and only loads the tools it actually needs for the current task.
 
 ## Try It Now
 
@@ -30,18 +26,18 @@ One command. Your browser opens, you sign in, and your agents are configured aut
 npx @crowdlisten/planner login
 ```
 
-This auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, and OpenClaw. It also installs [CrowdListen Insights](https://github.com/Crowdlisten/crowdlisten_insights) for cross-platform audience intelligence. No env vars, no JSON editing, no API keys to manage.
+This auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, Amp, and OpenClaw. No env vars, no JSON editing, no API keys to manage.
 
 Restart your agent after login, and it can start calling tools immediately.
 
 ### Manual Setup
 
-If you prefer to configure manually, add this to your agent's MCP config:
+Add this to your agent's MCP config:
 
 ```json
 {
   "mcpServers": {
-    "crowdlisten/planner": {
+    "crowdlisten": {
       "command": "npx",
       "args": ["-y", "@crowdlisten/planner"]
     }
@@ -49,42 +45,100 @@ If you prefer to configure manually, add this to your agent's MCP config:
 }
 ```
 
-Or sign in at [crowdlisten.com](https://crowdlisten.com) and your agent can read [AGENTS.md](AGENTS.md) for the full tool reference.
-
 ## How It Works
 
-CrowdListen Harness is an MCP server — your agent calls its 25 tools directly, the same way it calls any other MCP tool. The typical workflow looks like this:
+### Progressive Skill Disclosure
 
-1. **Pick up a task.** Your agent calls `list_tasks` to see what's available, then `claim_task` to start work. When it claims a task, it receives the full context: relevant knowledge base entries, existing plans, and a semantic map of related decisions.
+Your agent starts with 4 always-on tools:
 
-2. **Plan before you build.** For non-trivial work, the agent calls `create_plan` to draft an approach with assumptions, risks, and success criteria. You review the plan, leave feedback, and the agent iterates until you approve. Every version is archived.
-
-3. **Execute with context.** While working, the agent logs progress and records decisions with `add_context`. These aren't throwaway notes — they become searchable knowledge that future tasks can query.
-
-4. **Capture what you learned.** When the task is done, the agent calls `record_learning` to crystallize what it discovered. Promote a learning to project scope and every future agent session can find it.
-
-5. **The next task is smarter.** When the next task starts, `query_context` searches across all accumulated decisions, patterns, and learnings. Your agent doesn't start from scratch — it starts from everything that came before.
-
-Plans are optional. Quick tasks can skip straight to execution. But the knowledge capture always applies, so even small tasks contribute to the growing context.
-
-## The CrowdListen Ecosystem
-
-CrowdListen is two MCP servers that work together:
-
-**Insights** discovers what audiences are saying across social platforms — Reddit, YouTube, TikTok, Twitter, Instagram, Xiaohongshu, and more. **Harness** turns that signal into planned, tracked work with a knowledge base that compounds across every task. Together, your agent can research a topic, plan a response, execute it, and remember what it learned for next time.
-
-```bash
-# Install both with one command
-npx @crowdlisten/planner login
+```
+list_skill_packs()                                    → see available packs
+activate_skill_pack({ pack_id: "planning" })          → unlocks 11 task tools
+activate_skill_pack({ pack_id: "social-listening" })  → unlocks 7 search tools
+remember({ type: "preference", title: "...", ... })   → save context across sessions
+recall({ search: "React" })                           → retrieve saved context
 ```
 
-## MCP Tools
+After activation, new tools appear automatically via `tools/list_changed`. No restarts needed.
 
-### Task Management
+### Skill Packs
+
+| Pack | Tools | Description |
+|------|-------|-------------|
+| **core** (always on) | 4 | Discovery + memory |
+| **planning** | 11 | Tasks, plans, progress tracking |
+| **knowledge** | 3 | Project knowledge base |
+| **social-listening** | 7 | Search social platforms (free) |
+| **audience-analysis** | 6 | AI-powered analysis (requires CROWDLISTEN_API_KEY) |
+| **spec-delivery** | 3 | Actionable specs from crowd feedback |
+| **sessions** | 3 | Multi-agent coordination |
+| **setup** | 5 | Board management |
+
+Plus: native SKILL.md workflow packs (competitive-analysis, content-creator, etc.) that deliver full methodology instructions when activated.
+
+## What You Can Do
+
+### Plan and Track Work
+
+Your agent calls `list_tasks` to see what's available, `claim_task` to start work, and `create_plan` to draft an approach with assumptions and risks. You review the plan, leave feedback, the agent iterates. Every decision and learning is captured in a knowledge base that future tasks can query.
+
+### Search Social Platforms
+
+Search Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu, and Moltbook from one tool. Get back structured posts with engagement metrics, timestamps, and author info — same format regardless of platform.
+
+```bash
+# Also works as a CLI
+npx crowdlisten search reddit "cursor vs claude code" --limit 5
+npx crowdlisten vision https://news.ycombinator.com
+```
+
+### Extract From Any Website
+
+Vision mode takes a screenshot of any URL, sends it to an LLM (Claude, Gemini, or OpenAI), and returns structured data. Forum without an API? News site with paywalled comments? Just point `extract_url` at it.
+
+### Analyze Audience Signal
+
+The paid API layer adds opinion clustering, deep analysis (audience segments, competitive signals), and research synthesis (cross-platform reports from a single query). Core extraction is free and open source.
+
+### Get Actionable Specs from Crowd Feedback
+
+The full pipeline: crowd feedback channels are analyzed, insights extracted, and specs generated automatically. Your coding agent activates the `spec-delivery` pack and browses specs that are ready to implement — each with evidence from real user feedback, acceptance criteria, and a confidence score.
+
+```
+activate_skill_pack({ pack_id: "spec-delivery" })
+
+get_specs({ priority: "high", min_confidence: 0.8 })
+→ returns specs with title, type, priority, confidence
+
+get_spec_detail({ spec_id: "..." })
+→ formatted markdown: objective, evidence citations, acceptance criteria checklist
+
+start_spec({ spec_id: "..." })
+→ creates kanban task, claims it, sets up workspace + branch, returns context
+```
+
+`start_spec` composes the existing task management flow internally — it creates a task from the spec, moves it to In Progress, generates a branch name, and returns everything the agent needs to begin coding. No manual setup required.
+
+### Remember Across Sessions
+
+Your agent saves context with `remember` and retrieves it with `recall`. Switch from Claude Code to Cursor to Gemini CLI — the knowledge comes with you.
+
+## MCP Tools Reference
+
+### Always-On (4 tools)
 
 | Tool | What it does |
 |------|-------------|
-| `list_tasks` | List tasks on the board (call first) |
+| `list_skill_packs` | List available packs with status, tool counts |
+| `activate_skill_pack` | Activate a pack to unlock its tools |
+| `remember` | Save context across sessions (preference, decision, pattern, insight) |
+| `recall` | Retrieve saved context blocks |
+
+### Planning Pack (11 tools)
+
+| Tool | What it does |
+|------|-------------|
+| `list_tasks` | List board tasks |
 | `get_task` | Full task details |
 | `create_task` | Create a new task |
 | `update_task` | Change title, description, status, priority |
@@ -92,25 +146,56 @@ npx @crowdlisten/planner login
 | `complete_task` | Mark done, auto-complete plan |
 | `delete_task` | Permanently remove a task |
 | `log_progress` | Log a note to the execution session |
-
-### Planning
-
-| Tool | What it does |
-|------|-------------|
 | `create_plan` | Create execution plan (approach, assumptions, risks) |
 | `get_plan` | Get plan with version history and feedback |
 | `update_plan` | Iterate: update approach, status, or add feedback |
 
-### Knowledge Base
+### Knowledge Pack (3 tools)
 
 | Tool | What it does |
 |------|-------------|
 | `query_context` | Search decisions, patterns, learnings |
 | `add_context` | Write to knowledge base |
 | `record_learning` | Capture outcome, optionally promote to project scope |
-| `get_or_create_global_board` | Get your global board |
 
-### Multi-Agent Sessions
+### Social Listening Pack (7 tools, free)
+
+| Tool | What it does |
+|------|-------------|
+| `search_content` | Search posts across platforms. Supports `useVision` flag. |
+| `get_content_comments` | Get comments/replies for a specific post |
+| `get_trending_content` | Currently trending posts from a platform |
+| `get_user_content` | Recent posts from a specific user |
+| `extract_url` | Vision extraction — screenshot any URL, get structured data |
+| `get_platform_status` | Which platforms are available and their capabilities |
+| `health_check` | Platform connectivity check |
+
+Platforms: reddit, twitter, tiktok, instagram, youtube, xiaohongshu, moltbook
+
+### Audience Analysis Pack (6 tools, requires CROWDLISTEN_API_KEY)
+
+| Tool | What it does |
+|------|-------------|
+| `analyze_content` | Sentiment + theme analysis on a post and its comments |
+| `cluster_opinions` | Group comments into semantic opinion clusters |
+| `enrich_content` | Intent detection, stance analysis, engagement scoring |
+| `deep_analyze` | Full audience intelligence: segments, pain points, competitive signals |
+| `extract_insights` | Categorized insight extraction (pain points, feature requests, praise) |
+| `research_synthesis` | Cross-platform research report from a single query |
+
+### Spec Delivery Pack (3 tools)
+
+| Tool | What it does |
+|------|-------------|
+| `get_specs` | List actionable specs — filter by status, type, priority, min_confidence, project_id |
+| `get_spec_detail` | Full spec with formatted evidence citations and acceptance criteria checklist |
+| `start_spec` | Claim a spec, create kanban task, set up workspace + branch, return agent context |
+
+Spec statuses: `pending` (ready to start), `claimed` (agent working), `in_progress`, `completed`, `rejected`
+
+Spec types: `feature`, `bug_fix`, `improvement`, `investigation`
+
+### Sessions Pack (3 tools)
 
 | Tool | What it does |
 |------|-------------|
@@ -118,28 +203,94 @@ npx @crowdlisten/planner login
 | `list_sessions` | List sessions for a task |
 | `update_session` | Update session status/focus |
 
-### Board Management
+### Setup Pack (5 tools)
 
 | Tool | What it does |
 |------|-------------|
+| `get_or_create_global_board` | Get your global board |
 | `list_projects` | List accessible projects |
 | `list_boards` | List boards for a project |
 | `create_board` | Create board with default columns |
 | `migrate_to_global_board` | Move all tasks to global board |
 
-### Context Extraction
-
-| Tool | What it does |
-|------|-------------|
-| `process_transcript` | Extract context blocks from text (PII redacted first) |
-| `get_context_blocks` | Retrieve locally-stored context blocks |
-| `recommend_skills` | Get skill recommendations from stored context |
-
 Full parameter details: [docs/TOOLS.md](docs/TOOLS.md)
+
+## Platform Setup
+
+Most platforms work with zero configuration:
+
+| Platform | Setup | Without it |
+|----------|-------|-----------|
+| Reddit | Nothing | Works immediately |
+| TikTok | `npx playwright install chromium` | Browser not found error |
+| Instagram | `npx playwright install chromium` | Browser not found error |
+| Xiaohongshu | `npx playwright install chromium` | Browser not found error |
+| Twitter/X | `TWITTER_USERNAME` + `TWITTER_PASSWORD` in `.env` | Skipped |
+| YouTube | `YOUTUBE_API_KEY` in `.env` | Skipped |
+| Moltbook | `MOLTBOOK_API_KEY` in `.env` | Skipped |
+| Vision mode | Any of: `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY` | Vision returns error |
+| Paid analysis | `CROWDLISTEN_API_KEY` | Free tools still work |
+
+Browser-based platforms (TikTok, Instagram, Xiaohongshu) have built-in rate limits of 3-5 requests per minute to prevent IP blocks.
+
+## How It Works Under the Hood
+
+- **Reddit, YouTube, Moltbook** use direct HTTP APIs.
+- **Twitter** uses a cookie-based scraper — no developer account needed.
+- **TikTok, Instagram, Xiaohongshu** launch a real browser via Playwright and intercept the platform's own internal API responses.
+- **Vision mode** opens a browser, takes a full-page screenshot, and sends it to an LLM with a structured extraction prompt. Works on any website.
+
+### The Pipeline
+
+CrowdListen's end-to-end pipeline turns raw crowd feedback into agent-ready work:
+
+```
+Crowd Feedback     →  Analysis        →  Insight          →  Spec           →  MCP Delivery
+(Reddit, TikTok,      (sentiment,        Extraction          Generation        to Coding
+ YouTube, X, ...)      clustering,        (pain points,       (actionable       Agents
+                       segmentation)      feature requests,    specs with        (get_specs →
+                                          competitive          evidence +        start_spec →
+                                          signals)             criteria)         implement)
+```
+
+Each step feeds the next. By the time a coding agent calls `get_specs`, the spec already carries evidence citations from real user feedback, a confidence score based on signal strength, and acceptance criteria derived from the extracted insights.
+
+### Skill Pack Registry
+
+The registry (`src/tools/registry.ts`) implements progressive disclosure following the [GitHub MCP Server pattern](https://github.com/github/github-mcp-server). Instead of exposing 40+ tools on startup, the server starts with 4 core tools. Agents discover available packs via `list_skill_packs` and activate what they need with `activate_skill_pack`. The server fires `notifications/tools/list_changed` so the agent picks up new tools without restarting.
+
+This matters for token efficiency — an agent working on implementation only activates `spec-delivery` and `planning`, keeping its tool context small and focused.
+
+The browser can run locally (default), in Docker, or via a remote CDP endpoint:
+
+```bash
+BROWSER_PROVIDER=docker npx crowdlisten search tiktok "AI agents"
+BROWSER_PROVIDER=remote BROWSER_CDP_URL=wss://connect.browserbase.com?apiKey=KEY npx crowdlisten search tiktok "AI agents"
+```
+
+## CLI Commands
+
+```bash
+npx @crowdlisten/planner login          # Sign in + auto-configure agents
+npx @crowdlisten/planner setup          # Re-run auto-configure
+npx @crowdlisten/planner logout         # Clear credentials
+npx @crowdlisten/planner whoami         # Check current user
+npx @crowdlisten/planner context        # Launch skill pack dashboard (port 3847)
+npx @crowdlisten/planner context <file> # Process file through context pipeline
+npx @crowdlisten/planner setup-context  # Configure LLM provider for extraction
+
+# Social listening CLI
+npx crowdlisten search reddit "AI agents" --limit 20
+npx crowdlisten comments youtube dQw4w9WgXcQ --limit 100
+npx crowdlisten vision https://news.ycombinator.com --limit 10
+npx crowdlisten trending reddit --limit 10
+npx crowdlisten status
+npx crowdlisten health
+```
 
 ## Supported Agents
 
-**Auto-configured on login:** Claude Code, Cursor, Gemini CLI, Codex, OpenClaw
+**Auto-configured on login:** Claude Code, Cursor, Gemini CLI, Codex, Amp, OpenClaw
 
 **Also works with (manual config):** Copilot, Droid, Qwen Code, OpenCode
 
@@ -150,14 +301,6 @@ Upload chat transcripts, get reusable context blocks and skill recommendations. 
 ```
 Upload → Parse → PII Redact → Chunk → LLM Extract → Skill Match → Store
 (local)  (local)  (local)     (local)  (user's key)  (local)     (local)
-```
-
-### Quick Start
-
-```bash
-npx @crowdlisten/planner setup-context    # Configure your LLM API key
-npx @crowdlisten/planner context chat.json # Process a ChatGPT/Claude export
-npx @crowdlisten/planner context           # Launch web UI at localhost:3847
 ```
 
 ### Supported Formats
@@ -173,45 +316,25 @@ npx @crowdlisten/planner context           # Launch web UI at localhost:3847
 - **Anthropic** — Claude Sonnet default
 - **Ollama** — Local models, no API key needed
 
-### Privacy
+## Privacy
 
-- PII is redacted locally using regex before any LLM call
-- Your API key is stored in `~/.crowdlisten/config.json`
-- Context blocks are stored in `~/.crowdlisten/context.json`
-- No data syncs to CrowdListen unless you explicitly click Sync
+- PII redacted locally before LLM calls
+- Context stored locally (`~/.crowdlisten/`)
+- Your own API keys for LLM extraction
+- No data syncs without explicit user action
 - Everything is MIT open-source and inspectable
 
-## Commands
-
-```bash
-npx @crowdlisten/planner login          # Sign in + auto-configure agents
-npx @crowdlisten/planner setup          # Re-run auto-configure
-npx @crowdlisten/planner logout         # Clear credentials
-npx @crowdlisten/planner whoami         # Check current user
-npx @crowdlisten/planner context        # Launch context extraction web UI
-npx @crowdlisten/planner context <file> # Process file via CLI
-npx @crowdlisten/planner setup-context  # Configure LLM provider
-```
-
-## For Agents
-
-See [AGENTS.md](AGENTS.md) for machine-readable capability descriptions, MCP config, and example workflows.
-
 ## Configuration
-
-### Environment Variables
-
-CrowdListen Harness uses sensible defaults. These are only needed if you're self-hosting or overriding the default backend:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CROWDLISTEN_URL` | `https://crowdlisten.com` | Supabase project URL |
 | `CROWDLISTEN_ANON_KEY` | Built-in default | Supabase anonymous key |
-| `CROWDLISTEN_APP_URL` | `https://crowdlisten.com` | Web app URL (used for login redirects) |
+| `CROWDLISTEN_APP_URL` | `https://crowdlisten.com` | Web app URL (login redirects) |
 
 ### Auto-Executor Detection
 
-When your agent calls `claim_task` or `start_session` without specifying an executor, Harness auto-detects which agent is running by checking environment variables:
+When your agent calls `claim_task`, `start_session`, or `start_spec`, CrowdListen auto-detects which agent is running:
 
 | Agent | Detection |
 |-------|-----------|
@@ -222,7 +345,9 @@ When your agent calls `claim_task` or `start_session` without specifying an exec
 | OpenClaw | `OPENCLAW_SESSION` or `OPENCLAW_AGENT` |
 | Amp | `AMP_SESSION_ID` |
 
-This means task ownership is automatically attributed to the right agent without any configuration.
+## For Agents
+
+See [AGENTS.md](AGENTS.md) for machine-readable capability descriptions and example workflows.
 
 ## Development
 
@@ -232,6 +357,10 @@ cd crowdlisten_harness
 npm install && npm run build
 npm test    # 210 tests via Vitest
 ```
+
+## Contributing
+
+Highest-value contributions: new platform adapters (Threads, Bluesky, Hacker News, Product Hunt, Mastodon) and extraction fixes.
 
 ## License
 
