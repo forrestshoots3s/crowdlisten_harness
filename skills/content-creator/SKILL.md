@@ -3,6 +3,11 @@ name: crowdlisten:content-creator
 description: Generate SEO-optimized marketing content with brand voice analysis. Blog posts, social media, email campaigns. Use when creating any branded content.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: content
+    tags: [content-creation, seo, marketing, brand-voice]
+    requires_api_key: false
 ---
 
 # Content Creator

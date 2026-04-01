@@ -3,6 +3,11 @@ name: crowdlisten:data-storytelling
 description: Transform data and analysis into compelling narratives. Problem-Solution, Trend, Comparison, Hero's Journey frameworks. Use when presenting insights to stakeholders.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: data
+    tags: [data-storytelling, narrative, visualization, executive-communication]
+    requires_api_key: false
 ---
 
 # Data Storytelling

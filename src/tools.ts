@@ -19,6 +19,7 @@ import type { TelemetryLevel } from "./context/user-state.js";
 import { listPacks, hasPack, getPack, getSkillMdContent, getPackTools } from "./tools/registry.js";
 import type { ContextBlock } from "./context/types.js";
 import { logLearning, searchLearnings } from "./learnings.js";
+import { AGENT_TOOLS, isAgentTool, handleAgentTool } from "./agent-tools.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -917,6 +918,7 @@ export const TOOLS = [
       required: ["query"],
     },
   },
+  ...AGENT_TOOLS,
 ];
 
 // ─── Status <-> Column mapping ────────────────────────────────────────────────
@@ -2415,8 +2417,13 @@ export async function handleTool(
       });
     }
 
-    default:
+    default: {
+      // Delegate to agent-proxied tools
+      if (isAgentTool(name)) {
+        return handleAgentTool(name, args);
+      }
       throw new Error(`Unknown tool: ${name}`);
+    }
   }
 }
 

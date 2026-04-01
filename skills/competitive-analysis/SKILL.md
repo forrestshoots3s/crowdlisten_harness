@@ -3,6 +3,11 @@ name: crowdlisten:competitive-analysis
 description: Competitive intelligence through audience perception analysis. Use when comparing brands, products, or competitors in social conversations. Requires CROWDLISTEN_API_KEY.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: research
+    tags: [competitive-intelligence, brand-analysis, social-listening]
+    requires_api_key: true
 ---
 
 # Competitive Analysis

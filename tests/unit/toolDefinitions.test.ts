@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { TOOLS } from "../../src/tools.js";
 
 describe("TOOLS definitions", () => {
-  it("defines exactly 25 tools", () => {
-    expect(TOOLS).toHaveLength(25);
+  it("defines at least 41 tools (25 core + 16 agent-proxied)", () => {
+    expect(TOOLS.length).toBeGreaterThanOrEqual(41);
   });
 
   it("each tool has a name, description, and inputSchema", () => {

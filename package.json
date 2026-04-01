@@ -1,10 +1,11 @@
 {
   "name": "@crowdlisten/planner",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Planning, delegation, and context extraction for AI agents — plan before you build, capture knowledge as you go, compound learnings across tasks",
   "type": "module",
   "bin": {
-    "crowdlisten-planner": "dist/index.js"
+    "crowdlisten-planner": "dist/index.js",
+    "crowdlisten-serve": "dist/transport/http.js"
   },
   "scripts": {
     "build": "tsc",

@@ -3,6 +3,11 @@ name: crowdlisten:market-research
 description: Generate comprehensive market research reports with Porter's Five Forces, PESTLE, SWOT, TAM/SAM/SOM, BCG Matrix. Use for market analysis, competitive landscape, industry trends.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: research
+    tags: [market-research, porters-five-forces, swot, tam-sam-som]
+    requires_api_key: false
 ---
 
 # Market Research Reports

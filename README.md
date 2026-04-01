@@ -1,6 +1,6 @@
 # CrowdListen
 
-> One MCP server for AI agents. Plan work, search social platforms, capture knowledge — with progressive skill disclosure so your agent only loads what it needs.
+> One MCP server for AI agents. Plan work, search social platforms, capture knowledge — with progressive skill disclosure so your agent only loads what it needs. Connect via stdio, Streamable HTTP, or REST.
 
 [English](README.md) | [中文文档](README-CN.md)
 
@@ -30,7 +30,7 @@ This auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, Amp, and Op
 
 Restart your agent after login, and it can start calling tools immediately.
 
-### Manual Setup
+### Manual Setup (stdio)
 
 Add this to your agent's MCP config:
 
@@ -43,6 +43,29 @@ Add this to your agent's MCP config:
     }
   }
 }
+```
+
+### Remote Setup (Streamable HTTP)
+
+```json
+{
+  "mcpServers": {
+    "crowdlisten": {
+      "url": "https://mcp.crowdlisten.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Or self-host:
+
+```bash
+npx @crowdlisten/planner serve          # Starts on :3848
+curl http://localhost:3848/health        # Health check
+curl http://localhost:3848/openapi.json  # OpenAPI spec
 ```
 
 ## How It Works
@@ -73,6 +96,11 @@ After activation, new tools appear automatically via `tools/list_changed`. No re
 | **spec-delivery** | 3 | Actionable specs from crowd feedback |
 | **sessions** | 3 | Multi-agent coordination |
 | **setup** | 5 | Board management |
+| **analysis** | 5 | Run analysis, continue, list, generate specs (agent-proxied) |
+| **content** | 4 | Ingest content, vector search, stats (agent-proxied) |
+| **generation** | 2 | PRD generation, section updates (agent-proxied) |
+| **llm** | 2 | Free LLM completion proxy — no API key required |
+| **agent-network** | 3 | Register agents, discover capabilities, share results |
 
 Plus: native SKILL.md workflow packs (competitive-analysis, content-creator, etc.) that deliver full methodology instructions when activated.
 
@@ -195,6 +223,51 @@ Spec statuses: `pending` (ready to start), `claimed` (agent working), `in_progre
 
 Spec types: `feature`, `bug_fix`, `improvement`, `investigation`
 
+### Agent-Proxied Packs
+
+These tools proxy to the CrowdListen compute backend. Free tools require no API key. Paid tools require `CROWDLISTEN_API_KEY`.
+
+#### Analysis (5 tools, paid)
+
+| Tool | What it does |
+|------|-------------|
+| `run_analysis` | Run a full audience analysis (SSE streaming) |
+| `continue_analysis` | Continue an existing analysis with follow-up questions |
+| `get_analysis` | Retrieve analysis results by ID |
+| `list_analyses` | List analyses for a project |
+| `generate_specs` | Generate implementation specs from analysis results |
+
+#### Content & Vectors (4 tools, paid)
+
+| Tool | What it does |
+|------|-------------|
+| `ingest_content` | Ingest content for vector storage |
+| `search_vectors` | Semantic vector search across ingested content |
+| `get_content_stats` | Content ingestion statistics |
+| `delete_content` | Remove ingested content |
+
+#### Document Generation (2 tools, paid)
+
+| Tool | What it does |
+|------|-------------|
+| `generate_prd` | Generate a PRD from analysis results (SSE streaming) |
+| `update_prd_section` | Update a specific section of a PRD |
+
+#### LLM Proxy (2 tools, free)
+
+| Tool | What it does |
+|------|-------------|
+| `llm_complete` | LLM completion — no API key required |
+| `list_llm_models` | List available LLM models |
+
+#### Agent Network (3 tools, free/mixed)
+
+| Tool | What it does |
+|------|-------------|
+| `register_agent` | Register an agent in the network (free) |
+| `get_capabilities` | List network agent capabilities (free) |
+| `submit_analysis` | Submit analysis results to the network (paid) |
+
 ### Sessions Pack (3 tools)
 
 | Tool | What it does |
@@ -268,6 +341,16 @@ BROWSER_PROVIDER=docker npx crowdlisten search tiktok "AI agents"
 BROWSER_PROVIDER=remote BROWSER_CDP_URL=wss://connect.browserbase.com?apiKey=KEY npx crowdlisten search tiktok "AI agents"
 ```
 
+## Transports
+
+| Transport | Use case | Command |
+|-----------|----------|---------|
+| **stdio** (default) | Local agent integration | `npx @crowdlisten/planner` |
+| **Streamable HTTP** | Remote/cloud agent access | `npx @crowdlisten/planner serve` |
+| **OpenAPI/REST** | Any HTTP client | `curl localhost:3848/openapi.json` |
+
+The HTTP transport runs on port 3848 and supports stateless auth via `Authorization: Bearer <token>` (Supabase JWT or API key). All MCP tools are exposed via `POST /mcp`, with health check at `GET /health` and auto-generated OpenAPI spec at `GET /openapi.json`.
+
 ## CLI Commands
 
 ```bash
@@ -275,6 +358,8 @@ npx @crowdlisten/planner login          # Sign in + auto-configure agents
 npx @crowdlisten/planner setup          # Re-run auto-configure
 npx @crowdlisten/planner logout         # Clear credentials
 npx @crowdlisten/planner whoami         # Check current user
+npx @crowdlisten/planner serve          # Start HTTP server on :3848
+npx @crowdlisten/planner openapi        # Print OpenAPI 3.0 spec to stdout
 npx @crowdlisten/planner context        # Launch skill pack dashboard (port 3847)
 npx @crowdlisten/planner context <file> # Process file through context pipeline
 npx @crowdlisten/planner setup-context  # Configure LLM provider for extraction
@@ -331,6 +416,8 @@ Upload → Parse → PII Redact → Chunk → LLM Extract → Skill Match → St
 | `CROWDLISTEN_URL` | `https://crowdlisten.com` | Supabase project URL |
 | `CROWDLISTEN_ANON_KEY` | Built-in default | Supabase anonymous key |
 | `CROWDLISTEN_APP_URL` | `https://crowdlisten.com` | Web app URL (login redirects) |
+| `CROWDLISTEN_AGENT_URL` | `https://agent.crowdlisten.com` | Agent backend URL |
+| `CROWDLISTEN_API_KEY` | None | API key for paid tools (analysis, content, generation) |
 
 ### Auto-Executor Detection
 
@@ -355,7 +442,7 @@ See [AGENTS.md](AGENTS.md) for machine-readable capability descriptions and exam
 git clone https://github.com/Crowdlisten/crowdlisten_harness.git
 cd crowdlisten_harness
 npm install && npm run build
-npm test    # 210 tests via Vitest
+npm test    # 210+ tests via Vitest
 ```
 
 ## Contributing

@@ -3,6 +3,11 @@ name: crowdlisten:user-stories
 description: Turn social listening data into product decisions. JTBD extraction, feature demand scoring, persona generation, user story generation from real audience data. Requires CROWDLISTEN_API_KEY.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: research
+    tags: [user-stories, jtbd, feature-demand, persona-generation]
+    requires_api_key: true
 ---
 
 # User Stories

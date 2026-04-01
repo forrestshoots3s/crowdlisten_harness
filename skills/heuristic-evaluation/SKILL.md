@@ -3,6 +3,11 @@ name: crowdlisten:heuristic-evaluation
 description: Customer feedback analysis from social conversations. Journey friction detection, pain point mapping, persona generation, churn risk signals. Requires CROWDLISTEN_API_KEY.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: research
+    tags: [customer-feedback, journey-analysis, pain-points, churn-risk]
+    requires_api_key: true
 ---
 
 # Heuristic Evaluation

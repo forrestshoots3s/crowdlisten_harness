@@ -258,6 +258,6 @@ export function getSkillMdContent(packId: string): string | null {
  * Check if a tool name belongs to the insights module.
  */
 export function isInsightsTool(name: string): boolean {
-  const insightsToolNames = new Set(INSIGHTS_TOOLS.map(t => t.name));
+  const insightsToolNames = new Set(INSIGHTS_TOOLS.map((t: any) => t.name));
   return insightsToolNames.has(name);
 }

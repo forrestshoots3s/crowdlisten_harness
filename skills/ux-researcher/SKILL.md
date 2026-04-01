@@ -3,6 +3,11 @@ name: crowdlisten:ux-research
 description: UX research synthesis — user personas, journey maps, heuristic evaluation (Nielsen's 10), design recommendations. Use when analyzing user behavior or designing experiences.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
+metadata:
+  openclaw:
+    category: design
+    tags: [ux-research, user-personas, journey-maps, heuristic-evaluation]
+    requires_api_key: false
 ---
 
 # UX Researcher & Designer

@@ -6,7 +6,7 @@ Machine-readable capability description for AI agents.
 
 CrowdListen is two MCP servers that work together:
 - **Insights** ([crowdlisten](https://github.com/Crowdlisten/crowdlisten_insights)) — discovers audience signal from social platforms
-- **Harness** (this server) — plans and tracks work with a cloud-synced knowledge base
+- **Harness** (this server) — plans and tracks work with a cloud-synced knowledge base, proxies analysis and generation
 
 Install both with one command: `npx @crowdlisten/planner login`
 
@@ -18,7 +18,7 @@ npx @crowdlisten/planner login
 ```
 Auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, OpenClaw.
 
-### Manual MCP config
+### Manual MCP config (stdio)
 ```json
 {
   "crowdlisten/harness": {
@@ -28,13 +28,28 @@ Auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, OpenClaw.
 }
 ```
 
+### Remote MCP config (Streamable HTTP)
+```json
+{
+  "crowdlisten": {
+    "url": "https://mcp.crowdlisten.com/mcp",
+    "headers": {
+      "Authorization": "Bearer YOUR_API_KEY"
+    }
+  }
+}
+```
+
 ## Interfaces
 
 | Interface | Access | Best for |
 |-----------|--------|----------|
-| MCP (this server) | Agents call 25 tools via stdio | AI agents — task management, planning, knowledge, context extraction |
-| CLI | `npx @crowdlisten/planner login/setup/logout/whoami/context` | Authentication, agent config, context extraction |
-| Web UI | `npx @crowdlisten/planner context` → localhost:3847 | Visual context extraction with drag-and-drop |
+| MCP stdio | `npx @crowdlisten/planner` — ~41 tools | Local agents |
+| MCP HTTP | `POST https://mcp.crowdlisten.com/mcp` | Remote agents, cloud |
+| REST | `POST https://mcp.crowdlisten.com/tools/{name}` | Non-MCP integrations |
+| OpenAPI | `GET https://mcp.crowdlisten.com/openapi.json` | Docs, code gen |
+| CLI | `npx @crowdlisten/planner login/setup/serve/openapi` | Auth, config, hosting |
+| Web UI | `npx @crowdlisten/planner context` → localhost:3847 | Visual context extraction |
 
 ## Core Workflow (7 steps)
 
@@ -54,56 +69,85 @@ list_tasks → claim_task → query_context → create_plan → [human review] �
 
 Plans are optional — quick tasks can skip to execution. Knowledge capture still applies.
 
-## Core Tools (15)
+## Task Management (8 tools)
 
-### Task Management
-
-- **list_tasks**(board_id?, status?, limit?) — List tasks on the board. Call first to see available work. Filter: todo, inprogress, inreview, done, cancelled.
+- **list_tasks**(board_id?, status?, limit?) — List tasks on the board. Call first. Filter: todo, inprogress, inreview, done, cancelled.
 - **get_task**(task_id) — Full task details including description, status, priority, labels.
 - **create_task**(title, description?, priority?, project_id?, board_id?, labels?) — Create a new task. Uses global board by default.
 - **update_task**(task_id, title?, description?, status?, priority?) — Update task fields. Pass only what changes.
-- **claim_task**(task_id, executor?, branch?) — Start work. Moves to In Progress, creates workspace + session. Returns context and branch name. Call query_context next.
+- **claim_task**(task_id, executor?, branch?) — Start work. Moves to In Progress, creates workspace + session. Returns context and branch name.
 - **complete_task**(task_id, summary?) — Mark done. Call record_learning first. Auto-completes plan.
 - **delete_task**(task_id) — Permanently remove a task.
-- **log_progress**(task_id, message, session_id?) — Log a progress note during execution. Useful for agent handoff.
+- **log_progress**(task_id, message, session_id?) — Log a progress note during execution.
 
-### Planning
+## Planning (3 tools)
 
-- **create_plan**(task_id, approach, assumptions?, constraints?, success_criteria?, risks?, estimated_steps?) — Create execution plan. Call after claim_task + query_context. Submit with update_plan(status='review').
+- **create_plan**(task_id, approach, assumptions?, constraints?, success_criteria?, risks?, estimated_steps?) — Create execution plan. Submit with update_plan(status='review').
 - **get_plan**(task_id) — Get plan with version history and pending human feedback.
-- **update_plan**(plan_id, approach?, status?, feedback?, assumptions?, constraints?, success_criteria?, risks?) — Iterate on plan. Set status='review' to submit, status='executing' after approval. Setting feedback auto-reverts to draft.
+- **update_plan**(plan_id, approach?, status?, feedback?, ...) — Iterate on plan. Set status='review' to submit, status='executing' after approval.
 
-### Knowledge Base
+## Knowledge Base (4 tools)
 
-- **query_context**(project_id?, task_id?, type?, search?, tags?, limit?) — Search decisions, constraints, preferences, patterns, learnings, principles. Call after claim_task.
-- **add_context**(type, title, body, project_id?, task_id?, tags?, confidence?, supersedes?) — Write to knowledge base during execution. Types: decision, constraint, preference, pattern, learning, principle.
-- **record_learning**(task_id, title, body, learning_type?, tags?, promote?) — Capture learning before complete_task. Types: outcome, pattern, mistake, optimization, decision_record. Use promote=true for project-wide visibility.
+- **query_context**(project_id?, task_id?, type?, search?, tags?, limit?) — Search decisions, constraints, preferences, patterns, learnings, principles.
+- **add_context**(type, title, body, project_id?, task_id?, tags?, confidence?, supersedes?) — Write to knowledge base during execution.
+- **record_learning**(task_id, title, body, learning_type?, tags?, promote?) — Capture learning. Use promote=true for project-wide visibility.
 - **get_or_create_global_board**() — Get your global board. Call once if you need the board_id.
 
-## Advanced Tools (3) — Parallel Sessions
-
-For multi-agent coordination on a single task. claim_task already creates one session.
+## Sessions (3 tools) — Parallel Agents
 
 - **start_session**(task_id, executor?, focus) — Start additional parallel session.
 - **list_sessions**(task_id, status?) — List sessions showing status and focus.
 - **update_session**(session_id, status?, focus?) — Update session: idle, running, completed, failed, stopped.
 
-## Context Extraction Tools (3)
+## Context Extraction (3 tools)
 
-Extract reusable context blocks from chat transcripts and documents. PII is redacted locally before LLM processing. Requires LLM provider configuration (`npx @crowdlisten/planner setup-context`).
+- **process_transcript**(text, source?, is_chat?) — PII redaction → LLM extraction → skill matching. Returns blocks + skills.
+- **get_context_blocks**() — Retrieve locally-stored context blocks.
+- **recommend_skills**() — Get skill recommendations based on stored context.
 
-- **process_transcript**(text, source?, is_chat?) — Process text through the full pipeline: PII redaction → chunking → LLM extraction → skill matching. Returns extracted blocks (style/insight/pattern/preference) and recommended CrowdListen skills.
-- **get_context_blocks**() — Retrieve locally-stored context blocks from previous extractions (~/.crowdlisten/context.json).
-- **recommend_skills**() — Get CrowdListen skill recommendations based on stored context. Uses keyword overlap against the skill catalog.
+## Skill Discovery (3 tools)
 
-## Setup Tools (4) — Board Management
+- **discover_skills**(context?, category?, tier?, limit?) — Context-driven discovery across 154 skills.
+- **search_skills**(query, tier?, category?) — Text search across all skills.
+- **install_skill**(skill_id, target_dir?) — Install a skill by ID.
 
-Rarely needed — get_or_create_global_board handles most cases.
+## Setup (4 tools)
 
 - **list_projects**() — List accessible projects.
 - **list_boards**(project_id) — List boards for a project.
 - **create_board**(project_id, name?) — Create board with default columns.
-- **migrate_to_global_board**() — Consolidate all tasks to global board. Run once.
+- **migrate_to_global_board**() — Consolidate all tasks to global board.
+
+## Analysis (5 tools) — requires CROWDLISTEN_API_KEY
+
+- **run_analysis**(project_id, question, platforms?, max_results?) — Run audience analysis across Reddit, YouTube, TikTok, Twitter, Instagram, Xiaohongshu. Streams results.
+- **continue_analysis**(analysis_id, question) — Follow-up question on existing analysis.
+- **get_analysis**(analysis_id) — Get full analysis results with themes, sentiment, quotes.
+- **list_analyses**(project_id, limit?) — List analyses for a project.
+- **generate_specs**(project_id, analysis_id?, spec_type?) — Generate feature requests, user stories, acceptance criteria from analysis.
+
+## Content & Vectors (4 tools) — requires CROWDLISTEN_API_KEY
+
+- **ingest_content**(project_id, content, source_url?, title?, metadata?) — Ingest content into vector store.
+- **search_vectors**(project_id, query, limit?, threshold?) — Semantic search across ingested content.
+- **get_content_stats**(project_id) — Document count, chunks, storage usage.
+- **delete_content**(content_id) — Delete content document and embeddings.
+
+## Document Generation (2 tools) — requires CROWDLISTEN_API_KEY
+
+- **generate_prd**(project_id, analysis_ids?, template?, sections?) — Generate PRD from analysis. Templates: standard, lean, technical, marketing.
+- **update_prd_section**(document_id, section, instructions?, content?) — Update a specific PRD section.
+
+## LLM Proxy (2 tools) — free, no API key
+
+- **llm_complete**(prompt, model?, max_tokens?, temperature?, system?) — LLM completion through CrowdListen. Default: gpt-4o-mini.
+- **list_llm_models**() — List available models and capabilities.
+
+## Agent Network (3 tools) — mixed auth
+
+- **register_agent**(name, capabilities?, executor?) — Register in agent network. Free.
+- **get_capabilities**() — List network capabilities. Free.
+- **submit_analysis**(agent_id, analysis_id, summary) — Share analysis results. Requires API key.
 
 ## Example Workflow
 
@@ -120,46 +164,31 @@ query_context(search="auth patterns")
   → returns: relevant decisions, patterns, learnings
 
 # 4. Create a plan
-create_plan(task_id="abc-123", approach="Implement JWT auth with refresh tokens", assumptions=["Node.js backend"], risks=["Token storage security"])
+create_plan(task_id="abc-123", approach="Implement JWT auth with refresh tokens")
 
 # 5. Submit for review
 update_plan(plan_id="plan-456", status="review")
 
-# 6. After human approves, start executing
+# 6. After approval, execute
 update_plan(plan_id="plan-456", status="executing")
 
 # 7. During work, capture decisions
-add_context(type="decision", title="Use httpOnly cookies for refresh tokens", body="More secure than localStorage", project_id="proj-789")
+add_context(type="decision", title="Use httpOnly cookies", body="More secure than localStorage")
 
-# 8. Log progress
-log_progress(task_id="abc-123", message="Auth middleware complete, starting route protection")
+# 8. Run analysis for user research
+run_analysis(project_id="proj-789", question="What do users say about auth UX?", platforms=["reddit", "twitter"])
 
 # 9. Capture learning
-record_learning(task_id="abc-123", title="httpOnly cookies need CORS credentials", body="Set credentials: 'include' on fetch calls", promote=true)
+record_learning(task_id="abc-123", title="httpOnly cookies need CORS credentials", body="Set credentials: 'include'", promote=true)
 
 # 10. Complete
-complete_task(task_id="abc-123", summary="JWT auth with refresh tokens implemented")
+complete_task(task_id="abc-123", summary="JWT auth implemented")
 ```
 
-## Context Extraction Example
-
-```
-# 1. Process a chat transcript (PII redacted automatically)
-process_transcript(text="User: I prefer TypeScript with strict mode...", source="slack-export")
-  → returns: blocks (style/insight/pattern/preference), skill matches, redaction stats
-
-# 2. Check what context has been extracted
-get_context_blocks()
-  → returns: all stored blocks from previous extractions
-
-# 3. Get skill recommendations based on accumulated context
-recommend_skills()
-  → returns: ranked CrowdListen skills matching the user's patterns
-```
-
-### Privacy Model
+## Privacy Model
 
 - PII redacted locally (regex) before any LLM call
 - User's own API key used for extraction (OpenAI/Anthropic/Ollama)
 - Context blocks stored locally in `~/.crowdlisten/context.json`
 - No data syncs without explicit user action
+- Agent-proxied tools go through `agent.crowdlisten.com` with your API key

@@ -271,6 +271,10 @@ if (command === "login") {
   }
 } else if (command === "setup-context") {
   runSetupContext().then(() => process.exit(0));
+} else if (command === "serve") {
+  startHttpServer();
+} else if (command === "openapi") {
+  printOpenApiSpec();
 } else if (command === "help" || command === "--help" || command === "-h") {
   console.error(`
 CrowdListen — Unified MCP Server
@@ -280,6 +284,8 @@ COMMANDS:
   setup          Re-run auto-configure for agent MCP configs
   logout         Clear saved credentials
   whoami         Show current user
+  serve          Start Streamable HTTP transport (port 3848)
+  openapi        Print OpenAPI 3.0 spec to stdout
   context        Launch skill pack dashboard (port 3847)
   context <file> Process a file through the context pipeline (CLI mode)
   setup-context  Configure LLM provider for context extraction
@@ -296,6 +302,12 @@ QUICK START:
     list_skill_packs, activate_skill_pack, remember, recall
 
   Activate packs to unlock more: planning, social-listening, etc.
+
+REMOTE ACCESS:
+
+  npx @crowdlisten/planner serve           # Start HTTP server on :3848
+  curl localhost:3848/health               # Health check
+  curl localhost:3848/openapi.json         # OpenAPI spec
 `);
   process.exit(0);
 } else {
@@ -303,7 +315,7 @@ QUICK START:
   startMcpServer();
 }
 
-// ─── MCP Server ─────────────────────────────────────────────────────────────
+// ─── MCP Server (stdio, progressive disclosure) ─────────────────────────────
 
 async function startMcpServer() {
   const { supabase: sb, userId } = await getAuthedClient();
@@ -451,4 +463,20 @@ async function startMcpServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("CrowdListen unified MCP server running (progressive disclosure)");
+}
+
+// ─── HTTP Server (Streamable HTTP) ──────────────────────────────────────────
+
+async function startHttpServer() {
+  const { startHttpTransport } = await import("./transport/http.js");
+  const port = parseInt(process.argv[3] || "3848", 10);
+  await startHttpTransport(port);
+}
+
+// ─── OpenAPI Spec ───────────────────────────────────────────────────────────
+
+async function printOpenApiSpec() {
+  const { generateOpenApiSpec } = await import("./openapi.js");
+  console.log(JSON.stringify(generateOpenApiSpec(), null, 2));
+  process.exit(0);
 }
