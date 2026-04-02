@@ -2,6 +2,8 @@
 
 > CrowdListen gives AI agents crowd context — analyzed intelligence from what real users say, what markets think, and what communities want. Not just session recall. Analyzed, clustered, decision-ready.
 
+![CrowdListen — Give your agent evidence, not guesses](docs/images/hero.png)
+
 [English](README.md) | [中文文档](README-CN.md)
 
 ## The Problem
@@ -477,6 +479,8 @@ Browser-based platforms (TikTok, Instagram, Xiaohongshu) have built-in rate limi
 ### The Pipeline
 
 CrowdListen's end-to-end pipeline turns raw crowd feedback into agent-ready work:
+
+![CrowdListen Pipeline — Raw Crowd Signals to Agent Delivery](docs/images/pipeline.jpg)
 
 ```
 Crowd Feedback     →  Analysis        →  Insight          →  Spec           →  MCP Delivery
