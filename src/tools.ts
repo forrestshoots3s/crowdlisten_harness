@@ -694,7 +694,7 @@ export const TOOLS = [
   {
     name: "remember",
     description:
-      "Save context that persists across sessions — preferences, decisions, patterns, or any information the agent should recall later. Stored locally in ~/.crowdlisten/context.json.",
+      "Save context that persists across sessions — preferences, decisions, patterns, or any information the agent should recall later. Stored in Supabase (with local fallback).",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -2116,7 +2116,9 @@ export async function handleTool(
         });
         if (sbErr) throw sbErr;
         savedToSupabase = true;
-      } catch {
+      } catch (err: any) {
+        // Log the error so Supabase failures aren't invisible
+        console.error(`[remember] Supabase write failed: ${err?.message || err}`);
         // Fallback to local store
         const block: ContextBlock = {
           type: type as ContextBlock["type"],
