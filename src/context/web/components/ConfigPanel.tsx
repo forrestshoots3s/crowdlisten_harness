@@ -8,7 +8,6 @@ export default function ConfigPanel({ onSaved }: Props) {
   const [provider, setProvider] = useState("openai");
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("");
-  const [ollamaUrl, setOllamaUrl] = useState("http://localhost:11434");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,10 +16,8 @@ export default function ConfigPanel({ onSaved }: Props) {
     setError(null);
 
     try {
-      const body: Record<string, string> = { provider };
-      if (provider !== "ollama") body.apiKey = apiKey;
+      const body: Record<string, string> = { provider, apiKey };
       if (model) body.model = model;
-      if (provider === "ollama") body.ollamaUrl = ollamaUrl;
 
       const res = await fetch("/api/config", {
         method: "POST",
@@ -69,42 +66,24 @@ export default function ConfigPanel({ onSaved }: Props) {
           >
             <option value="openai">OpenAI</option>
             <option value="anthropic">Anthropic</option>
-            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
 
-        {provider !== "ollama" ? (
-          <div>
-            <label
-              className="text-sm font-medium block mb-1.5"
-              style={{ color: "var(--cl-fg)" }}
-            >
-              API Key
-            </label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder={provider === "openai" ? "sk-..." : "sk-ant-..."}
-              className="input-field"
-            />
-          </div>
-        ) : (
-          <div>
-            <label
-              className="text-sm font-medium block mb-1.5"
-              style={{ color: "var(--cl-fg)" }}
-            >
-              Ollama URL
-            </label>
-            <input
-              type="text"
-              value={ollamaUrl}
-              onChange={(e) => setOllamaUrl(e.target.value)}
-              className="input-field"
-            />
-          </div>
-        )}
+        <div>
+          <label
+            className="text-sm font-medium block mb-1.5"
+            style={{ color: "var(--cl-fg)" }}
+          >
+            API Key
+          </label>
+          <input
+            type="password"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder={provider === "openai" ? "sk-..." : "sk-ant-..."}
+            className="input-field"
+          />
+        </div>
 
         <div>
           <label className="text-sm font-medium block mb-1.5">
@@ -136,16 +115,6 @@ export default function ConfigPanel({ onSaved }: Props) {
                 <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
               </>
             )}
-            {provider === "ollama" && (
-              <>
-                <option value="llama3.1">Llama 3.1</option>
-                <option value="llama3.2">Llama 3.2</option>
-                <option value="mistral">Mistral</option>
-                <option value="mixtral">Mixtral</option>
-                <option value="codellama">Code Llama</option>
-                <option value="qwen2.5">Qwen 2.5</option>
-              </>
-            )}
           </select>
         </div>
       </div>
@@ -159,7 +128,7 @@ export default function ConfigPanel({ onSaved }: Props) {
       <div className="mt-4">
         <button
           onClick={handleSave}
-          disabled={saving || (provider !== "ollama" && !apiKey)}
+          disabled={saving || !apiKey}
           className="btn-primary"
         >
           {saving ? "Saving..." : "Save Configuration"}

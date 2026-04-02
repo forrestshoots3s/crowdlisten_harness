@@ -1782,6 +1782,25 @@ export async function handleTool(
           .eq("id", args.supersedes as string);
       }
 
+      // Mirror knowledge types to project_insights for project board visibility
+      const knowledgeTypes = ["decision", "pattern", "preference", "learning", "principle"];
+      const resolvedProjectId = (args.project_id as string) || null;
+      if (knowledgeTypes.includes(contextType) && resolvedProjectId) {
+        try {
+          await sb.from("project_insights").insert({
+            project_id: resolvedProjectId,
+            user_id: userId,
+            title: args.title as string,
+            content: args.body as string,
+            source: "mcp_add_context",
+            source_agent: detectExecutor(),
+            category: contextType,
+          });
+        } catch {
+          // Non-blocking — planning_context is the primary store
+        }
+      }
+
       return json({ context_id: entry!.id, status: entry!.status });
     }
 
@@ -1832,6 +1851,23 @@ export async function handleTool(
         .select("id")
         .single();
       if (learnErr) throw new Error(learnErr.message);
+
+      // Mirror to project_insights for project board visibility
+      if (projectId) {
+        try {
+          await sb.from("project_insights").insert({
+            project_id: projectId,
+            user_id: userId,
+            title: args.title as string,
+            content: args.body as string,
+            source: "mcp_learning",
+            source_agent: detectExecutor(),
+            category: "learning",
+          });
+        } catch {
+          // Non-blocking
+        }
+      }
 
       let promotedId: string | null = null;
 
@@ -2066,20 +2102,32 @@ export async function handleTool(
         return json({ error: "Missing required parameters: type, title, content" });
       }
 
-      const block: ContextBlock = {
-        type: type as ContextBlock["type"],
-        title,
-        content,
-        source: "remember",
-      };
+      // Write to Supabase context_blocks (primary), local JSON as fallback
+      let savedToSupabase = false;
+      try {
+        const { error: sbErr } = await sb.from("context_blocks").insert({
+          user_id: userId,
+          type,
+          title,
+          content,
+          source_filename: "mcp_remember",
+          status: "approved",
+          project_id: (args.project_id as string) || null,
+        });
+        if (sbErr) throw sbErr;
+        savedToSupabase = true;
+      } catch {
+        // Fallback to local store
+        const block: ContextBlock = {
+          type: type as ContextBlock["type"],
+          title,
+          content,
+          source: "remember",
+        };
+        addBlocks([block], "remember");
+      }
 
-      const allBlocks = addBlocks([block], "remember");
-      return json({
-        saved: true,
-        title,
-        type,
-        totalBlocks: allBlocks.length,
-      });
+      return json({ saved: true, title, type, supabase: savedToSupabase });
     }
 
     case "recall": {
@@ -2087,28 +2135,48 @@ export async function handleTool(
       const search = args.search as string | undefined;
       const limit = (args.limit as number) || 20;
 
-      let blocks = getBlocks();
+      // Read from Supabase context_blocks (primary), local JSON as fallback
+      try {
+        let query = sb
+          .from("context_blocks")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(limit);
 
-      if (type) {
-        blocks = blocks.filter(b => b.type === type);
+        if (type) query = query.eq("type", type);
+        if (args.project_id) query = query.eq("project_id", args.project_id as string);
+        if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+
+        const { data, error: sbErr } = await query;
+        if (sbErr) throw sbErr;
+
+        return json({
+          blocks: data || [],
+          count: (data || []).length,
+          filters: { type: type || "all", search: search || null },
+          source: "supabase",
+        });
+      } catch {
+        // Fallback to local store
+        let blocks = getBlocks();
+        if (type) blocks = blocks.filter(b => b.type === type);
+        if (search) {
+          const lower = search.toLowerCase();
+          blocks = blocks.filter(
+            b =>
+              b.title.toLowerCase().includes(lower) ||
+              b.content.toLowerCase().includes(lower)
+          );
+        }
+        blocks = blocks.slice(-limit);
+        return json({
+          blocks,
+          count: blocks.length,
+          filters: { type: type || "all", search: search || null },
+          source: "local",
+        });
       }
-
-      if (search) {
-        const lower = search.toLowerCase();
-        blocks = blocks.filter(
-          b =>
-            b.title.toLowerCase().includes(lower) ||
-            b.content.toLowerCase().includes(lower)
-        );
-      }
-
-      blocks = blocks.slice(-limit);
-
-      return json({
-        blocks,
-        count: blocks.length,
-        filters: { type: type || "all", search: search || null },
-      });
     }
 
     // ── Spec Delivery ────────────────────────────────────────────────

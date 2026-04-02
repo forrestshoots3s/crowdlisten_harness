@@ -77,10 +77,9 @@ export interface LLMProvider {
 }
 
 export interface ContextConfig {
-  provider: "openai" | "anthropic" | "ollama";
+  provider: "openai" | "anthropic";
   apiKey: string;
   model?: string;
-  ollamaUrl?: string;
 }
 
 export interface PipelineResult {

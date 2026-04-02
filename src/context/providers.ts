@@ -115,64 +115,6 @@ class AnthropicProvider implements LLMProvider {
   }
 }
 
-// ─── Ollama ──────────────────────────────────────────────────────────────────
-
-class OllamaProvider implements LLMProvider {
-  name = "ollama";
-  private baseUrl: string;
-  private defaultModel: string;
-
-  constructor(model?: string, baseUrl?: string) {
-    this.baseUrl = baseUrl || "http://localhost:11434";
-    this.defaultModel = model || "llama3.2";
-  }
-
-  async complete(messages: LLMMessage[], opts?: LLMOpts): Promise<string> {
-    const body: Record<string, unknown> = {
-      model: opts?.model || this.defaultModel,
-      messages,
-      stream: false,
-      options: { temperature: opts?.temperature ?? 0.3 },
-    };
-    if (opts?.jsonMode) body.format = "json";
-
-    const res = await fetch(`${this.baseUrl}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      throw new Error(`Ollama request failed (${res.status})`);
-    }
-
-    const data = (await res.json()) as any;
-    return data.message?.content || "";
-  }
-
-  async embed(texts: string[]): Promise<number[][]> {
-    const results: number[][] = [];
-    for (const text of texts) {
-      const res = await fetch(`${this.baseUrl}/api/embeddings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "nomic-embed-text",
-          prompt: text,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Ollama embeddings failed (${res.status})`);
-      }
-
-      const data = (await res.json()) as any;
-      results.push(data.embedding);
-    }
-    return results;
-  }
-}
-
 // ─── Factory ─────────────────────────────────────────────────────────────────
 
 export function createProvider(config: ContextConfig): LLMProvider {
@@ -181,8 +123,6 @@ export function createProvider(config: ContextConfig): LLMProvider {
       return new OpenAIProvider(config.apiKey, config.model);
     case "anthropic":
       return new AnthropicProvider(config.apiKey, config.model);
-    case "ollama":
-      return new OllamaProvider(config.model, config.ollamaUrl);
     default:
       throw new Error(`Unknown provider: ${config.provider}`);
   }

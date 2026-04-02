@@ -39,17 +39,14 @@ export async function runSetupContext(): Promise<void> {
   }
 
   const providerInput = await prompt(
-    "Provider (openai / anthropic / ollama) [openai]: "
+    "Provider (openai / anthropic) [openai]: "
   );
   const provider = (providerInput || "openai") as ContextConfig["provider"];
 
-  let apiKey = "";
-  if (provider !== "ollama") {
-    apiKey = await prompt(`${provider === "openai" ? "OpenAI" : "Anthropic"} API key: `);
-    if (!apiKey) {
-      console.error("❌ API key required.");
-      process.exit(1);
-    }
+  const apiKey = await prompt(`${provider === "openai" ? "OpenAI" : "Anthropic"} API key: `);
+  if (!apiKey) {
+    console.error("❌ API key required.");
+    process.exit(1);
   }
 
   const modelInput = await prompt("Model (press Enter for default): ");
@@ -58,13 +55,6 @@ export async function runSetupContext(): Promise<void> {
     provider,
     apiKey,
     ...(modelInput ? { model: modelInput } : {}),
-    ...(provider === "ollama"
-      ? {
-          ollamaUrl:
-            (await prompt("Ollama URL [http://localhost:11434]: ")) ||
-            "http://localhost:11434",
-        }
-      : {}),
   };
 
   saveConfig(config);

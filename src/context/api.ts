@@ -150,8 +150,8 @@ export async function handleApiRequest(
     if (pathname === "/api/config" && method === "POST") {
       const body = JSON.parse(await readBody(req)) as ContextConfig;
       if (!body.provider) return error(res, "Missing 'provider' field");
-      if (body.provider !== "ollama" && !body.apiKey) {
-        return error(res, "API key required for non-Ollama providers");
+      if (!body.apiKey) {
+        return error(res, "API key required");
       }
       saveConfig(body);
       return json(res, { ok: true });
