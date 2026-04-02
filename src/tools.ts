@@ -2701,7 +2701,7 @@ export async function buildProjectContextMd(
 
   // Insights
   const { data: insights } = await sb
-    .from("content_insights")
+    .from("project_insights")
     .select("title, content")
     .eq("project_id", projectId)
     .order("created_at", { ascending: false })
