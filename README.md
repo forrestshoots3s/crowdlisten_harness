@@ -10,13 +10,13 @@ AI agents are stateless. Every new session starts from scratch — no memory of 
 
 CrowdListen fixes this with a single MCP server that closes the loop from crowd feedback to implementation:
 
-1. **Listens to your audience** — searches Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu — and returns structured data your agent can reason about.
-2. **Analyzes what they're saying** — clusters opinions, extracts pain points, identifies feature requests across platforms.
-3. **Generates actionable specs** — turns crowd insights into implementation specs with evidence citations, acceptance criteria, and confidence scores.
-4. **Delivers specs to coding agents** — your agent calls `get_specs`, picks a spec, calls `start_spec`, and gets a kanban task with workspace and branch ready to go.
-5. **Plans and tracks work** across agents with a shared knowledge base that compounds over time.
+1. **Remembers across sessions** — `save` and `recall` with semantic search. Your agent finds "JWT auth decision" when it asks about "login security", across agents and devices.
+2. **Listens to your audience** — searches Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu — and returns structured data your agent can reason about.
+3. **Analyzes what they're saying** — clusters opinions, extracts pain points, identifies feature requests across platforms.
+4. **Generates actionable specs** — turns crowd insights into implementation specs with evidence citations, acceptance criteria, and confidence scores.
+5. **Plans and tracks work** — kanban tasks, execution plans, progress tracking. Knowledge compounds over time via semantic memory.
 
-Your agent starts with 4 discovery tools. It activates skill packs on demand — planning, social listening, audience analysis, spec delivery — and only loads the tools it actually needs for the current task.
+Your agent starts with 5 core tools (including semantic memory). It activates skill packs on demand — planning, social listening, audience analysis, spec delivery — and only loads the tools it actually needs for the current task.
 
 ## Try It Now
 
@@ -72,25 +72,24 @@ curl http://localhost:3848/openapi.json  # OpenAPI spec
 
 ### Progressive Skill Disclosure
 
-Your agent starts with 4 always-on tools:
+Your agent starts with 5 always-on tools:
 
 ```
+save({ title: "...", content: "...", tags: [...] })   → save context with semantic embedding
+recall({ search: "natural language query" })           → find relevant memories by meaning
 list_skill_packs()                                    → see available packs
 activate_skill_pack({ pack_id: "planning" })          → unlocks 11 task tools
-activate_skill_pack({ pack_id: "social-listening" })  → unlocks 7 search tools
-remember({ type: "preference", title: "...", ... })   → save context across sessions
-recall({ search: "React" })                           → retrieve saved context
+set_preferences({ ... })                              → configure agent behavior
 ```
 
 After activation, new tools appear automatically via `tools/list_changed`. No restarts needed.
 
-### Skill Packs (22 total)
+### Skill Packs
 
 | Pack | Tools | Description | Auth |
 |------|-------|-------------|------|
-| **core** (always on) | 5 | Discovery + memory | Free |
+| **core** (always on) | 5 | Discovery + semantic memory | Free |
 | **planning** | 11 | Tasks, plans, progress tracking | Free |
-| **knowledge** | 5 | Project knowledge base | Free |
 | **social-listening** | 7 | Search social platforms | Free |
 | **audience-analysis** | 6 | AI-powered analysis | API key |
 | **spec-delivery** | 3 | Actionable specs from crowd feedback | Free |
@@ -107,9 +106,24 @@ Plus 8 **SKILL.md workflow packs** (competitive-analysis, content-creator, conte
 
 ## What You Can Do
 
+### Semantic Memory Across Sessions
+
+Your agent saves context with `save` and retrieves it with `recall`. What makes this different: recall uses semantic search, not keyword matching. Ask "how should we handle login security?" and it finds your earlier note about JWT tokens — even though the words don't overlap.
+
+```
+save({ title: "Auth approach", content: "Use JWT with refresh tokens", tags: ["decision", "auth"] })
+
+recall({ search: "how should we handle login security?" })
+→ [{ title: "Auth approach", content: "Use JWT with refresh tokens", similarity: 0.89 }]
+```
+
+Tag memories however you want — `["decision"]`, `["auth", "backend"]`, `["preference"]` — no fixed categories. Filter by tags or project on recall. Memories persist in Supabase with pgvector embeddings, so they follow you across agents (Claude Code → Cursor → Gemini CLI) and across devices.
+
+If the embedding API is unavailable, recall falls back to keyword matching. If Supabase is down, it falls back to local storage. Saving never fails.
+
 ### Plan and Track Work
 
-Your agent calls `list_tasks` to see what's available, `claim_task` to start work, and `create_plan` to draft an approach with assumptions and risks. You review the plan, leave feedback, the agent iterates. Every decision and learning is captured in a knowledge base that future tasks can query.
+Your agent calls `list_tasks` to see what's available, `claim_task` to start work, and `create_plan` to draft an approach with assumptions and risks. You review the plan, leave feedback, the agent iterates. Decisions and learnings are saved via `save` with relevant tags, so future tasks can `recall` them.
 
 ### Search Social Platforms
 
@@ -148,10 +162,6 @@ start_spec({ spec_id: "..." })
 
 `start_spec` composes the existing task management flow internally — it creates a task from the spec, moves it to In Progress, generates a branch name, and returns everything the agent needs to begin coding. No manual setup required.
 
-### Remember Across Sessions
-
-Your agent saves context with `remember` and retrieves it with `recall`. Switch from Claude Code to Cursor to Gemini CLI — the knowledge comes with you.
-
 ## End-to-End Walkthrough
 
 Here's what happens when you use CrowdListen from scratch, step by step.
@@ -169,10 +179,10 @@ Your browser opens → you sign in with Google/GitHub → the CLI auto-configure
 On startup, your agent sees **5 core tools** — nothing else:
 
 ```
-list_skill_packs          → see all 22 available packs
+list_skill_packs          → see available packs
 activate_skill_pack       → unlock a pack's tools
-remember                  → save context across sessions
-recall                    → retrieve saved context
+save                      → save context with semantic embedding
+recall                    → semantic similarity search across memories
 set_preferences           → configure telemetry, auto-activate, etc.
 ```
 
@@ -183,12 +193,12 @@ This is progressive disclosure. Your agent's tool context stays small until it n
 Your agent calls `list_skill_packs` and sees:
 
 ```
-✓ active   | core                    |  5 tools | Discovery + memory
+✓ active   | core                    |  5 tools | Discovery + semantic memory
   available | planning                | 11 tools | Tasks, plans, progress
   available | social-listening        |  7 tools | Search Reddit, TikTok, YouTube...
   available | analysis                |  5 tools | Run audience analyses (paid)
   available | llm                     |  2 tools | Free LLM completion proxy
-  ... 17 more packs
+  ... 16 more packs
 ```
 
 To unlock planning tools:
@@ -217,17 +227,13 @@ claim_task({ task_id: "dcb80a64-..." })
 → { "status": "claimed", "workspace": "...", "branch": "feature/implement-user-auth" }
 ```
 
-**Save and recall context across sessions:**
+**Save and recall context (semantic search — see above):**
 
 ```
-remember({ type: "preference", title: "Test framework", content: "Use Vitest, not Jest" })
-→ { "status": "saved", "block_id": "..." }
-
-recall({ search: "Vitest" })
-→ [{ "type": "preference", "title": "Test framework", "content": "Use Vitest, not Jest" }]
+save({ title: "Test framework", content: "Use Vitest, not Jest", tags: ["preference"] })
+recall({ search: "which testing library?" })
+→ [{ "title": "Test framework", "content": "Use Vitest, not Jest", "similarity": 0.91 }]
 ```
-
-Context persists in `~/.crowdlisten/context.json`. Switch agents (Claude Code → Cursor → Gemini CLI) and the knowledge comes with you.
 
 **Search social platforms (after activating social-listening):**
 
@@ -289,14 +295,15 @@ Each spec carries evidence citations from real user feedback, a confidence score
 
 ## MCP Tools Reference
 
-### Always-On (4 tools)
+### Always-On (5 tools)
 
 | Tool | What it does |
 |------|-------------|
 | `list_skill_packs` | List available packs with status, tool counts |
 | `activate_skill_pack` | Activate a pack to unlock its tools |
-| `remember` | Save context across sessions (preference, decision, pattern, insight) |
-| `recall` | Retrieve saved context blocks |
+| `save` | Save context with freeform tags; auto-generates semantic embedding for recall |
+| `recall` | Semantic similarity search across all saved memories; keyword fallback if embedding API is unavailable |
+| `set_preferences` | Configure telemetry, proactive suggestions, cross-project learnings |
 
 ### Planning Pack (11 tools)
 
@@ -313,14 +320,6 @@ Each spec carries evidence citations from real user feedback, a confidence score
 | `create_plan` | Create execution plan (approach, assumptions, risks) |
 | `get_plan` | Get plan with version history and feedback |
 | `update_plan` | Iterate: update approach, status, or add feedback |
-
-### Knowledge Pack (3 tools)
-
-| Tool | What it does |
-|------|-------------|
-| `query_context` | Search decisions, patterns, learnings |
-| `add_context` | Write to knowledge base |
-| `record_learning` | Capture outcome, optionally promote to project scope |
 
 ### Social Listening Pack (7 tools, free)
 
@@ -466,7 +465,7 @@ Each step feeds the next. By the time a coding agent calls `get_specs`, the spec
 
 ### Skill Pack Registry
 
-The registry (`src/tools/registry.ts`) implements progressive disclosure following the [GitHub MCP Server pattern](https://github.com/github/github-mcp-server). Instead of exposing 40+ tools on startup, the server starts with 4 core tools. Agents discover available packs via `list_skill_packs` and activate what they need with `activate_skill_pack`. The server fires `notifications/tools/list_changed` so the agent picks up new tools without restarting.
+The registry (`src/tools/registry.ts`) implements progressive disclosure following the [GitHub MCP Server pattern](https://github.com/github/github-mcp-server). Instead of exposing 40+ tools on startup, the server starts with 5 core tools. Agents discover available packs via `list_skill_packs` and activate what they need with `activate_skill_pack`. The server fires `notifications/tools/list_changed` so the agent picks up new tools without restarting.
 
 This matters for token efficiency — an agent working on implementation only activates `spec-delivery` and `planning`, keeping its tool context small and focused.
 
@@ -535,12 +534,12 @@ Upload → Parse → PII Redact → Chunk → LLM Extract → Skill Match → St
 
 - **OpenAI** — gpt-4o-mini default, supports embeddings
 - **Anthropic** — Claude Sonnet default
-- **Ollama** — Local models, no API key needed
 
 ## Privacy
 
 - PII redacted locally before LLM calls
-- Context stored locally (`~/.crowdlisten/`)
+- Memories stored in Supabase with RLS (users can only access their own data)
+- Local fallback (`~/.crowdlisten/`) when Supabase is unavailable
 - Your own API keys for LLM extraction
 - No data syncs without explicit user action
 - Everything is MIT open-source and inspectable

@@ -18,7 +18,7 @@ import { loadUserState, saveUserState, activatePack, deactivatePack } from "./co
 import type { TelemetryLevel } from "./context/user-state.js";
 import { listPacks, hasPack, getPack, getSkillMdContent, getPackTools } from "./tools/registry.js";
 import type { ContextBlock } from "./context/types.js";
-import { logLearning, searchLearnings } from "./learnings.js";
+// logLearning/searchLearnings — kept in learnings.ts but no longer imported (consolidated into save/recall)
 import { AGENT_TOOLS, isAgentTool, handleAgentTool } from "./agent-tools.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -495,70 +495,7 @@ export const TOOLS = [
       required: ["plan_id"],
     },
   },
-  {
-    name: "query_context",
-    description:
-      "Search the project knowledge base. Call after claim_task to check existing decisions, constraints, patterns, and learnings before planning. Returns active entries matching your filters.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Filter by project" },
-        task_id: { type: "string", description: "Filter by task" },
-        type: {
-          type: "string",
-          description: "Filter by type: plan, decision, constraint, preference, pattern, learning, principle",
-        },
-        search: { type: "string", description: "Full-text search across title and body" },
-        tags: { type: "array", items: { type: "string" }, description: "Filter by tags" },
-        limit: { type: "number", description: "Max results (default 20)" },
-      },
-    },
-  },
-  {
-    name: "add_context",
-    description:
-      "Write to the project knowledge base during execution. Record decisions, constraints, preferences, patterns, or principles discovered during work so future tasks benefit.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        type: {
-          type: "string",
-          description: "decision, constraint, preference, pattern, learning, or principle",
-        },
-        title: { type: "string", description: "Short descriptive title" },
-        body: { type: "string", description: "Full context content" },
-        project_id: { type: "string", description: "Scope to project (recommended)" },
-        task_id: { type: "string", description: "Scope to task (optional)" },
-        tags: { type: "array", items: { type: "string" }, description: "Tags for discovery" },
-        confidence: { type: "number", description: "0-1 confidence score (default 1.0)" },
-        supersedes: { type: "string", description: "UUID of context entry this replaces" },
-      },
-      required: ["type", "title", "body"],
-    },
-  },
-  {
-    name: "record_learning",
-    description:
-      "Capture a learning from completed work. Call this before complete_task. Use promote=true to make it visible to all future tasks across the project.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID the learning came from" },
-        title: { type: "string", description: "What was learned" },
-        body: { type: "string", description: "Details of the learning" },
-        learning_type: {
-          type: "string",
-          description: "outcome, pattern, mistake, optimization, or decision_record",
-        },
-        tags: { type: "array", items: { type: "string" }, description: "Tags for discovery" },
-        promote: {
-          type: "boolean",
-          description: "If true, also creates a project-level copy visible to all future tasks",
-        },
-      },
-      required: ["task_id", "title", "body"],
-    },
-  },
+  // query_context, add_context, record_learning → consolidated into save/recall
   // ─── Context Extraction Tools ──────────────────────────────────────────────
   {
     name: "process_transcript",
@@ -692,44 +629,60 @@ export const TOOLS = [
     },
   },
   {
-    name: "remember",
+    name: "save",
     description:
-      "Save context that persists across sessions — preferences, decisions, patterns, or any information the agent should recall later. Stored in Supabase (with local fallback).",
+      "Save context that persists across sessions. Use tags to categorize (e.g. 'decision', 'pattern', 'preference'). Embedding is auto-generated for semantic recall.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        type: {
-          type: "string",
-          enum: ["preference", "decision", "pattern", "insight", "style"],
-          description: "Type of context block to save",
-        },
         title: {
           type: "string",
-          description: "Short title for this context block",
+          description: "Short title",
         },
         content: {
           type: "string",
           description: "The content to remember",
         },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "Freeform tags (e.g. ['decision', 'auth', 'pattern'])",
+        },
+        project_id: {
+          type: "string",
+          description: "Optional project scope",
+        },
+        task_id: {
+          type: "string",
+          description: "Optional task association",
+        },
+        confidence: {
+          type: "number",
+          description: "Confidence 0-1 (default 1.0)",
+        },
       },
-      required: ["type", "title", "content"],
+      required: ["title", "content"],
     },
   },
   {
     name: "recall",
     description:
-      "Retrieve previously saved context blocks. Search by type or keyword to find relevant memories. Returns context saved via the remember tool.",
+      "Search saved memories using semantic similarity. Returns most relevant results ranked by meaning, not just keywords.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        type: {
-          type: "string",
-          enum: ["preference", "decision", "pattern", "insight", "style"],
-          description: "Filter by context type",
-        },
         search: {
           type: "string",
-          description: "Search keyword to filter results",
+          description: "Natural language search query",
+        },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "Filter by tags",
+        },
+        project_id: {
+          type: "string",
+          description: "Filter by project",
         },
         limit: {
           type: "number",
@@ -842,82 +795,7 @@ export const TOOLS = [
       },
     },
   },
-  // ── Local Learnings ──────────────────────────────────────────────
-  {
-    name: "log_learning",
-    description:
-      "Record a learning or insight for future sessions. Learnings persist locally across conversations and optionally across projects. " +
-      "Uses confidence decay — observed/inferred learnings fade over time, user-stated ones don't.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        type: {
-          type: "string",
-          enum: ["pattern", "pitfall", "preference", "architecture", "tool", "operational"],
-          description: "Category of learning",
-        },
-        key: {
-          type: "string",
-          description: "Short identifier for dedup (e.g. 'supabase-rls-gotcha')",
-        },
-        insight: {
-          type: "string",
-          description: "The actual learning",
-        },
-        confidence: {
-          type: "number",
-          description: "Confidence level 1-10",
-        },
-        source: {
-          type: "string",
-          enum: ["observed", "user-stated", "inferred"],
-          description: "How this learning was obtained",
-        },
-        skill: {
-          type: "string",
-          description: "Which skill pack or context generated this (e.g. 'planning', 'social-listening')",
-        },
-        project: {
-          type: "string",
-          description: "Project name for cross-project filtering",
-        },
-        files: {
-          type: "array",
-          items: { type: "string" },
-          description: "Relevant file paths",
-        },
-      },
-      required: ["type", "key", "insight", "confidence", "source"],
-    },
-  },
-  {
-    name: "search_learnings",
-    description:
-      "Search past learnings by keyword. Returns learnings with confidence-decayed scores, sorted by relevance. " +
-      "Use cross_project=true to search across all projects (requires cross_project_learnings preference enabled).",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        query: {
-          type: "string",
-          description: "Search keyword",
-        },
-        cross_project: {
-          type: "boolean",
-          description: "Search across all projects (default: false, requires preference enabled)",
-        },
-        project: {
-          type: "string",
-          description: "Current project name for scoping (defaults to cwd basename)",
-        },
-        limit: {
-          type: "number",
-          description: "Max results (default 10)",
-        },
-      },
-      required: ["query"],
-    },
-  },
+  // log_learning, search_learnings → consolidated into save/recall
   ...AGENT_TOOLS,
 ];
 
@@ -1713,188 +1591,7 @@ export async function handleTool(
       return json({ plan_id: updated!.id, version: updated!.version, status: updated!.status });
     }
 
-    case "query_context": {
-      let query = sb
-        .from("planning_context")
-        .select("id, type, title, body, tags, metadata, status, confidence, source, source_agent, task_id, project_id, created_at, updated_at")
-        .eq("user_id", userId)
-        .in("status", ["active", "approved", "executing"]);
-
-      if (args.project_id) query = query.eq("project_id", args.project_id as string);
-      if (args.task_id) query = query.eq("task_id", args.task_id as string);
-      if (args.type) query = query.eq("type", args.type as string);
-      if (args.tags && (args.tags as string[]).length > 0) {
-        query = query.contains("tags", args.tags as string[]);
-      }
-      if (args.search) {
-        query = query.textSearch("title", args.search as string, { type: "websearch" });
-      }
-
-      query = query
-        .order("updated_at", { ascending: false })
-        .limit((args.limit as number) || 20);
-
-      const { data, error } = await query;
-      if (error) throw new Error(error.message);
-
-      return json({ entries: data || [], count: (data || []).length });
-    }
-
-    case "add_context": {
-      const contextType = args.type as string;
-      const validTypes = ["decision", "constraint", "preference", "pattern", "learning", "principle"];
-      if (!validTypes.includes(contextType)) {
-        throw new Error(`Invalid type: ${contextType}. Must be one of: ${validTypes.join(", ")}`);
-      }
-
-      // Handle supersession
-      if (args.supersedes) {
-        await sb
-          .from("planning_context")
-          .update({ status: "superseded", superseded_by: null })
-          .eq("id", args.supersedes as string);
-      }
-
-      const { data: entry, error: insertErr } = await sb
-        .from("planning_context")
-        .insert({
-          user_id: userId,
-          project_id: (args.project_id as string) || null,
-          task_id: (args.task_id as string) || null,
-          type: contextType,
-          title: args.title as string,
-          body: args.body as string,
-          tags: (args.tags as string[]) || [],
-          status: "active",
-          source: "agent",
-          source_agent: detectExecutor(),
-          confidence: (args.confidence as number) ?? 1.0,
-        })
-        .select("id, status")
-        .single();
-      if (insertErr) throw new Error(insertErr.message);
-
-      // Link supersession
-      if (args.supersedes) {
-        await sb
-          .from("planning_context")
-          .update({ superseded_by: entry!.id })
-          .eq("id", args.supersedes as string);
-      }
-
-      // Mirror knowledge types to project_insights for project board visibility
-      const knowledgeTypes = ["decision", "pattern", "preference", "learning", "principle"];
-      const resolvedProjectId = (args.project_id as string) || null;
-      if (knowledgeTypes.includes(contextType) && resolvedProjectId) {
-        try {
-          await sb.from("project_insights").insert({
-            project_id: resolvedProjectId,
-            user_id: userId,
-            title: args.title as string,
-            content: args.body as string,
-            source: "mcp_add_context",
-            source_agent: detectExecutor(),
-            category: contextType,
-          });
-        } catch {
-          // Non-blocking — planning_context is the primary store
-        }
-      }
-
-      return json({ context_id: entry!.id, status: entry!.status });
-    }
-
-    case "record_learning": {
-      const taskId = args.task_id as string;
-      const promote = !!args.promote;
-
-      // Look up project_id from the task's board
-      let projectId: string | null = null;
-      try {
-        const { data: card } = await sb
-          .from("kanban_cards")
-          .select("board_id")
-          .eq("id", taskId)
-          .single();
-        if (card) {
-          const { data: board } = await sb
-            .from("kanban_boards")
-            .select("project_id")
-            .eq("id", card.board_id)
-            .single();
-          if (board?.project_id) projectId = board.project_id;
-        }
-      } catch {
-        // Non-blocking
-      }
-
-      const metadata: Record<string, unknown> = {};
-      if (args.learning_type) metadata.learning_type = args.learning_type;
-      metadata.source_task_id = taskId;
-
-      // Task-scoped learning
-      const { data: learning, error: learnErr } = await sb
-        .from("planning_context")
-        .insert({
-          user_id: userId,
-          project_id: projectId,
-          task_id: taskId,
-          type: "learning",
-          title: args.title as string,
-          body: args.body as string,
-          tags: (args.tags as string[]) || [],
-          metadata,
-          status: "active",
-          source: "agent",
-          source_agent: detectExecutor(),
-        })
-        .select("id")
-        .single();
-      if (learnErr) throw new Error(learnErr.message);
-
-      // Mirror to project_insights for project board visibility
-      if (projectId) {
-        try {
-          await sb.from("project_insights").insert({
-            project_id: projectId,
-            user_id: userId,
-            title: args.title as string,
-            content: args.body as string,
-            source: "mcp_learning",
-            source_agent: detectExecutor(),
-            category: "learning",
-          });
-        } catch {
-          // Non-blocking
-        }
-      }
-
-      let promotedId: string | null = null;
-
-      if (promote && projectId) {
-        const promoteMeta = { ...metadata, promoted: true, source_learning_id: learning!.id };
-        const { data: promoted } = await sb
-          .from("planning_context")
-          .insert({
-            user_id: userId,
-            project_id: projectId,
-            task_id: null,
-            type: "learning",
-            title: args.title as string,
-            body: args.body as string,
-            tags: (args.tags as string[]) || [],
-            metadata: promoteMeta,
-            status: "active",
-            source: "agent",
-            source_agent: detectExecutor(),
-          })
-          .select("id")
-          .single();
-        if (promoted) promotedId = promoted.id;
-      }
-
-      return json({ learning_id: learning!.id, promoted_id: promotedId });
-    }
+    // query_context, add_context, record_learning → removed (consolidated into save/recall)
 
     // ─── Context Extraction Tools ────────────────────────────────────────────
     case "process_transcript": {
@@ -2093,76 +1790,167 @@ export async function handleTool(
       });
     }
 
-    case "remember": {
-      const type = args.type as string;
+    case "save": {
       const title = args.title as string;
       const content = args.content as string;
 
-      if (!type || !title || !content) {
-        return json({ error: "Missing required parameters: type, title, content" });
+      if (!title || !content) {
+        return json({ error: "Missing required parameters: title, content" });
       }
 
-      // Write to Supabase context_blocks (primary), local JSON as fallback
+      const tags = (args.tags as string[]) || [];
+      const projectId = (args.project_id as string) || null;
+      const taskId = (args.task_id as string) || null;
+      const confidence = (args.confidence as number) ?? 1.0;
+      const sourceAgent = detectExecutor();
+
+      // Primary: write to Supabase memories table
       let savedToSupabase = false;
+      let memoryId: string | null = null;
       try {
-        const { error: sbErr } = await sb.from("context_blocks").insert({
-          user_id: userId,
-          type,
-          title,
-          content,
-          source_filename: "mcp_remember",
-          status: "approved",
-          project_id: (args.project_id as string) || null,
-        });
+        const { data: row, error: sbErr } = await sb
+          .from("memories")
+          .insert({
+            user_id: userId,
+            project_id: projectId,
+            task_id: taskId,
+            title,
+            content,
+            tags,
+            source: "agent",
+            source_agent: sourceAgent,
+            confidence,
+          })
+          .select("id")
+          .single();
         if (sbErr) throw sbErr;
         savedToSupabase = true;
+        memoryId = row!.id;
+
+        // Fire-and-forget: generate embedding via agent backend
+        const AGENT_BASE = process.env.CROWDLISTEN_AGENT_URL || "https://agent.crowdlisten.com";
+        fetch(`${AGENT_BASE}/agent/v1/content/embed`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: `${title}\n${content}` }),
+        })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data?.embedding && memoryId) {
+              sb.from("memories")
+                .update({ embedding: data.embedding })
+                .eq("id", memoryId)
+                .then(() => {});
+            }
+          })
+          .catch(() => {
+            // Non-blocking — row exists without embedding, keyword fallback on recall
+          });
+
+        // Side effect: dual-write to project_insights for frontend visibility
+        const knowledgeTags = ["decision", "pattern", "preference", "learning", "principle"];
+        if (projectId && tags.some(t => knowledgeTags.includes(t))) {
+          try {
+            await sb.from("project_insights").insert({
+              project_id: projectId,
+              user_id: userId,
+              title,
+              content,
+              source: "mcp_save",
+              source_agent: sourceAgent,
+              category: tags.find(t => knowledgeTags.includes(t)) || "insight",
+            });
+          } catch {
+            // Non-blocking
+          }
+        }
       } catch (err: any) {
-        // Log the error so Supabase failures aren't invisible
-        console.error(`[remember] Supabase write failed: ${err?.message || err}`);
+        console.error(`[save] Supabase write failed: ${err?.message || err}`);
         // Fallback to local store
         const block: ContextBlock = {
-          type: type as ContextBlock["type"],
+          type: (tags[0] || "insight") as ContextBlock["type"],
           title,
           content,
-          source: "remember",
+          source: "save",
         };
-        addBlocks([block], "remember");
+        addBlocks([block], "save");
       }
 
-      return json({ saved: true, title, type, supabase: savedToSupabase });
+      return json({ saved: true, id: memoryId, title, tags, supabase: savedToSupabase });
     }
 
     case "recall": {
-      const type = args.type as string | undefined;
       const search = args.search as string | undefined;
+      const tags = args.tags as string[] | undefined;
+      const projectId = args.project_id as string | undefined;
       const limit = (args.limit as number) || 20;
 
-      // Read from Supabase context_blocks (primary), local JSON as fallback
       try {
-        let query = sb
-          .from("context_blocks")
-          .select("*")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(limit);
+        // Try semantic search first via agent embedding endpoint
+        const AGENT_BASE = process.env.CROWDLISTEN_AGENT_URL || "https://agent.crowdlisten.com";
+        let usedSemantic = false;
 
-        if (type) query = query.eq("type", type);
-        if (args.project_id) query = query.eq("project_id", args.project_id as string);
-        if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+        if (search) {
+          try {
+            const embedRes = await fetch(`${AGENT_BASE}/agent/v1/content/embed`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: search }),
+            });
 
-        const { data, error: sbErr } = await query;
-        if (sbErr) throw sbErr;
+            if (embedRes.ok) {
+              const embedData = await embedRes.json() as { embedding?: number[] };
+              if (embedData.embedding) {
+                // Use RPC for semantic search
+                const rpcArgs: Record<string, unknown> = {
+                  p_user_id: userId,
+                  p_query_embedding: embedData.embedding,
+                  p_match_count: limit,
+                };
+                if (projectId) rpcArgs.p_project_id = projectId;
+                if (tags && tags.length > 0) rpcArgs.p_tags = tags;
 
-        return json({
-          blocks: data || [],
-          count: (data || []).length,
-          filters: { type: type || "all", search: search || null },
-          source: "supabase",
-        });
+                const { data, error: rpcErr } = await sb.rpc("search_memories", rpcArgs);
+                if (!rpcErr && data && (data as unknown[]).length > 0) {
+                  usedSemantic = true;
+                  return json({
+                    memories: data,
+                    count: (data as unknown[]).length,
+                    search_mode: "semantic",
+                  });
+                }
+              }
+            }
+          } catch {
+            // Embedding API unavailable — fall through to keyword search
+          }
+        }
+
+        // Keyword fallback: ILIKE on title/content
+        if (!usedSemantic) {
+          let query = sb
+            .from("memories")
+            .select("id, title, content, tags, source, source_agent, task_id, project_id, confidence, metadata, created_at")
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false })
+            .limit(limit);
+
+          if (projectId) query = query.eq("project_id", projectId);
+          if (tags && tags.length > 0) query = query.overlaps("tags", tags);
+          if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+
+          const { data, error: sbErr } = await query;
+          if (sbErr) throw sbErr;
+
+          return json({
+            memories: data || [],
+            count: (data || []).length,
+            search_mode: "keyword",
+          });
+        }
       } catch {
         // Fallback to local store
         let blocks = getBlocks();
-        if (type) blocks = blocks.filter(b => b.type === type);
         if (search) {
           const lower = search.toLowerCase();
           blocks = blocks.filter(
@@ -2173,12 +1961,14 @@ export async function handleTool(
         }
         blocks = blocks.slice(-limit);
         return json({
-          blocks,
+          memories: blocks,
           count: blocks.length,
-          filters: { type: type || "all", search: search || null },
-          source: "local",
+          search_mode: "local",
         });
       }
+
+      // Should not reach here, but return empty just in case
+      return json({ memories: [], count: 0, search_mode: "none" });
     }
 
     // ── Spec Delivery ────────────────────────────────────────────────
@@ -2419,73 +2209,7 @@ export async function handleTool(
       });
     }
 
-    // ── Local Learnings ──────────────────────────────────────────────
-    case "log_learning": {
-      const type = args.type as string;
-      const key = args.key as string;
-      const insight = args.insight as string;
-      const confidence = args.confidence as number;
-      const source = args.source as string;
-
-      if (!type || !key || !insight || confidence == null || !source) {
-        return json({ error: "Missing required parameters: type, key, insight, confidence, source" });
-      }
-
-      if (confidence < 1 || confidence > 10) {
-        return json({ error: "Confidence must be between 1 and 10" });
-      }
-
-      const learning = logLearning({
-        type: type as any,
-        key,
-        insight,
-        confidence,
-        source: source as any,
-        skill: (args.skill as string) || "unknown",
-        project: (args.project as string) || path.basename(process.cwd()),
-        files: args.files as string[] | undefined,
-      });
-
-      return json({
-        logged: true,
-        id: learning.id,
-        key: learning.key,
-        type: learning.type,
-        confidence: learning.confidence,
-        source: learning.source,
-        project: learning.project,
-      });
-    }
-
-    case "search_learnings": {
-      const query = args.query as string;
-      if (!query) return json({ error: "Missing required parameter: query" });
-
-      const crossProject = !!args.cross_project;
-      const state = loadUserState();
-
-      // Gate cross-project search behind preference
-      if (crossProject && !state.preferences.crossProjectLearnings) {
-        return json({
-          error: "Cross-project learnings are disabled. Enable with: set_preferences({ cross_project_learnings: true })",
-        });
-      }
-
-      const results = searchLearnings(query, {
-        crossProject,
-        currentProject: (args.project as string) || path.basename(process.cwd()),
-        limit: (args.limit as number) || 10,
-      });
-
-      return json({
-        results,
-        count: results.length,
-        crossProject,
-        hint: results.length === 0
-          ? "No learnings found. Use log_learning to record insights for future sessions."
-          : undefined,
-      });
-    }
+    // log_learning, search_learnings → removed (consolidated into save/recall)
 
     default: {
       // Delegate to agent-proxied tools

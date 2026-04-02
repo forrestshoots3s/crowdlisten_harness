@@ -60,12 +60,12 @@ const packs: Map<string, SkillPack> = new Map();
  * Built-in skill packs grouping tools into logical units.
  */
 export function initializeRegistry(skillsDir: string): void {
-  // Core — always on (4 tools)
+  // Core — always on (5 tools)
   packs.set("core", {
     id: "core",
     name: "Core",
-    description: "Discovery + memory — list skill packs, activate packs, remember and recall context",
-    toolNames: ["list_skill_packs", "activate_skill_pack", "remember", "recall", "set_preferences"],
+    description: "Discovery + memory — list skill packs, activate packs, save and recall context with semantic search",
+    toolNames: ["list_skill_packs", "activate_skill_pack", "save", "recall", "set_preferences"],
   });
 
   // Planning — task management
@@ -80,13 +80,7 @@ export function initializeRegistry(skillsDir: string): void {
     ],
   });
 
-  // Knowledge
-  packs.set("knowledge", {
-    id: "knowledge",
-    name: "Knowledge Base",
-    description: "Project knowledge management — query decisions, add context, record learnings",
-    toolNames: ["query_context", "add_context", "record_learning", "log_learning", "search_learnings"],
-  });
+  // Knowledge pack removed — consolidated into core save/recall
 
   // Social listening — free tools
   packs.set("social-listening", {
