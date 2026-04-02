@@ -153,6 +153,11 @@ export function getAgentConfigs(): AgentConfig[] {
       configPath: path.join(home, ".openclaw", "openclaw.json"),
       mcpKey: "mcpServers",
     },
+    {
+      name: "Amp",
+      configPath: path.join(home, ".config", "amp", "settings.json"),
+      mcpKey: "amp.mcpServers",
+    },
   ];
 }
 

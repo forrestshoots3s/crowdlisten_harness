@@ -51,7 +51,6 @@ interface UserStateV1 {
 // All tool packs (excluding core which is always on, and legacy which is hidden)
 const ALL_PACKS = [
   "planning",
-  "knowledge",
   "social-listening",
   "audience-analysis",
   "sessions",

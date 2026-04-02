@@ -13,11 +13,12 @@ describe("getAgentConfigs", () => {
     expect(names).toContain("Gemini CLI");
     expect(names).toContain("Codex");
     expect(names).toContain("OpenClaw");
+    expect(names).toContain("Amp");
   });
 
-  it("returns exactly 5 agent configurations", () => {
+  it("returns exactly 6 agent configurations", () => {
     const configs = getAgentConfigs();
-    expect(configs).toHaveLength(5);
+    expect(configs).toHaveLength(6);
   });
 
   it("each config has name, configPath, and mcpKey", () => {
@@ -40,6 +41,13 @@ describe("getAgentConfigs", () => {
     const configs = getAgentConfigs();
     const codex = configs.find((c) => c.name === "Codex")!;
     expect(codex.mcpKey).toBe("mcp_servers");
+  });
+
+  it("Amp uses nested amp.mcpServers key", () => {
+    const configs = getAgentConfigs();
+    const amp = configs.find((c) => c.name === "Amp")!;
+    expect(amp.configPath).toBe(path.join(os.homedir(), ".config", "amp", "settings.json"));
+    expect(amp.mcpKey).toBe("amp.mcpServers");
   });
 });
 
