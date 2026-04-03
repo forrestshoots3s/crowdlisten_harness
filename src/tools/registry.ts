@@ -184,17 +184,6 @@ export function initializeRegistry(skillsDir: string): void {
     toolNames: ["register_agent", "get_capabilities", "submit_analysis"],
   });
 
-  // Legacy — context extraction tools (hidden by default for existing users, replaced by remember/recall)
-  packs.set("legacy", {
-    id: "legacy",
-    name: "Legacy Context Extraction",
-    description: "Previous-gen context tools — process transcripts, discover skills, install skills. Replaced by remember/recall and list_skill_packs.",
-    toolNames: [
-      "process_transcript", "get_context_blocks", "recommend_skills",
-      "discover_skills", "search_skills", "install_skill",
-    ],
-  });
-
   // ── Virtual SKILL.md Packs ────────────────────────────────────────────
   // Each native skill directory becomes a virtual pack
   if (fs.existsSync(skillsDir)) {
