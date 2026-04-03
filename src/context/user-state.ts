@@ -27,8 +27,6 @@ export interface UserState {
   activePacks: string[];
   contextBlockCount: number;
   preferences: {
-    maxActivePacks: number;
-    autoActivate: string[];
     telemetry: TelemetryLevel;
     proactiveSuggestions: boolean;
     crossProjectLearnings: boolean;
@@ -43,8 +41,8 @@ interface UserStateV1 {
   activePacks: string[];
   contextBlockCount: number;
   preferences: {
-    maxActivePacks: number;
-    autoActivate: string[];
+    maxActivePacks?: number;
+    autoActivate?: string[];
   };
 }
 
@@ -63,8 +61,6 @@ function defaultNewUserState(): UserState {
     activePacks: [],
     contextBlockCount: 0,
     preferences: {
-      maxActivePacks: 10,
-      autoActivate: [],
       telemetry: "off",
       proactiveSuggestions: true,
       crossProjectLearnings: false,
@@ -77,11 +73,9 @@ function defaultNewUserState(): UserState {
 function defaultExistingUserState(): UserState {
   return {
     version: 2,
-    activePacks: [...ALL_PACKS, "legacy"],
+    activePacks: [...ALL_PACKS],
     contextBlockCount: 0,
     preferences: {
-      maxActivePacks: 10,
-      autoActivate: [...ALL_PACKS],
       telemetry: "off",
       proactiveSuggestions: true,
       crossProjectLearnings: false,
@@ -100,7 +94,6 @@ function migrateV1toV2(v1: UserStateV1): UserState {
     activePacks: v1.activePacks,
     contextBlockCount: v1.contextBlockCount,
     preferences: {
-      ...v1.preferences,
       telemetry: "off",
       proactiveSuggestions: true,
       crossProjectLearnings: false,
