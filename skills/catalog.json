@@ -2,7 +2,7 @@
   {
     "id": "competitive-analysis",
     "name": "crowdlisten:competitive-analysis",
-    "description": "Competitive intelligence through audience perception analysis. Use when comparing brands, products, or competitors in social conversations. Requires CROWDLISTEN_API_KEY.",
+    "description": "Competitive intelligence through audience perception analysis. Use when comparing brands, products, or competitors in social conversations.",
     "keywords": [
       "competitive",
       "intelligence",
@@ -65,7 +65,7 @@
   {
     "id": "content-strategy",
     "name": "crowdlisten:content-strategy",
-    "description": "Data-driven content strategy grounded in audience demand. Topic demand analysis, content gaps, platform optimization, voice matching, campaign tracking. Requires CROWDLISTEN_API_KEY.",
+    "description": "Data-driven content strategy grounded in audience demand. Topic demand analysis, content gaps, platform optimization, voice matching, campaign tracking.",
     "keywords": [
       "data-driven",
       "content",
@@ -143,7 +143,7 @@
   {
     "id": "heuristic-evaluation",
     "name": "crowdlisten:heuristic-evaluation",
-    "description": "Customer feedback analysis from social conversations. Journey friction detection, pain point mapping, persona generation, churn risk signals. Requires CROWDLISTEN_API_KEY.",
+    "description": "Customer feedback analysis from social conversations. Journey friction detection, pain point mapping, persona generation, churn risk signals.",
     "keywords": [
       "customer",
       "feedback",
@@ -212,7 +212,7 @@
   {
     "id": "user-stories",
     "name": "crowdlisten:user-stories",
-    "description": "Turn social listening data into product decisions. JTBD extraction, feature demand scoring, persona generation, user story generation from real audience data. Requires CROWDLISTEN_API_KEY.",
+    "description": "Turn social listening data into product decisions. JTBD extraction, feature demand scoring, persona generation, user story generation from real audience data.",
     "keywords": [
       "turn",
       "social",

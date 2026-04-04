@@ -1,13 +1,13 @@
 ---
 name: crowdlisten:content-strategy
-description: Data-driven content strategy grounded in audience demand. Topic demand analysis, content gaps, platform optimization, voice matching, campaign tracking. Requires CROWDLISTEN_API_KEY.
+description: Data-driven content strategy grounded in audience demand. Topic demand analysis, content gaps, platform optimization, voice matching, campaign tracking.
 user-invocable: true
 allowed-tools: Bash, Read, Write, WebFetch, Grep
 metadata:
   openclaw:
     category: content
     tags: [content-strategy, demand-analysis, platform-optimization]
-    requires_api_key: true
+    requires_api_key: false
 ---
 
 # Content Strategy

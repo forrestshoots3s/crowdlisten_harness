@@ -11,15 +11,15 @@ const AGENT_BASE =
 // ─── Auth ──────────────────────────────────────────────────────────────────
 
 /**
- * Returns the CROWDLISTEN_API_KEY or throws.
- * Tools that require auth call this; free tools skip it.
+ * Returns the CROWDLISTEN_API_KEY or throws with a sign-in prompt.
+ * Login is free — `npx @crowdlisten/harness login` sets this up automatically.
  */
 export function requireApiKey(): string {
   const key = process.env.CROWDLISTEN_API_KEY;
   if (!key) {
     throw new Error(
-      "CROWDLISTEN_API_KEY is required for this tool. " +
-        "Get one at https://crowdlisten.com/settings/api-keys"
+      "Sign in to use this tool: npx @crowdlisten/harness login\n" +
+        "Login is free and auto-configures your agent."
     );
   }
   return key;

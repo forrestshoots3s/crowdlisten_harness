@@ -1,12 +1,8 @@
 /**
  * Agent-Proxied Tools — Tools that proxy to agent.crowdlisten.com
  *
- * 6 skill packs, 18 tools. Each tool calls the agent backend via
+ * 4 skill packs, 11 tools. Each tool calls the agent backend via
  * the shared agent-proxy helpers.
- *
- * Free vs Paid:
- *   - Free: llm (2 tools), agent-network (2 tools) — no API key needed
- *   - Paid: analysis (5), content (4), generation (2), crowd-intelligence (2) — require CROWDLISTEN_API_KEY
  */
 
 import {
@@ -24,7 +20,7 @@ export const AGENT_TOOLS = [
   {
     name: "run_analysis",
     description:
-      "[Analysis] Run an audience analysis on a project. Streams results via SSE — returns the final analysis with themes, sentiment, insights, and recommendations. Requires CROWDLISTEN_API_KEY.",
+      "[Analysis] Run an audience analysis on a project. Streams results via SSE — returns the final analysis with themes, sentiment, insights, and recommendations.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -51,7 +47,7 @@ export const AGENT_TOOLS = [
   {
     name: "continue_analysis",
     description:
-      "[Analysis] Continue a previous analysis with a follow-up question. Builds on existing context. Requires CROWDLISTEN_API_KEY.",
+      "[Analysis] Continue a previous analysis with a follow-up question. Builds on existing context.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -64,7 +60,7 @@ export const AGENT_TOOLS = [
   {
     name: "get_analysis",
     description:
-      "[Analysis] Get the full results of a completed analysis including themes, sentiment breakdown, and source quotes. Requires CROWDLISTEN_API_KEY.",
+      "[Analysis] Get the full results of a completed analysis including themes, sentiment breakdown, and source quotes.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -76,7 +72,7 @@ export const AGENT_TOOLS = [
   {
     name: "list_analyses",
     description:
-      "[Analysis] List analyses for a project, newest first. Requires CROWDLISTEN_API_KEY.",
+      "[Analysis] List analyses for a project, newest first.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -89,7 +85,7 @@ export const AGENT_TOOLS = [
   {
     name: "generate_specs",
     description:
-      "[Analysis] Generate product specifications from analysis results — feature requests, user stories, and acceptance criteria extracted from audience signal. Requires CROWDLISTEN_API_KEY.",
+      "[Analysis] Generate product specifications from analysis results — feature requests, user stories, and acceptance criteria extracted from audience signal.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -107,165 +103,11 @@ export const AGENT_TOOLS = [
     },
   },
 
-  // ── Content Pack (4 tools) ─────────────────────────────────────────────
-  {
-    name: "ingest_content",
-    description:
-      "[Content] Ingest content into the vector store for semantic search. Accepts raw text, URLs, or structured content. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        content: { type: "string", description: "Text content to ingest" },
-        source_url: { type: "string", description: "Optional: source URL" },
-        title: { type: "string", description: "Optional: content title" },
-        metadata: {
-          type: "object",
-          description: "Optional: key-value metadata",
-        },
-      },
-      required: ["project_id", "content"],
-    },
-  },
-  {
-    name: "search_vectors",
-    description:
-      "[Content] Semantic search across ingested content using vector embeddings. Returns ranked results with relevance scores. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        query: { type: "string", description: "Search query" },
-        limit: { type: "number", description: "Max results (default 10)" },
-        threshold: {
-          type: "number",
-          description: "Minimum similarity score 0-1 (default 0.5)",
-        },
-      },
-      required: ["project_id", "query"],
-    },
-  },
-  {
-    name: "get_content_stats",
-    description:
-      "[Content] Get statistics about ingested content — document count, total chunks, storage usage. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-      },
-      required: ["project_id"],
-    },
-  },
-  {
-    name: "delete_content",
-    description:
-      "[Content] Delete a specific content document and its vector embeddings. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        content_id: { type: "string", description: "Content document UUID" },
-      },
-      required: ["content_id"],
-    },
-  },
-
-  // ── Generation Pack (2 tools) ──────────────────────────────────────────
-  {
-    name: "generate_prd",
-    description:
-      "[Generation] Generate a Product Requirements Document from analysis results. Streams the PRD as it's generated. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        analysis_ids: {
-          type: "array",
-          items: { type: "string" },
-          description: "Analysis UUIDs to base the PRD on",
-        },
-        template: {
-          type: "string",
-          description:
-            "PRD template: standard, lean, technical, marketing. Default: standard.",
-        },
-        sections: {
-          type: "array",
-          items: { type: "string" },
-          description:
-            "Specific sections to generate (default: all). Options: overview, problem, solution, requirements, metrics, timeline",
-        },
-      },
-      required: ["project_id"],
-    },
-  },
-  {
-    name: "update_prd_section",
-    description:
-      "[Generation] Update a specific section of an existing PRD with new content or instructions. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        document_id: { type: "string", description: "PRD document UUID" },
-        section: {
-          type: "string",
-          description: "Section to update: overview, problem, solution, requirements, metrics, timeline",
-        },
-        instructions: {
-          type: "string",
-          description: "Instructions for how to update the section",
-        },
-        content: {
-          type: "string",
-          description: "Optional: replacement content (overrides instructions-based generation)",
-        },
-      },
-      required: ["document_id", "section"],
-    },
-  },
-
-  // ── LLM Pack (2 tools) — FREE ─────────────────────────────────────────
-  {
-    name: "llm_complete",
-    description:
-      "[LLM] Send a completion request through CrowdListen's LLM proxy. Free tier — no API key required. Supports multiple models.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        prompt: { type: "string", description: "The prompt to complete" },
-        model: {
-          type: "string",
-          description:
-            "Model to use (default: gpt-4o-mini). Call list_llm_models for available options.",
-        },
-        max_tokens: {
-          type: "number",
-          description: "Max tokens in response (default 1000)",
-        },
-        temperature: {
-          type: "number",
-          description: "Temperature 0-2 (default 0.7)",
-        },
-        system: {
-          type: "string",
-          description: "Optional system prompt",
-        },
-      },
-      required: ["prompt"],
-    },
-  },
-  {
-    name: "list_llm_models",
-    description:
-      "[LLM] List available LLM models and their capabilities. Free — no API key required.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-
-  // ── Crowd Intelligence Pack (2 tools) — Paid ──────────────────────────
+  // ── Crowd Intelligence Pack (2 tools) ──────────────────────────────────
   {
     name: "crowd_research",
     description:
-      "[Crowd Intelligence] Research what the crowd is saying about a topic. Searches social platforms, clusters opinions, and synthesizes structured intelligence enriched with your business context. Returns a job_id — poll with crowd_research_status. Requires CROWDLISTEN_API_KEY.",
+      "[Crowd Intelligence] Research what the crowd is saying about a topic. Searches social platforms, clusters opinions, and synthesizes structured intelligence enriched with your business context. Returns a job_id — poll with crowd_research_status.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -314,11 +156,11 @@ export const AGENT_TOOLS = [
     },
   },
 
-  // ── Agent Network Pack (3 tools) — Mixed auth ─────────────────────────
+  // ── Agent Network Pack (2 tools) ───────────────────────────────────────
   {
     name: "register_agent",
     description:
-      "[Agent Network] Register this agent in the CrowdListen agent network. Free — no API key required. Returns agent_id for future interactions.",
+      "[Agent Network] Register this agent in the CrowdListen agent network. Returns agent_id for future interactions.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -341,64 +183,53 @@ export const AGENT_TOOLS = [
   {
     name: "get_capabilities",
     description:
-      "[Agent Network] List capabilities of agents in the network. Free — no API key required.",
+      "[Agent Network] List capabilities of agents in the network.",
     inputSchema: { type: "object" as const, properties: {} },
   },
+
+  // ── Task Execution (2 tools) ──────────────────────────────────────────
   {
-    name: "submit_analysis",
+    name: "execute_task",
     description:
-      "[Agent Network] Submit an analysis result from this agent to the network for cross-agent synthesis. Requires CROWDLISTEN_API_KEY.",
+      "[Execution] Trigger server-side AI agent execution for a task. The agent runs on the CrowdListen backend using the specified executor (AMP, Claude Code, Codex, Gemini). Returns a process_id to poll with get_execution_status.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        agent_id: { type: "string", description: "Your agent_id from register_agent" },
-        analysis_id: { type: "string", description: "Analysis UUID to share" },
-        summary: { type: "string", description: "Brief summary of findings" },
+        session_id: { type: "string", description: "Session UUID (from claim_task or start_session)" },
+        prompt: { type: "string", description: "Prompt/instructions for the AI agent to execute" },
+        executor: {
+          type: "string",
+          enum: ["CLAUDE_CODE", "CODEX", "GEMINI_CLI", "AMP"],
+          description: "AI agent executor to use (default: AMP)",
+        },
+        cwd: { type: "string", description: "Working directory for execution (optional)" },
+        auto_approve: {
+          type: "boolean",
+          description: "Auto-approve tool calls without human confirmation (default: false)",
+        },
+        allowed_tools: {
+          type: "array",
+          items: { type: "string" },
+          description: "Restrict which tools the agent can use (optional)",
+        },
+        context: { type: "string", description: "Additional context to prepend to the prompt (optional)" },
       },
-      required: ["agent_id", "analysis_id", "summary"],
+      required: ["session_id", "prompt"],
+    },
+  },
+  {
+    name: "get_execution_status",
+    description:
+      "[Execution] Get the status and recent logs of a server-side AI agent execution. Returns process status (running/completed/failed/killed) and the last 50 log entries.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        process_id: { type: "string", description: "Process UUID from execute_task" },
+      },
+      required: ["process_id"],
     },
   },
 
-  // ── Insight Pipeline (3 tools) ────────────────────────────────────────
-  {
-    name: "promote_insight",
-    description:
-      "[Insight Pipeline] Promote a single pending insight to a kanban card. Creates a card in the To Do column with needs-review label. Deduplicates against existing cards. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        insight_id: { type: "string", description: "Insight UUID to promote" },
-        board_id: { type: "string", description: "Target kanban board UUID" },
-      },
-      required: ["insight_id", "board_id"],
-    },
-  },
-  {
-    name: "batch_promote_insights",
-    description:
-      "[Insight Pipeline] Promote all pending insights for a project to kanban cards. Creates cards in the To Do column with needs-review labels. Deduplicates automatically. Returns counts of promoted, skipped, and errors. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        board_id: { type: "string", description: "Target kanban board UUID" },
-      },
-      required: ["project_id", "board_id"],
-    },
-  },
-  {
-    name: "get_pending_insights",
-    description:
-      "[Insight Pipeline] List pending insights for a project that haven't been promoted to kanban cards yet. Useful for reviewing what insights are available before promoting. Requires CROWDLISTEN_API_KEY.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        limit: { type: "number", description: "Max insights to return (default 20)" },
-      },
-      required: ["project_id"],
-    },
-  },
 ];
 
 // ─── Agent Tool Names (for dispatch routing) ───────────────────────────────
@@ -409,23 +240,13 @@ export function isAgentTool(name: string): boolean {
   return AGENT_TOOL_NAMES.has(name);
 }
 
-// ─── Free tools (no API key required) ──────────────────────────────────────
-
-const FREE_TOOLS = new Set([
-  "llm_complete",
-  "list_llm_models",
-  "register_agent",
-  "get_capabilities",
-]);
-
 // ─── Handler ───────────────────────────────────────────────────────────────
 
 export async function handleAgentTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<string> {
-  const needsKey = !FREE_TOOLS.has(name);
-  const apiKey = needsKey ? requireApiKey() : process.env.CROWDLISTEN_API_KEY;
+  const apiKey = requireApiKey();
 
   switch (name) {
     // ── Analysis ───────────────────────────────────────────────
@@ -442,7 +263,7 @@ export async function handleAgentTool(
         180_000 // 3 min timeout for analysis
       );
       const out: Record<string, unknown> = typeof result === "object" && result !== null ? { ...result as Record<string, unknown> } : { result };
-      out._knowledge_base_hint = "Save key insights from this analysis using save(). Run compile_context() periodically to organize.";
+      out._knowledge_base_hint = "Save key insights from this analysis using save(). Run sync_context({ organize: true }) periodically to organize.";
       return JSON.stringify(out, null, 2);
     }
 
@@ -482,103 +303,6 @@ export async function handleAgentTool(
         },
         apiKey
       );
-      return JSON.stringify(result, null, 2);
-    }
-
-    // ── Content ────────────────────────────────────────────────
-    case "ingest_content": {
-      const result = await agentPost(
-        "/agent/v1/content/ingest",
-        {
-          project_id: args.project_id,
-          content: args.content,
-          source_url: args.source_url,
-          title: args.title,
-          metadata: args.metadata,
-        },
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "search_vectors": {
-      const result = await agentPost(
-        "/agent/v1/content/search",
-        {
-          project_id: args.project_id,
-          query: args.query,
-          limit: args.limit,
-          threshold: args.threshold,
-        },
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "get_content_stats": {
-      const result = await agentGet(
-        `/agent/v1/content/stats?project_id=${args.project_id}`,
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "delete_content": {
-      const result = await agentDelete(
-        `/agent/v1/content/${args.content_id}`,
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    // ── Generation ─────────────────────────────────────────────
-    case "generate_prd": {
-      const result = await agentStream(
-        "/agent/v1/prd/generate",
-        {
-          project_id: args.project_id,
-          analysis_ids: args.analysis_ids,
-          template: args.template,
-          sections: args.sections,
-        },
-        apiKey,
-        180_000
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "update_prd_section": {
-      const result = await agentPost(
-        "/agent/v1/prd/update-section",
-        {
-          document_id: args.document_id,
-          section: args.section,
-          instructions: args.instructions,
-          content: args.content,
-        },
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    // ── LLM (Free) ────────────────────────────────────────────
-    case "llm_complete": {
-      const result = await agentPost(
-        "/api/v1/llm/complete",
-        {
-          prompt: args.prompt,
-          model: args.model,
-          max_tokens: args.max_tokens,
-          temperature: args.temperature,
-          system: args.system,
-        },
-        apiKey // Optional — may be undefined for free tier
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "list_llm_models": {
-      const result = await agentGet("/api/v1/llm/models", apiKey);
       return JSON.stringify(result, null, 2);
     }
 
@@ -653,7 +377,7 @@ export async function handleAgentTool(
             related_questions: poll.related_questions,
             source_count: poll.source_count,
             share_url: poll.share_url,
-            _knowledge_base_hint: "Save key insights from this research using save(). Run compile_context() periodically to organize.",
+            _knowledge_base_hint: "Save key insights from this research using save(). Run sync_context({ organize: true }) periodically to organize.",
           },
           null,
           2
@@ -690,45 +414,38 @@ export async function handleAgentTool(
       return JSON.stringify(result, null, 2);
     }
 
-    case "submit_analysis": {
+    // ── Task Execution ────────────────────────────────────
+    case "execute_task": {
+      const body: Record<string, unknown> = {
+        session_id: args.session_id,
+        prompt: args.prompt,
+      };
+      if (args.executor) body.executor = args.executor;
+      if (args.cwd) body.cwd = args.cwd;
+      if (args.auto_approve !== undefined) body.auto_approve = args.auto_approve;
+      if (args.allowed_tools) body.allowed_tools = args.allowed_tools;
+      if (args.context) body.context = args.context;
+
       const result = await agentPost(
-        "/api/agents/analyze",
+        "/agent/v1/kanban/agents/execute",
+        body,
+        apiKey
+      );
+      const response = result as any;
+      return JSON.stringify(
         {
-          agent_id: args.agent_id,
-          analysis_id: args.analysis_id,
-          summary: args.summary,
+          process_id: response.process_id || response.id,
+          status: response.status || "running",
+          message: `Execution started. Poll with get_execution_status({ process_id: "${response.process_id || response.id}" }) to check progress.`,
         },
-        apiKey
+        null,
+        2
       );
-      return JSON.stringify(result, null, 2);
     }
 
-    // ── Insight Pipeline ────────────────────────────────────
-    case "promote_insight": {
-      const result = await agentPost(
-        `/agent/v1/insights/${args.insight_id}/promote`,
-        { board_id: args.board_id },
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "batch_promote_insights": {
-      const result = await agentPost(
-        "/agent/v1/insights/batch-promote",
-        {
-          project_id: args.project_id,
-          board_id: args.board_id,
-        },
-        apiKey
-      );
-      return JSON.stringify(result, null, 2);
-    }
-
-    case "get_pending_insights": {
-      const limit = (args.limit as number) || 20;
+    case "get_execution_status": {
       const result = await agentGet(
-        `/agent/v1/insights/pending/${args.project_id}?limit=${limit}`,
+        `/agent/v1/kanban/processes/${args.process_id}`,
         apiKey
       );
       return JSON.stringify(result, null, 2);

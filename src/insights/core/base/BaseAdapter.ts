@@ -166,7 +166,7 @@ export abstract class BaseAdapter implements SocialMediaPlatform {
         platform: this.getPlatformName(),
         sentiment: 'neutral',
         themes: ['general'],
-        summary: `Retrieved ${comments.length} comments for ${contentId}. Use analyze_content with CROWDLISTEN_API_KEY for full analysis.`,
+        summary: `Retrieved ${comments.length} comments for ${contentId}. Use analyze_content for full analysis.`,
         commentCount: comments.length,
         topComments: comments.slice(0, 5),
       };

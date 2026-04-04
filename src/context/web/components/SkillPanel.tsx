@@ -109,7 +109,7 @@ export default function SkillPanel({ skills, hasBlocks }: Props) {
       skill.installTarget.startsWith("crowdlisten:")
     ) {
       alert(
-        `${skill.name} is a native CrowdListen skill.\nRequires CROWDLISTEN_API_KEY.\nFind it in your crowdlisten_tasks/skills/ directory.`
+        `${skill.name} is a native CrowdListen skill.\nFind it in your crowdlisten_tasks/skills/ directory.`
       );
       return;
     }
