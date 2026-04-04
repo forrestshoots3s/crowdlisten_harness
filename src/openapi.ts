@@ -54,7 +54,7 @@ function tagDescription(tag: string): string {
     content:
       "Ingest content, semantic vector search, manage content documents",
     generation: "Generate PRDs and product documentation from analysis results",
-    llm: "Free LLM completion proxy — no API key required",
+    llm: "LLM completion proxy",
     "agent network":
       "Register agents, discover capabilities, share analysis results",
     setup: "Board and project management, initial configuration",
@@ -125,7 +125,7 @@ export function generateOpenApiSpec(): OpenApiSpec {
               },
             },
           },
-          "401": { description: "API key required (paid tools)" },
+          "401": { description: "Authentication required" },
           "500": { description: "Tool execution error" },
         },
       },
@@ -172,8 +172,7 @@ export function generateOpenApiSpec(): OpenApiSpec {
       description:
         "Audience intelligence, social listening, planning, and context extraction for AI agents. " +
         "This API exposes the full CrowdListen tool surface as REST endpoints. " +
-        "Free tools (LLM, Agent Network) require no authentication. " +
-        "Paid tools (Analysis, Content, Generation) require a CROWDLISTEN_API_KEY.",
+        "Sign in with `npx @crowdlisten/harness login` to get started.",
     },
     servers: [
       { url: "https://mcp.crowdlisten.com", description: "Production" },

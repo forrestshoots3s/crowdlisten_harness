@@ -18,14 +18,14 @@ Save insights as you work. Use `save()` with these tags:
 
 **Rule**: After every analysis or research task, save 2-3 key takeaways.
 
-## Compile
+## Organize
 
-Run `compile_context()` to organize the knowledge base. Do this:
+Run `sync_context({ organize: true })` to organize the knowledge base. Do this:
 - After 20+ new entries accumulate
 - Before starting a new project
 - Weekly as maintenance
 
-The compile tool returns a report with:
+The organize mode returns a report with:
 - **Tag groups** — how entries distribute across tags
 - **Topic candidates** — tags with 3+ entries worth synthesizing
 - **Duplicates** — near-duplicate titles to merge or prune

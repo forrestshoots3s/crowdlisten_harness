@@ -65,8 +65,8 @@ For remote access, use the HTTP transport:
 |---|---|---|
 | **Search social platforms** | Search Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu from one tool | Returns structured posts with engagement metrics, timestamps, and author info — same format regardless of platform |
 | **Analyze audience signal** | Cluster opinions, extract pain points, generate cross-platform reports | AI groups comments by theme, scores sentiment, identifies competitive signals |
-| **Save and recall across sessions** | .md knowledge base that compounds across agents and devices | Your agent saves with `save`, retrieves with `recall`, browses `~/.crowdlisten/context/INDEX.md`, compiles with `compile_context` |
-| **Plan and track work** | Tasks, execution plans, progress tracking | Your agent claims tasks, drafts plans with assumptions and risks, logs progress |
+| **Save and recall across sessions** | .md knowledge base that compounds across agents and devices | Your agent saves with `save`, retrieves with `recall`, browses `~/.crowdlisten/context/INDEX.md`, organizes with `sync_context({ organize: true })` |
+| **Plan and track work** | Tasks, execution plans, progress tracking, server-side execution | Your agent claims tasks, drafts plans with assumptions and risks, logs progress, triggers agent execution and polls status |
 | **Get specs from crowd feedback** | Turn crowd intelligence into implementation-ready specs | Specs include evidence citations, acceptance criteria, and confidence scores |
 | **Extract from any website** | Screenshot any URL and get structured data back | Vision mode sends screenshots to an LLM — works on forums, paywalled sites, anything with a URL |
 
@@ -74,23 +74,22 @@ For remote access, use the HTTP transport:
 
 ![CrowdListen Pipeline — Raw Crowd Signals to Agent Delivery](docs/images/pipeline.jpg)
 
-Your agent starts with **8 core tools** and activates skill packs on demand. No restart required — new tools appear instantly.
+Your agent starts with **7 core tools** and activates skill packs on demand (~30 tools total across all packs). No restart required — new tools appear instantly.
+
+**Task Execution** — Trigger server-side AI agent execution (Amp, Claude Code, Codex, Gemini CLI) and poll progress via MCP. Calls `execute_task` to dispatch work and `get_execution_status` to track completion.
 
 ### Skill Packs
 
-| Pack | Tools | What it does | Free? |
-|------|:-----:|---|:---:|
-| **core** (always on) | 8 | .md knowledge base (save/recall/sync/compile/publish), discovery, preferences | Yes |
-| **social-listening** | 7 | Search Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu | Yes |
-| **audience-analysis** | 6 | Opinion clustering, deep analysis, insight extraction, research synthesis | API key |
-| **planning** | 11 | Tasks, execution plans, progress tracking | Yes |
-| **spec-delivery** | 3 | Browse and claim actionable specs from crowd feedback | Yes |
-| **sessions** | 3 | Multi-agent coordination | Yes |
-| **analysis** | 5 | Run full analyses, generate specs from results | API key |
-| **content** | 4 | Ingest content, vector search | API key |
-| **generation** | 2 | PRD generation | API key |
-| **llm** | 2 | Free LLM completion proxy | Yes |
-| **agent-network** | 3 | Register agents, discover capabilities | Mixed |
+| Pack | Tools | What it does |
+|------|:-----:|---|
+| **core** (always on) | 7 | .md knowledge base (save/recall/sync/publish), discovery, preferences |
+| **social-listening** | 7 | Search Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu |
+| **audience-analysis** | 4 | Opinion clustering, insight extraction, content enrichment |
+| **planning** | 13 | Tasks, execution plans, progress tracking, server-side agent execution |
+| **spec-delivery** | 3 | Browse and claim actionable specs from crowd feedback |
+| **sessions** | 3 | Multi-agent coordination |
+| **analysis** | 5 | Run full analyses, generate specs from results |
+| **agent-network** | 2 | Register agents, discover capabilities |
 
 Plus 9 **workflow packs** (knowledge-base, competitive-analysis, content-strategy, market-research, ux-research, and more) that deliver expert methodology when activated.
 
@@ -106,7 +105,7 @@ Every agent interaction can make the knowledge base better. The system works as 
                                        ├── entries/a1b2c3d4.md
  recall()        ↑                     └── topics/auth.md
 ←────────────────┘
-                                       compile_context()
+                                       sync_context({ organize: true })
  sync_context()                        detects duplicates,
  rebuilds local ←──── full pull ────── groups by topic,
  .md cache                             suggests syntheses
@@ -116,11 +115,10 @@ Every agent interaction can make the knowledge base better. The system works as 
 
 1. **Save** — `save({ title, content, tags })` writes to Supabase and renders a `.md` file locally with YAML frontmatter
 2. **Recall** — `recall({ search })` queries Supabase via keyword matching. For structured browsing, agents read `~/.crowdlisten/context/INDEX.md` directly
-3. **Sync** — `sync_context()` pulls all entries from cloud and rebuilds the entire local `.md` folder. Use after web uploads or switching machines
-4. **Compile** — `compile_context()` scans all entries, detects near-duplicates (Jaccard similarity), identifies topics with 3+ entries, and rebuilds `INDEX.md`. Returns a report telling the agent what to synthesize or prune
-5. **Publish** — `publish_context({ memory_id, team_id })` shares an entry with teammates. Their next `sync_context` pulls it into a `## Shared` section in their INDEX.md
+3. **Sync** — `sync_context()` pulls all entries from cloud and rebuilds the entire local `.md` folder. Use after web uploads or switching machines. Pass `organize: true` to also detect near-duplicates (Jaccard similarity), identify topics with 3+ entries, and return a report telling the agent what to synthesize or prune
+4. **Publish** — `publish_context({ memory_id, team_id })` shares an entry with teammates. Their next `sync_context` pulls it into a `## Shared` section in their INDEX.md
 
-**The compounding effect:** After every analysis or research task, the agent saves 2-3 key takeaways. Over time, `compile_context` groups these into topics. The agent synthesizes topics into distilled summaries. The next agent starts with a rich INDEX.md instead of a blank slate.
+**The compounding effect:** After every analysis or research task, the agent saves 2-3 key takeaways. Over time, `sync_context({ organize: true })` groups these into topics. The agent synthesizes topics into distilled summaries. The next agent starts with a rich INDEX.md instead of a blank slate.
 
 Supabase is the source of truth. The local `.md` folder is a read-only rendered cache — no sync conflicts, no merge issues.
 

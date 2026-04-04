@@ -234,29 +234,6 @@ export const TOOLS = [
     inputSchema: { type: "object" as const, properties: {} },
   },
   {
-    name: "list_boards",
-    description: "[Setup] List task boards for a project. Most users have one global board — use get_or_create_global_board instead.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-      },
-      required: ["project_id"],
-    },
-  },
-  {
-    name: "create_board",
-    description: "[Setup] Create a new task board for a project with default columns (To Do, In Progress, In Review, Done, Cancelled). Rarely needed — get_or_create_global_board handles this automatically.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: { type: "string", description: "Project UUID" },
-        name: { type: "string", description: "Board name (default: 'Tasks')" },
-      },
-      required: ["project_id"],
-    },
-  },
-  {
     name: "list_tasks",
     description:
       "List tasks on the board. Call this first to see what work is available. Uses global board by default. Filter by status: todo, inprogress, inreview, done, cancelled.",
@@ -542,48 +519,27 @@ export const TOOLS = [
 
   // ─── Skill Discovery Tools ──────────────────────────────────────────────
   {
-    name: "discover_skills",
-    description:
-      "[Context] Context-driven skill discovery — scores all skills (native CrowdListen + 146 community skills from 4 repos) against your extracted context blocks. Returns ranked skills with install instructions. Optionally process new context text first.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        context: {
-          type: "string",
-          description:
-            "Optional: raw context text to process through extraction pipeline first. If omitted, uses stored blocks.",
-        },
-        category: {
-          type: "string",
-          description:
-            "Filter by category: development, data, content, research, automation, design, business, productivity",
-        },
-        tier: {
-          type: "string",
-          description: "Filter by tier: crowdlisten (native, need API key) or community (open source)",
-        },
-        limit: {
-          type: "number",
-          description: "Max results to return (default 10)",
-        },
-      },
-    },
-  },
-  {
     name: "search_skills",
     description:
-      "[Context] Text search across all 154 skills (8 native + 146 community). Browse by category or search by name/keyword. Returns matching skills with descriptions and install methods.",
+      "[Context] Search or discover skills across all 154 skills (8 native + 146 community). Pass a query for keyword search, or pass context for context-driven discovery that scores skills against your extracted context blocks.",
     inputSchema: {
       type: "object" as const,
       properties: {
         query: { type: "string", description: "Search query (name, keyword, or description text)" },
+        context: {
+          type: "string",
+          description: "Raw context text for context-driven discovery. Processes text through extraction pipeline and scores skills against it.",
+        },
         tier: { type: "string", description: "Filter: crowdlisten or community" },
         category: {
           type: "string",
           description: "Filter: development, data, content, research, automation, design, business, productivity",
         },
+        limit: {
+          type: "number",
+          description: "Max results to return (default 10, used with context-driven discovery)",
+        },
       },
-      required: ["query"],
     },
   },
   {
@@ -700,7 +656,7 @@ export const TOOLS = [
   {
     name: "sync_context",
     description:
-      "Pull all context from cloud and rebuild local .md knowledge base at ~/.crowdlisten/context/. Use after web uploads or when switching machines.",
+      "Pull all context from cloud and rebuild local .md knowledge base at ~/.crowdlisten/context/. Pass organize=true to also detect duplicates, group by topic, and return an organization report.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -708,19 +664,13 @@ export const TOOLS = [
           type: "boolean",
           description: "Force full rebuild (default: true)",
         },
-      },
-    },
-  },
-  {
-    name: "compile_context",
-    description:
-      "Organize knowledge base: detect duplicates, group by topic, rebuild INDEX.md. Returns a report — use it to decide what to synthesize or prune.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
+        organize: {
+          type: "boolean",
+          description: "Also run dedup/topic grouping and return an organization report (default: false)",
+        },
         dry_run: {
           type: "boolean",
-          description: "Preview only, no file changes (default: false)",
+          description: "When organize=true, preview only without file changes (default: false)",
         },
       },
     },
@@ -977,54 +927,6 @@ export async function handleTool(
       return json({ projects: slim, count: slim.length });
     }
 
-    // ── Boards ────────────────────────────────────────────────
-    case "list_boards": {
-      const { data, error } = await sb
-        .from("kanban_boards")
-        .select("id, name, description, created_at")
-        .eq("project_id", args.project_id as string)
-        .order("created_at", { ascending: false });
-      if (error) throw new Error(error.message);
-      return json({ boards: data, count: data?.length || 0 });
-    }
-
-    case "create_board": {
-      const projectId = args.project_id as string;
-      const boardName = (args.name as string) || "Tasks";
-
-      // Verify project exists
-      const { data: project, error: projErr } = await sb
-        .from("projects")
-        .select("id")
-        .eq("id", projectId)
-        .single();
-      if (projErr || !project) throw new Error("Project not found");
-
-      // Create board
-      const { data: board, error: boardErr } = await sb
-        .from("kanban_boards")
-        .insert({
-          project_id: projectId,
-          name: boardName,
-          user_id: userId,
-        })
-        .select("id")
-        .single();
-      if (boardErr) throw new Error(boardErr.message);
-
-      // Create default columns
-      const defaultColumns = ["To Do", "In Progress", "In Review", "Done", "Cancelled"];
-      for (let i = 0; i < defaultColumns.length; i++) {
-        const { error: colErr } = await sb.from("kanban_columns").insert({
-          board_id: board!.id,
-          name: defaultColumns[i],
-          position: i,
-        });
-        if (colErr) throw new Error(`Failed to create column '${defaultColumns[i]}': ${colErr.message}`);
-      }
-
-      return json({ board_id: board!.id, name: boardName, status: "created", columns: defaultColumns });
-    }
 
     // ── Tasks ─────────────────────────────────────────────────
     case "list_tasks": {
@@ -1675,51 +1577,50 @@ export async function handleTool(
     }
 
     // ─── Skill Discovery Tools ──────────────────────────────────────────────
-    case "discover_skills": {
-      let blocks = getBlocks();
-
-      // If context text provided, process it first
+    case "search_skills": {
+      // Context-driven discovery mode
       if (args.context) {
+        let blocks = getBlocks();
         const result = await runPipeline({
           text: args.context as string,
           source: "discover",
           isChat: true,
         });
         blocks = result.blocks;
-      }
 
-      if (blocks.length === 0) {
+        if (blocks.length === 0) {
+          return json({
+            error: "No context blocks found. Provide more detailed context text.",
+            skills: [],
+          });
+        }
+
+        const skills = await discoverSkills(blocks, {
+          category: args.category as any,
+          tier: args.tier as any,
+          limit: (args.limit as number) || 10,
+        });
+
         return json({
-          error: "No context blocks found. Process a transcript first with process_transcript, or provide context text.",
-          skills: [],
+          mode: "context-discovery",
+          total_available: 154,
+          results: skills.length,
+          skills: skills.map((s) => ({
+            id: s.skillId,
+            name: s.name,
+            description: s.description,
+            score: `${Math.round(s.score * 100)}%`,
+            tier: s.tier,
+            category: s.category,
+            install: s.installMethod === "copy" ? `Copy SKILL.md from ${s.installTarget}` : s.installTarget,
+            matched_keywords: s.matchedKeywords,
+          })),
         });
       }
 
-      const skills = await discoverSkills(blocks, {
-        category: args.category as any,
-        tier: args.tier as any,
-        limit: (args.limit as number) || 10,
-      });
-
-      return json({
-        total_available: 154,
-        results: skills.length,
-        skills: skills.map((s) => ({
-          id: s.skillId,
-          name: s.name,
-          description: s.description,
-          score: `${Math.round(s.score * 100)}%`,
-          tier: s.tier,
-          category: s.category,
-          install: s.installMethod === "copy" ? `Copy SKILL.md from ${s.installTarget}` : s.installTarget,
-          matched_keywords: s.matchedKeywords,
-        })),
-      });
-    }
-
-    case "search_skills": {
+      // Keyword search mode
       const query = args.query as string;
-      if (!query) return json({ error: "Missing 'query' parameter" });
+      if (!query) return json({ error: "Provide either 'query' for keyword search or 'context' for context-driven discovery" });
 
       const results = searchSkills(query, {
         tier: args.tier as any,
@@ -1727,6 +1628,7 @@ export async function handleTool(
       });
 
       return json({
+        mode: "keyword-search",
         query,
         results: results.length,
         skills: results.map((s) => ({
@@ -1762,7 +1664,7 @@ export async function handleTool(
           return json({
             skill: skill.name,
             tier: skill.tier,
-            instructions: `This is a native CrowdListen skill. It requires a CROWDLISTEN_API_KEY.`,
+            instructions: `This is a native CrowdListen skill.`,
             install: `Add to your .claude/commands/ directory from the crowdlisten_tasks/skills/${skill.id}/ folder.`,
           });
         }
@@ -1965,46 +1867,38 @@ export async function handleTool(
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-
-        const { renderAll, readMeta } = await import("./context/md-store.js");
-        renderAll(data || []);
-        const meta = readMeta();
-
-        return json({
-          synced: true,
-          entry_count: (data || []).length,
-          index_path: "~/.crowdlisten/context/INDEX.md",
-          meta,
-        });
-      } catch (err: any) {
-        return json({ error: `Sync failed: ${err?.message || err}` });
-      }
-    }
-
-    case "compile_context": {
-      const dryRun = (args.dry_run as boolean) ?? false;
-
-      try {
-        const { data, error } = await sb
-          .from("memories")
-          .select("id, title, content, tags, source, source_agent, project_id, confidence, created_at")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
         const memories = data || [];
+        const organize = (args.organize as boolean) ?? false;
+        const dryRun = (args.dry_run as boolean) ?? false;
 
-        // Group by primary tag
+        // Rebuild local .md files (unless dry_run with organize)
+        if (!(organize && dryRun)) {
+          const { renderAll } = await import("./context/md-store.js");
+          renderAll(memories);
+        }
+
+        // Simple sync — just pull and rebuild
+        if (!organize) {
+          const { readMeta } = await import("./context/md-store.js");
+          const meta = readMeta();
+          return json({
+            synced: true,
+            entry_count: memories.length,
+            index_path: "~/.crowdlisten/context/INDEX.md",
+            meta,
+          });
+        }
+
+        // Organize mode — dedup + topic grouping
         const tagGroups: Record<string, { count: number; titles: string[] }> = {};
         for (const m of memories) {
-          for (const tag of m.tags || []) {
+          for (const tag of (m.tags || [])) {
             if (!tagGroups[tag]) tagGroups[tag] = { count: 0, titles: [] };
             tagGroups[tag].count++;
             if (tagGroups[tag].titles.length < 5) tagGroups[tag].titles.push(m.title);
           }
         }
 
-        // Detect near-duplicates (Jaccard similarity on title words)
         const duplicates: Array<{ a: string; b: string; similarity: number; titleA: string; titleB: string }> = [];
         for (let i = 0; i < memories.length; i++) {
           const wordsA = new Set(memories[i].title.toLowerCase().split(/\s+/));
@@ -2025,16 +1919,9 @@ export async function handleTool(
           }
         }
 
-        // Identify topic candidates (tags with 3+ entries)
         const topicCandidates = Object.entries(tagGroups)
           .filter(([, g]) => g.count >= 3)
           .map(([tag, g]) => ({ tag, count: g.count, sample_titles: g.titles }));
-
-        // Rebuild if not dry run
-        if (!dryRun) {
-          const { renderAll } = await import("./context/md-store.js");
-          renderAll(memories);
-        }
 
         const hint = topicCandidates.length > 0
           ? `Consider synthesizing topics: ${topicCandidates.map(t => t.tag).join(", ")}. Read entries for each topic, write a synthesis, save it with tag 'synthesis'.`
@@ -2043,6 +1930,7 @@ export async function handleTool(
             : "Knowledge base looks clean. No action needed.";
 
         return json({
+          synced: !dryRun,
           total_entries: memories.length,
           tag_groups: tagGroups,
           topic_candidates: topicCandidates,
@@ -2051,7 +1939,7 @@ export async function handleTool(
           hint,
         });
       } catch (err: any) {
-        return json({ error: `Compile failed: ${err?.message || err}` });
+        return json({ error: `Sync failed: ${err?.message || err}` });
       }
     }
 

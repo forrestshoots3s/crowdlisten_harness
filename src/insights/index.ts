@@ -4,8 +4,8 @@
  * Tool definitions and handler dispatcher for social listening capabilities.
  * Merged from crowdlisten_sources into the unified MCP server.
  *
- * Free tools (no key): search, comments, trending, user content, platform status, health, vision
- * Paid tools (CROWDLISTEN_API_KEY): analyze, cluster, enrich, deep_analyze, insights, research
+ * Retrieval tools: search, comments, trending, user content, platform status, health, vision
+ * Analysis tools (API): analyze, cluster, enrich, insights
  */
 
 import { createService } from './service-config.js';
@@ -21,9 +21,7 @@ import {
   healthCheck,
   clusterOpinions,
   enrichContent,
-  deepAnalyze,
   extractInsights,
-  researchSynthesis,
   extractWithVision,
 } from './handlers.js';
 
@@ -39,10 +37,10 @@ export type {
 // ─── Tool Definitions ──────────────────────────────────────────────────────
 
 export const INSIGHTS_TOOLS = [
-  // ── Free tools — no API key needed ──────────────────────────────────────
+  // ── Retrieval tools ─────────────────────────────────────────────────────
   {
     name: 'search_content',
-    description: 'Search for posts and discussions across social platforms. Use this first to find content, then use get_content_comments on specific results. Free, no API key needed.',
+    description: 'Search for posts and discussions across social platforms. Use this first to find content, then use get_content_comments on specific results.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -73,7 +71,7 @@ export const INSIGHTS_TOOLS = [
   },
   {
     name: 'get_content_comments',
-    description: 'Get comments/replies for a specific post. Use after search_content to drill into a discussion. Returns raw comment text, authors, timestamps, and engagement metrics. Free, no API key needed.',
+    description: 'Get comments/replies for a specific post. Use after search_content to drill into a discussion. Returns raw comment text, authors, timestamps, and engagement metrics.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -104,7 +102,7 @@ export const INSIGHTS_TOOLS = [
   },
   {
     name: 'get_trending_content',
-    description: 'Get currently trending posts from a platform. Useful for discovering what audiences are talking about right now. Free, no API key needed.',
+    description: 'Get currently trending posts from a platform. Useful for discovering what audiences are talking about right now.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -126,7 +124,7 @@ export const INSIGHTS_TOOLS = [
   },
   {
     name: 'get_user_content',
-    description: 'Get recent posts from a specific user/creator. Useful for tracking influencers, competitors, or key voices. Free, no API key needed.',
+    description: 'Get recent posts from a specific user/creator. Useful for tracking influencers, competitors, or key voices.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -167,10 +165,10 @@ export const INSIGHTS_TOOLS = [
     },
   },
 
-  // ── Vision extraction — screenshot + LLM analysis, no API key ────────────
+  // ── Vision extraction — screenshot + LLM analysis ───────────────────────
   {
     name: 'extract_url',
-    description: 'Extract content from any URL using vision (screenshot + LLM analysis). Works with any website — social media, forums, news sites, etc. Requires at least one LLM API key (ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY). Free, no CROWDLISTEN_API_KEY needed.',
+    description: 'Extract content from any URL using vision (screenshot + LLM analysis). Works with any website — social media, forums, news sites, etc. Requires at least one LLM API key (ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -196,10 +194,10 @@ export const INSIGHTS_TOOLS = [
     },
   },
 
-  // ── Paid tools — require CROWDLISTEN_API_KEY ─────────────────────────────
+  // ── Analysis tools ──────────────────────────────────────────────────────
   {
     name: 'analyze_content',
-    description: 'Analyze a post and its comments via the CrowdListen analysis API — sentiment, themes, tension synthesis. Requires CROWDLISTEN_API_KEY. Get one at crowdlisten.com/api.',
+    description: 'Analyze a post and its comments via the CrowdListen analysis API — sentiment, themes, tension synthesis.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -224,7 +222,7 @@ export const INSIGHTS_TOOLS = [
   },
   {
     name: 'cluster_opinions',
-    description: 'Group comments into engagement-weighted semantic opinion clusters. Identifies recurring themes, consensus, and minority viewpoints. Requires CROWDLISTEN_API_KEY.',
+    description: 'Group comments into engagement-weighted semantic opinion clusters. Identifies recurring themes, consensus, and minority viewpoints.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -260,7 +258,7 @@ export const INSIGHTS_TOOLS = [
   },
   {
     name: 'enrich_content',
-    description: 'Enrich comments with intent detection, stance analysis, engagement scoring, and timestamp hints. Requires CROWDLISTEN_API_KEY.',
+    description: 'Enrich comments with intent detection, stance analysis, engagement scoring, and timestamp hints.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -282,33 +280,8 @@ export const INSIGHTS_TOOLS = [
     },
   },
   {
-    name: 'deep_analyze',
-    description: 'AI-powered deep analysis of content via the CrowdListen analysis API. Returns structured insights including audience segments, pain points, feature requests, and competitive signals. Requires CROWDLISTEN_API_KEY.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        platform: {
-          type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook'],
-          description: 'Platform where the content is located',
-        },
-        contentId: {
-          type: 'string',
-          description: 'ID of the content to analyze',
-        },
-        analysisDepth: {
-          type: 'string',
-          enum: ['deep', 'comprehensive'],
-          default: 'deep',
-          description: 'deep = structured analysis; comprehensive = full audience intelligence report',
-        },
-      },
-      required: ['platform', 'contentId'],
-    },
-  },
-  {
     name: 'extract_insights',
-    description: 'Extract categorized insights (pain points, feature requests, praise, complaints, suggestions) from content via the CrowdListen analysis API. Requires CROWDLISTEN_API_KEY.',
+    description: 'Extract categorized insights (pain points, feature requests, praise, complaints, suggestions) from content via the CrowdListen analysis API.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -328,31 +301,6 @@ export const INSIGHTS_TOOLS = [
         },
       },
       required: ['platform', 'contentId'],
-    },
-  },
-  {
-    name: 'research_synthesis',
-    description: 'Cross-platform research synthesis — searches multiple platforms, analyzes results, and produces a unified research report. Requires CROWDLISTEN_API_KEY.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        query: {
-          type: 'string',
-          description: 'Research query or topic to synthesize across platforms',
-        },
-        platforms: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Platforms to include (default: reddit, twitter, youtube)',
-        },
-        depth: {
-          type: 'string',
-          enum: ['quick', 'standard', 'deep'],
-          default: 'standard',
-          description: 'Research depth — quick (~10 sources), standard (~25), deep (~50+)',
-        },
-      },
-      required: ['query'],
     },
   },
 ];
@@ -418,7 +366,7 @@ export async function handleInsightsTool(
   }
 
   switch (name) {
-    // ── Free tools ──────────────────────────────────────────────────
+    // ── Retrieval tools ─────────────────────────────────────────────
     case 'search_content':
       return JSON.stringify(await searchContent(insightsService, args as any), null, 2);
 
@@ -441,7 +389,7 @@ export async function handleInsightsTool(
     case 'extract_url':
       return JSON.stringify(await extractWithVision(args as any), null, 2);
 
-    // ── Paid tools (all delegate to agent API) ──────────────────────
+    // ── Analysis tools (all delegate to agent API) ──────────────────
     case 'analyze_content':
       return JSON.stringify(await analyzeContent(insightsService, args as any), null, 2);
 
@@ -451,14 +399,8 @@ export async function handleInsightsTool(
     case 'enrich_content':
       return JSON.stringify(await enrichContent(insightsService, args as any), null, 2);
 
-    case 'deep_analyze':
-      return JSON.stringify(await deepAnalyze(args as any), null, 2);
-
     case 'extract_insights':
       return JSON.stringify(await extractInsights(args as any), null, 2);
-
-    case 'research_synthesis':
-      return JSON.stringify(await researchSynthesis(args as any), null, 2);
 
     default:
       throw new Error(`Unknown insights tool: ${name}`);

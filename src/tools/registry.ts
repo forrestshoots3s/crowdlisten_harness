@@ -64,8 +64,8 @@ export function initializeRegistry(skillsDir: string): void {
   packs.set("core", {
     id: "core",
     name: "Core",
-    description: "Discovery + memory — list skill packs, activate packs, save/recall/sync/compile context as .md knowledge base",
-    toolNames: ["list_skill_packs", "activate_skill_pack", "save", "recall", "sync_context", "compile_context", "publish_context", "set_preferences"],
+    description: "Discovery + memory — list skill packs, activate packs, save/recall/sync context as .md knowledge base",
+    toolNames: ["list_skill_packs", "activate_skill_pack", "save", "recall", "sync_context", "publish_context", "set_preferences"],
   });
 
   // Planning — task management
@@ -77,30 +77,31 @@ export function initializeRegistry(skillsDir: string): void {
       "list_tasks", "create_task", "get_task", "update_task",
       "claim_task", "complete_task", "log_progress", "delete_task",
       "create_plan", "get_plan", "update_plan",
+      "execute_task", "get_execution_status",
     ],
   });
 
   // Knowledge pack removed — consolidated into core save/recall
 
-  // Social listening — free tools
+  // Social listening
   packs.set("social-listening", {
     id: "social-listening",
     name: "Social Listening",
-    description: "Search and retrieve content from social platforms — Reddit, Twitter, TikTok, YouTube, Instagram. Free, no API key needed.",
+    description: "Search and retrieve content from social platforms — Reddit, Twitter, TikTok, YouTube, Instagram.",
     toolNames: [
       "search_content", "get_content_comments", "get_trending_content",
       "get_user_content", "get_platform_status", "health_check", "extract_url",
     ],
   });
 
-  // Audience analysis — paid tools
+  // Audience analysis
   packs.set("audience-analysis", {
     id: "audience-analysis",
     name: "Audience Analysis",
-    description: "AI-powered content analysis, opinion clustering, insight extraction, and cross-platform research synthesis. Requires CROWDLISTEN_API_KEY.",
+    description: "AI-powered content analysis, opinion clustering, insight extraction, and cross-platform research synthesis.",
     toolNames: [
       "analyze_content", "cluster_opinions", "enrich_content",
-      "deep_analyze", "extract_insights", "research_synthesis",
+      "extract_insights",
     ],
   });
 
@@ -119,7 +120,7 @@ export function initializeRegistry(skillsDir: string): void {
     description: "Project and board setup — list projects, create boards, migrate tasks",
     toolNames: [
       "get_or_create_global_board", "list_projects",
-      "list_boards", "create_board", "migrate_to_global_board",
+      "migrate_to_global_board",
     ],
   });
 
@@ -137,59 +138,27 @@ export function initializeRegistry(skillsDir: string): void {
   packs.set("analysis", {
     id: "analysis",
     name: "Analysis Engine",
-    description: "Run audience analyses, continue with follow-ups, list results, generate specs. Requires CROWDLISTEN_API_KEY.",
+    description: "Run audience analyses, continue with follow-ups, list results, generate specs.",
     toolNames: [
       "run_analysis", "continue_analysis", "get_analysis",
       "list_analyses", "generate_specs",
     ],
   });
 
-  // Content & Vectors — ingest, search, manage content
-  packs.set("content", {
-    id: "content",
-    name: "Content & Vectors",
-    description: "Ingest content for vector storage, semantic search, stats, deletion. Requires CROWDLISTEN_API_KEY.",
-    toolNames: ["ingest_content", "search_vectors", "get_content_stats", "delete_content"],
-  });
-
-  // Document Generation — PRDs from analysis
-  packs.set("generation", {
-    id: "generation",
-    name: "Document Generation",
-    description: "Generate PRDs from analysis results, update sections. Requires CROWDLISTEN_API_KEY.",
-    toolNames: ["generate_prd", "update_prd_section"],
-  });
-
-  // LLM Proxy — free completion and model listing
-  packs.set("llm", {
-    id: "llm",
-    name: "LLM Proxy",
-    description: "Free LLM completion proxy — no API key needed. List available models and run completions.",
-    toolNames: ["llm_complete", "list_llm_models"],
-  });
-
   // Crowd Intelligence — context-enriched crowd research
   packs.set("crowd-intelligence", {
     id: "crowd-intelligence",
     name: "Crowd Intelligence",
-    description: "Research what the crowd says about any topic — social listening with business context enrichment. Async: submit research, poll for results. Requires CROWDLISTEN_API_KEY.",
+    description: "Research what the crowd says about any topic — social listening with business context enrichment. Async: submit research, poll for results.",
     toolNames: ["crowd_research", "crowd_research_status"],
   });
 
-  // Insight Pipeline — promote insights to kanban
-  packs.set("insight-pipeline", {
-    id: "insight-pipeline",
-    name: "Insight Pipeline",
-    description: "Promote extracted insights to kanban task cards — single or batch promote, list pending insights. Review mode with dedup. Requires CROWDLISTEN_API_KEY.",
-    toolNames: ["promote_insight", "batch_promote_insights", "get_pending_insights"],
-  });
-
-  // Agent Network — register, discover, share
+  // Agent Network — register, discover
   packs.set("agent-network", {
     id: "agent-network",
     name: "Agent Network",
-    description: "Register agents, discover capabilities, submit analysis results to the network.",
-    toolNames: ["register_agent", "get_capabilities", "submit_analysis"],
+    description: "Register agents and discover capabilities in the CrowdListen agent network.",
+    toolNames: ["register_agent", "get_capabilities"],
   });
 
   // ── Virtual SKILL.md Packs ────────────────────────────────────────────

@@ -2,8 +2,8 @@
  * CrowdListen Shared Handlers
  * Pure functions that return plain objects — used by CLI and MCP server.
  *
- * Retrieval handlers (free, local): search, comments, trending, user content, vision
- * Analysis handlers (paid, API): analyze, cluster, enrich, deep_analyze, insights, research
+ * Retrieval handlers: search, comments, trending, user content, vision
+ * Analysis handlers (API): analyze, cluster, enrich, insights
  */
 
 import { UnifiedSocialMediaService } from './services/UnifiedSocialMediaService.js';
@@ -91,7 +91,7 @@ export async function extractWithVision(args: ExtractUrlArgs) {
   };
 }
 
-// ---------- Free Retrieval Handlers ----------
+// ---------- Retrieval Handlers ----------
 
 export async function getTrendingContent(service: UnifiedSocialMediaService, args: TrendingArgs) {
   const { platform, limit = 10 } = args;
@@ -224,7 +224,7 @@ export async function healthCheck(
   return { healthStatus: health, timestamp: new Date().toISOString() };
 }
 
-// ---------- Paid Agent API Proxy ----------
+// ---------- Agent API Proxy ----------
 
 const AGENT_API_BASE = process.env.CROWDLISTEN_AGENT_URL || 'https://agent.crowdlisten.com';
 
@@ -232,10 +232,8 @@ function requireApiKey(): string {
   const apiKey = process.env.CROWDLISTEN_API_KEY;
   if (!apiKey) {
     throw new Error(
-      'CROWDLISTEN_API_KEY required for this feature.\n' +
-      'Get one at https://crowdlisten.com/api\n\n' +
-      'Free features (no key): search, comments, trending, user content, vision\n' +
-      'Paid features (key required): analyze, cluster, enrich, deep analysis, insights, research'
+      'Sign in to use this tool: npx @crowdlisten/harness login\n' +
+      'Login is free and auto-configures your agent.'
     );
   }
   return apiKey;
@@ -335,30 +333,10 @@ export async function enrichContent(service: UnifiedSocialMediaService, args: En
 
 // ---------- Deep Analysis Handlers (always API) ----------
 
-export interface DeepAnalyzeArgs {
-  platform: string;
-  contentId: string;
-  analysisDepth: 'deep' | 'comprehensive';
-}
-
 export interface InsightsArgs {
   platform: string;
   contentId: string;
   categories?: string[];
-}
-
-export interface ResearchArgs {
-  query: string;
-  platforms?: string[];
-  depth?: 'quick' | 'standard' | 'deep';
-}
-
-export async function deepAnalyze(args: DeepAnalyzeArgs) {
-  return agentPost('/api/v1/analyze', {
-    platform: args.platform,
-    content_id: args.contentId,
-    depth: args.analysisDepth,
-  });
 }
 
 export async function extractInsights(args: InsightsArgs) {
@@ -369,10 +347,3 @@ export async function extractInsights(args: InsightsArgs) {
   });
 }
 
-export async function researchSynthesis(args: ResearchArgs) {
-  return agentPost('/api/v1/research', {
-    query: args.query,
-    platforms: args.platforms || ['reddit', 'twitter', 'youtube'],
-    depth: args.depth || 'standard',
-  });
-}

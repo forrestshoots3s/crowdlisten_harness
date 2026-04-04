@@ -110,7 +110,7 @@ npx crowdlisten vision https://news.ycombinator.com
 
 ### Analizar Senales de Audiencia
 
-Agrupa opiniones, ejecuta analisis profundos (segmentos de audiencia, senales competitivas) y genera reportes de investigacion multi-plataforma desde una sola consulta. La extraccion base es gratuita y de codigo abierto.
+Agrupa opiniones, ejecuta analisis profundos (segmentos de audiencia, senales competitivas) y genera reportes de investigacion multi-plataforma desde una sola consulta.
 
 ### Guardar y Recuperar Entre Sesiones
 
@@ -153,19 +153,16 @@ Cada paso alimenta al siguiente. Para cuando un agente de desarrollo llama a `ge
 
 Tu agente comienza con 5 herramientas base y activa paquetes bajo demanda:
 
-| Paquete | Herramientas | Que hace | Gratis? |
-|---------|:------------:|----------|:-------:|
-| **core** (siempre activo) | 5 | Memoria semantica, descubrimiento, preferencias | Si |
-| **social-listening** | 7 | Buscar en Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu, Moltbook | Si |
-| **audience-analysis** | 6 | Agrupacion de opiniones, analisis profundo, extraccion de hallazgos, sintesis de investigacion | API key |
-| **planning** | 11 | Tareas, planes de ejecucion, seguimiento de progreso | Si |
-| **spec-delivery** | 3 | Navegar y reclamar specs accionables del feedback colectivo | Si |
-| **sessions** | 3 | Coordinacion multi-agente | Si |
-| **analysis** | 5 | Ejecutar analisis completos, generar specs de resultados | API key |
-| **content** | 4 | Ingerir contenido, busqueda vectorial | API key |
-| **generation** | 2 | Generacion de PRD | API key |
-| **llm** | 2 | Proxy gratuito de completado LLM | Si |
-| **agent-network** | 3 | Registrar agentes, descubrir capacidades | Mixto |
+| Paquete | Herramientas | Que hace |
+|---------|:------------:|----------|
+| **core** (siempre activo) | 5 | Memoria semantica, descubrimiento, preferencias |
+| **social-listening** | 7 | Buscar en Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu, Moltbook |
+| **audience-analysis** | 6 | Agrupacion de opiniones, analisis profundo, extraccion de hallazgos, sintesis de investigacion |
+| **planning** | 11 | Tareas, planes de ejecucion, seguimiento de progreso |
+| **spec-delivery** | 3 | Navegar y reclamar specs accionables del feedback colectivo |
+| **sessions** | 3 | Coordinacion multi-agente |
+| **analysis** | 5 | Ejecutar analisis completos, generar specs de resultados |
+| **agent-network** | 2 | Registrar agentes, descubrir capacidades |
 
 Ademas, 8 **paquetes de flujo de trabajo** (competitive-analysis, content-strategy, market-research-reports, ux-researcher y mas) que entregan instrucciones metodologicas de expertos al activarse.
 
@@ -184,7 +181,7 @@ Referencia completa de herramientas con parametros: **[docs/TOOLS.md](docs/TOOLS
 
 **Modo vision** — necesita cualquiera de: `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` u `OPENAI_API_KEY`
 
-**Herramientas de analisis de pago** — `CROWDLISTEN_API_KEY` (las herramientas gratuitas funcionan sin ella)
+**Herramientas de analisis** — requiere iniciar sesion (`npx @crowdlisten/harness login`)
 
 ## Privacidad
 
@@ -242,7 +239,7 @@ El transporte HTTP corre en el puerto 3848 con autenticacion via `Authorization:
 | `CROWDLISTEN_ANON_KEY` | Incluida | Clave anonima de Supabase |
 | `CROWDLISTEN_APP_URL` | `https://crowdlisten.com` | URL de la app web (redirecciones de login) |
 | `CROWDLISTEN_AGENT_URL` | `https://agent.crowdlisten.com` | URL del backend del agente |
-| `CROWDLISTEN_API_KEY` | Ninguna | API key para herramientas de pago |
+| `CROWDLISTEN_API_KEY` | Ninguna | Token de autenticacion (se configura automaticamente al iniciar sesion) |
 </details>
 
 <details>

@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { TOOLS } from "../../src/tools.js";
 
 describe("TOOLS definitions", () => {
-  it("defines at least 41 tools (25 core + 16 agent-proxied)", () => {
-    expect(TOOLS.length).toBeGreaterThanOrEqual(41);
+  it("defines at least 35 tools (19 core + 16 agent-proxied)", () => {
+    expect(TOOLS.length).toBeGreaterThanOrEqual(35);
   });
 
   it("each tool has a name, description, and inputSchema", () => {
@@ -26,8 +26,6 @@ describe("TOOLS definitions", () => {
   const expectedTools = [
     "get_or_create_global_board",
     "list_projects",
-    "list_boards",
-    "create_board",
     "list_tasks",
     "get_task",
     "create_task",
@@ -84,16 +82,6 @@ describe("TOOLS definitions", () => {
     it("delete_task requires task_id", () => {
       const tool = TOOLS.find((t) => t.name === "delete_task")!;
       expect(tool.inputSchema.required).toContain("task_id");
-    });
-
-    it("list_boards requires project_id", () => {
-      const tool = TOOLS.find((t) => t.name === "list_boards")!;
-      expect(tool.inputSchema.required).toContain("project_id");
-    });
-
-    it("create_board requires project_id", () => {
-      const tool = TOOLS.find((t) => t.name === "create_board")!;
-      expect(tool.inputSchema.required).toContain("project_id");
     });
 
     it("start_session requires task_id and focus", () => {
