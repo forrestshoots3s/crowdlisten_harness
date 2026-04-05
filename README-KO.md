@@ -65,7 +65,7 @@ npx @crowdlisten/harness login
 |------|------|-----------|
 | **소셜 플랫폼 검색** | 하나의 도구로 Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu 검색 | 참여 지표, 타임스탬프, 작성자 정보가 포함된 구조화된 게시물 반환 — 플랫폼 무관 동일 형식 |
 | **청중 신호 분석** | 의견 클러스터링, 페인 포인트 추출, 크로스 플랫폼 리포트 생성 | AI가 댓글을 주제별로 그���화, 감성 점수, 경쟁 신호 식별 |
-| **세션 간 저장 및 리콜** | .md 지식 베이스가 에이전트와 디바이스를 넘어 축적 | `save`로 저장, `recall`로 검색, `~/.crowdlisten/context/INDEX.md` 탐색, `sync_context({ organize: true })`로 정리 |
+| **세션 간 저장 및 리콜** | .md 지식 베이스가 에이전트와 디바이스를 넘어 축적 | `save`로 저장, `wiki_search`로 검색, `wiki_list`로 탐색, `wiki_ingest`로 콘텐츠 수집 |
 | **작업 계획 및 추적** | 작업, 실행 계획, 진행 추적, 서버측 실행 | 에이전트가 작업 선점, 가정과 리스크 포함 계획 초안, 진행 기록, 실행 트리거 및 상태 폴링 |
 | **전체 분석 실행** | 스트리밍 결과와 함께 엔드투엔드 크라우드 분석 | `run_analysis`로 백엔드 전체 파이프라인 트리거; `continue_analysis`로 후속 질문 |
 | **크라우드 피드백에서 스펙 획득** | 크라우드 인텔리전스를 구현 가능한 스펙으로 전환 | 스펙에 증거 인용, 인수 기준, 신뢰도 점수 포함 |
@@ -75,7 +75,7 @@ npx @crowdlisten/harness login
 
 ![CrowdListen Pipeline — Raw Crowd Signals to Agent Delivery](docs/images/pipeline.jpg)
 
-에이전트는 **7개의 코어 도구**로 시작하고 필요에 따라 스킬 팩을 활성화합니다 (전체 팩 합계 ~30개 도구). 재시작 불필요 — `tools/list_changed`를 통해 새 도구가 즉시 나타납니다.
+에이전트는 **8개의 코어 도구**로 시작하고 필요에 따라 스킬 팩을 활성화합니다 (전체 팩 합계 ~28개 도구). 재시작 불필요 — `tools/list_changed`를 통해 새 도구가 즉시 나타납니다.
 
 **작업 실행** — 서버측 AI 에이전트 실행(Amp, Claude Code, Codex, Gemini CLI)을 트리거하고 MCP를 통해 진행 상황을 폴링합니다. `execute_task`로 작업을 배정하고 `get_execution_status`로 완료를 추적합니다.
 
@@ -83,16 +83,12 @@ npx @crowdlisten/harness login
 
 | 팩 | 도구 수 | 기능 |
 |------|:-----:|-------------|
-| **core** (항상 활성) | 7 | .md 지식 베이스 (save/recall/sync/publish), 스킬 발견, 환경설정 |
-| **social-listening** | 7 | Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu 검색 |
-| **audience-analysis** | 4 | 의견 클러스터링, 인사이트 추출, 콘텐츠 보강 |
-| **planning** | 13 | 작업, 실행 계획, 진행 추적, 서버측 에이전트 실행 |
+| **core** (항상 활성) | 8 | Wiki 지식 베이스 (save/wiki_*/skills), 스킬 발견 |
+| **social-listening** | 5 | Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu 검색 |
+| **audience-analysis** | 3 | 의견 클러스터링, 인사이트 추출, 콘텐츠 분석 |
+| **planning** | 6 | 작업, 실행, 진행 추적, 서버측 에이전트 실행 |
 | **analysis** | 5 | 전체 분석 실행, 결과에서 스펙 생성 |
-| **crowd-intelligence** | 2 | 비동기 크라우드 리서치와 작업 폴링 |
-| **spec-delivery** | 3 | 크라우드 피드백의 실행 가능한 스펙 탐색 및 선점 |
-| **sessions** | 3 | 멀티 에이전트 조율 |
-| **setup** | 3 | 보드 관리, 프로젝트 목록, 마이그레이션 |
-| **agent-network** | 2 | 에이전트 등록, 기능 발견 |
+| **crowd-intelligence** | 1 | 비동기 크라우드 리서치와 작업 폴링 |
 
 추가로 9개의 **워크플로우 팩**이 활성화 시 SKILL.md를 통해 전문 방법론을 제공합니다:
 - knowledge-base, competitive-analysis, content-strategy, content-creator, data-storytelling, heuristic-evaluation, market-research-reports, user-stories, ux-researcher
@@ -107,22 +103,21 @@ npx @crowdlisten/harness login
  save()          Supabase              ~/.crowdlisten/context/
 ───────→  memories 테이블  ──렌더──→  ├── INDEX.md
                                       ├── entries/a1b2c3d4.md
- recall()        ↑                    └── topics/auth.md
+ wiki_search()   ↑                    └── topics/auth.md
 ←────────────────┘
-                                      sync_context({ organize: true })
- sync_context()                       중복 감지,
- 로컬 재구축 ←──── 전체 풀 ────── 주제별 그룹화,
- .md 캐시                             합성 제안
+ wiki_list()                          wiki_ingest()
+ 인덱스 탐색                            외부 콘텐츠 수집
 ```
 
 **데이터 흐름:**
 
-1. **저장** — `save({ title, content, tags })`는 Supabase에 기록하고 YAML 프론트매터가 포함된 `.md` 파일을 로컬에 렌더링
-2. **리콜** — `recall({ search })`는 시맨틱 검색(pgvector 코사인 유사도)으로 Supabase를 쿼리하며, 키워드 매칭으로 폴백. 구조화된 탐색은 `~/.crowdlisten/context/INDEX.md`를 직접 읽기
-3. **동기화** — `sync_context()`는 클라우드에서 모든 항목을 풀하고 전체 로컬 `.md` 폴더를 재구축. 웹 업로드나 기기 전환 후 사용. `organize: true`를 전달하면 근사 중복 감지(Jaccard 유사도), 3개 이상 항목의 주제 식별, 합성이나 정리가 필요한 항목 보고서 반환
-4. **퍼블리시** — `publish_context({ memory_id, team_id })`로 팀원과 항목 공유. 다음 `sync_context` 시 INDEX.md의 `## Shared` 섹션에 풀됨
+1. **저장** — `save({ title, content, tags })`는 Supabase에 기록하고 `.md` 파일을 로컬에 렌더링. `publish: { team_id }`를 전달하면 팀과 공유.
+2. **탐색** — `wiki_list()`로 인덱스 탐색. `wiki_read(entry_id)`로 개별 항목 읽기.
+3. **검색** — `wiki_search({ query })`로 모든 항목에서 전체 텍스트 검색.
+4. **수집** — `wiki_ingest({ url_or_text })`로 외부 콘텐츠를 지식 베이스에 수집.
+5. **로그** — `wiki_log({ message })`로 결정사항과 진행 상황의 타임스탬프 로그 항목 추가.
 
-**복리 효과:** 매 분석이나 리서치 작업 후 에이전트가 핵심 요점 2-3개를 저장합니다. 시간이 지나면 `sync_context({ organize: true })`가 이를 주제별로 그룹화합니다. 에이전트가 주제를 정제된 요약으로 합성합니다. 다음 에이전트는 풍부한 INDEX.md로 시작하며, 빈 슬레이트가 아닙니다.
+**복리 효과:** 매 분석이나 리서치 작업 후 에이전트가 핵심 요점 2-3개를 저장합니다. Wiki 도구를 통해 에이전트가 지식을 탐색, 검색, 정리할 수 있습니다. 다음 에이전트는 풍부한 지식 베이스로 시작하며, 빈 슬레이트가 아닙니다.
 
 Supabase가 유일한 진실 소스입니다. 로컬 `.md` 폴더는 읽기 전용 렌더링 캐시입니다 — 동기화 충돌도, 병합 이슈도 없습니다.
 

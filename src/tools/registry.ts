@@ -60,76 +60,44 @@ const packs: Map<string, SkillPack> = new Map();
  * Built-in skill packs grouping tools into logical units.
  */
 export function initializeRegistry(skillsDir: string): void {
-  // Core — always on (5 tools)
+  // Core — always on (2 tools + wiki)
   packs.set("core", {
     id: "core",
     name: "Core",
-    description: "Discovery + memory — list skill packs, activate packs, save/recall/sync context as .md knowledge base",
-    toolNames: ["list_skill_packs", "activate_skill_pack", "save", "recall", "sync_context", "publish_context", "set_preferences", "wiki_list", "wiki_read", "wiki_write", "wiki_search", "wiki_ingest", "wiki_log"],
+    description: "Discovery + memory — manage skill packs, save context, browse project wiki",
+    toolNames: ["skills", "save", "wiki_list", "wiki_read", "wiki_write", "wiki_search", "wiki_ingest", "wiki_log"],
   });
 
-  // Planning — task management
+  // Planning — task management (4 tools)
   packs.set("planning", {
     id: "planning",
     name: "Planning & Tasks",
-    description: "Task management, planning, and execution tracking — create tasks, build plans, track progress",
+    description: "Task board for agent coordination — create, claim, and complete tasks. Trigger remote agent execution.",
     toolNames: [
-      "list_tasks", "create_task", "get_task", "update_task",
-      "claim_task", "complete_task", "log_progress", "delete_task",
-      "create_plan", "get_plan", "update_plan",
+      "list_tasks", "create_task", "claim_task", "complete_task",
       "execute_task", "get_execution_status",
     ],
   });
 
-  // Knowledge pack removed — consolidated into core save/recall
-
-  // Social listening
+  // Social listening (5 tools)
   packs.set("social-listening", {
     id: "social-listening",
     name: "Social Listening",
     description: "Search and retrieve content from social platforms — Reddit, Twitter, TikTok, YouTube, Instagram.",
     toolNames: [
       "search_content", "get_content_comments", "get_trending_content",
-      "get_user_content", "get_platform_status", "health_check", "extract_url",
+      "platform_status", "extract_url",
     ],
   });
 
-  // Audience analysis
+  // Audience analysis (3 tools)
   packs.set("audience-analysis", {
     id: "audience-analysis",
     name: "Audience Analysis",
-    description: "AI-powered content analysis, opinion clustering, insight extraction, and cross-platform research synthesis.",
+    description: "AI-powered content analysis, opinion clustering, and insight extraction.",
     toolNames: [
-      "analyze_content", "cluster_opinions", "enrich_content",
-      "extract_insights",
+      "analyze_content", "cluster_opinions", "extract_insights",
     ],
-  });
-
-  // Sessions — multi-agent coordination
-  packs.set("sessions", {
-    id: "sessions",
-    name: "Multi-Agent Sessions",
-    description: "Coordinate parallel agent sessions on shared tasks",
-    toolNames: ["start_session", "list_sessions", "update_session"],
-  });
-
-  // Setup — board management
-  packs.set("setup", {
-    id: "setup",
-    name: "Setup & Board Management",
-    description: "Project and board setup — list projects, create boards, migrate tasks",
-    toolNames: [
-      "get_or_create_global_board", "list_projects",
-      "migrate_to_global_board",
-    ],
-  });
-
-  // Spec Delivery — actionable specs from crowd analysis
-  packs.set("spec-delivery", {
-    id: "spec-delivery",
-    name: "Spec Delivery",
-    description: "Actionable specs from crowd feedback — browse, inspect, and start implementing specs generated from analysis",
-    toolNames: ["get_specs", "get_spec_detail", "start_spec"],
   });
 
   // ── Agent-Proxied Packs (proxy to agent.crowdlisten.com) ────────────
@@ -149,16 +117,8 @@ export function initializeRegistry(skillsDir: string): void {
   packs.set("crowd-intelligence", {
     id: "crowd-intelligence",
     name: "Crowd Intelligence",
-    description: "Research what the crowd says about any topic — social listening with business context enrichment. Async: submit research, poll for results.",
-    toolNames: ["crowd_research", "crowd_research_status"],
-  });
-
-  // Agent Network — register, discover
-  packs.set("agent-network", {
-    id: "agent-network",
-    name: "Agent Network",
-    description: "Register agents and discover capabilities in the CrowdListen agent network.",
-    toolNames: ["register_agent", "get_capabilities"],
+    description: "Research what the crowd says about any topic — social listening with business context enrichment.",
+    toolNames: ["crowd_research"],
   });
 
   // ── Virtual SKILL.md Packs ────────────────────────────────────────────

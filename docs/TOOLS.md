@@ -1,8 +1,8 @@
 # Tools Reference
 
-Technical reference for all CrowdListen Harness MCP tools. Organized by feature. Each tool lists its parameters, return shape, and code path.
+Technical reference for all CrowdListen Harness MCP tools (~28 tools across 6 packs). Organized by feature. Each tool lists its parameters, return shape, and code path.
 
-**Skill pack system**: Tools are grouped into packs. Only the `core` pack is always active. Call `list_skill_packs` then `activate_skill_pack` to unlock others. See [Skill Discovery](#skill-discovery) for details.
+**Skill pack system**: Tools are grouped into packs. Only the `core` pack is always active. Call `skills({ action: "list" })` then `skills({ action: "activate", pack_id: "..." })` to unlock others. See [Skill Discovery](#skill-discovery) for details.
 
 **Auth model**: All tools authenticate via Supabase session token stored at `~/.crowdlisten/auth.json`. Sign in with `npx @crowdlisten/harness login`.
 
@@ -10,57 +10,24 @@ Technical reference for all CrowdListen Harness MCP tools. Organized by feature.
 
 ## Task Management
 
-Pack: `setup` + `planning`
-
-### `get_or_create_global_board`
-
-Get (or auto-create) the user's single global task board. Call once at session start to get `board_id`.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ board_id, name, status: "created" | "exists" }`
-
-> **Code**: `src/tools.ts` handleTool() -> `getOrCreateGlobalBoard()` -> Supabase `kanban_boards` + `kanban_columns` tables
-
-### `list_projects`
-
-List all projects the authenticated user can access.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ projects: [{ id, name }], count }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `projects` table, ordered by `updated_at` desc, limit 20
+Pack: `planning`
 
 ### `list_tasks`
 
-List tasks on a board. Defaults to the global board.
+List tasks on a board, or get full details of a single task. Defaults to the global board.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
+| `task_id` | No | Card/task UUID — if provided, returns full details of that single task |
 | `board_id` | No | Board UUID (defaults to global board) |
 | `status` | No | Filter: `todo`, `inprogress`, `inreview`, `done`, `cancelled` |
 | `limit` | No | Max results (default 50) |
 
-**Returns**: `{ tasks: [{ id, title, description, status, priority, labels, column, ... }], count, board_id }`
+**Returns (list)**: `{ tasks: [{ id, title, description, status, priority, labels, column, ... }], count, board_id }`
+
+**Returns (single task)**: `{ task: { id, title, description, status, priority, labels, column: { id, name }, board: { id, name, project_id }, ... } }`
 
 > **Code**: `src/tools.ts` handleTool() -> Supabase `kanban_cards` table with join on `kanban_columns`, ordered by `position`
-
-### `get_task`
-
-Get full details of a single task including board and column info.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-
-**Returns**: `{ task: { id, title, description, status, priority, labels, column: { id, name }, board: { id, name, project_id }, ... } }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `kanban_cards` with joins on `kanban_columns` and `kanban_boards`
 
 ### `create_task`
 
@@ -79,52 +46,6 @@ Create a new task. Defaults to global board, To Do column.
 
 > **Code**: `src/tools.ts` handleTool() -> resolves `column_id` via `getColumnByStatus()`, inserts into Supabase `kanban_cards`
 
-### `update_task`
-
-Update title, description, status, or priority. Pass only changed fields.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-| `title` | No | New title |
-| `description` | No | New description |
-| `status` | No | `todo`, `inprogress`, `inreview`, `done`, `cancelled` |
-| `priority` | No | `low`, `medium`, `high` |
-
-**Returns**: `{ task: { id, title, status, priority }, status: "updated" }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `kanban_cards` update. Status changes also move `column_id` via `getColumnByStatus()`.
-
-### `delete_task`
-
-Permanently delete a task. Cannot be undone.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-
-**Returns**: `{ deleted_task_id, status: "deleted" }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `kanban_cards` delete
-
-### `migrate_to_global_board`
-
-Move all tasks from all boards to the global board. One-time consolidation utility.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ migrated, total_found, global_board_id, status: "migration_complete" }`
-
-> **Code**: `src/tools.ts` handleTool() -> queries all user's `kanban_cards` not on global board, updates each `board_id` + `column_id`
-
----
-
-## Task Execution & Sessions
-
-Pack: `planning` + `sessions`
-
 ### `claim_task`
 
 Start working on a task. Moves it to In Progress, creates a workspace and session, returns project context and any existing plan.
@@ -141,71 +62,20 @@ Start working on a task. Moves it to In Progress, creates a workspace and sessio
 
 ### `complete_task`
 
-Mark a task as done. Auto-completes any active plan.
+Mark a task as done, or log a progress note. Auto-completes any active plan when completing.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `task_id` | Yes | Card/task UUID |
 | `summary` | No | Completion summary (logged to session) |
+| `progress` | No | If `true`, logs a progress note instead of completing the task |
+| `message` | No | Progress message (used when `progress: true`) |
 
-**Returns**: `{ task_id, status: "done" }`
+**Returns (complete)**: `{ task_id, status: "done" }`
 
-> **Code**: `src/tools.ts` handleTool() -> updates `kanban_cards` to `done`, updates `planning_context` plan status to `completed`, calls `logToSession()` if summary provided
+**Returns (progress)**: `{ task_id, session_id, status: "logged" }`
 
-### `log_progress`
-
-Log a progress note to the task's execution session.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-| `message` | Yes | Progress message |
-| `session_id` | No | Specific session UUID (defaults to most recent active session) |
-
-**Returns**: `{ task_id, session_id, status: "logged" }`
-
-> **Code**: `src/tools.ts` handleTool() -> `logToSession()` -> inserts into Supabase `kanban_session_logs`
-
-### `start_session`
-
-Start a new parallel agent session for a task. Use when multiple agents work on different aspects of the same task. `claim_task` already creates one session.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-| `executor` | No | Agent type |
-| `focus` | Yes | What this session will work on |
-
-**Returns**: `{ session_id, workspace_id, executor, focus, status, started_at, branch }`
-
-> **Code**: `src/tools.ts` handleTool() -> finds or creates `kanban_workspaces`, inserts into `kanban_sessions` with `status: "running"`
-
-### `list_sessions`
-
-List all sessions for a task with workspace info.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-| `status` | No | Filter: `idle`, `running`, `completed`, `failed`, `stopped` |
-
-**Returns**: `{ sessions: [{ session_id, workspace_id, branch, executor, focus, status, started_at, completed_at }], count, task_id }`
-
-> **Code**: `src/tools.ts` handleTool() -> joins `kanban_workspaces` and `kanban_sessions` tables
-
-### `update_session`
-
-Update a session's status or focus.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `session_id` | Yes | Session UUID |
-| `status` | No | `idle`, `running`, `completed`, `failed`, `stopped` |
-| `focus` | No | Updated focus description |
-
-**Returns**: `{ session: { id, workspace_id, executor, focus, status, ... }, status: "updated" }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `kanban_sessions` update. Sets `completed_at` when status is `completed`.
+> **Code**: `src/tools.ts` handleTool() -> updates `kanban_cards` to `done`, updates `planning_context` plan status to `completed`, calls `logToSession()` if summary/progress provided
 
 ### `execute_task`
 
@@ -213,7 +83,7 @@ Trigger server-side AI agent execution. The agent runs on the CrowdListen backen
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `session_id` | Yes | Session UUID (from `claim_task` or `start_session`) |
+| `session_id` | Yes | Session UUID (from `claim_task`) |
 | `prompt` | Yes | Instructions for the AI agent |
 | `executor` | No | `CLAUDE_CODE`, `CODEX`, `GEMINI_CLI`, `AMP` (default: `AMP`) |
 | `cwd` | No | Working directory for execution |
@@ -239,70 +109,15 @@ Poll status and logs of a server-side agent execution.
 
 ---
 
-## Planning
-
-Pack: `planning`
-
-### `create_plan`
-
-Create an execution plan for a task. Status starts as `draft`. Lifecycle: draft -> review -> approved -> executing -> completed.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-| `approach` | Yes | The proposed approach |
-| `assumptions` | No | List of assumptions |
-| `constraints` | No | Known constraints |
-| `success_criteria` | No | How to know it's done |
-| `risks` | No | Identified risks |
-| `estimated_steps` | No | Estimated number of steps |
-
-**Returns**: `{ plan_id, status: "draft", version: 1 }`
-
-> **Code**: `src/tools.ts` handleTool() -> resolves `project_id` from task's board, inserts into Supabase `planning_context` with `type: "plan"`
-
-### `get_plan`
-
-Get the active plan for a task with version history.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `task_id` | Yes | Card/task UUID |
-
-**Returns**: `{ plan: { id, title, body, metadata, status, version, ... } | null, versions: [{ version, title, body, feedback, ... }] }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `planning_context` (active plan) + `planning_context_versions` (history)
-
-### `update_plan`
-
-Iterate on a plan. Content changes archive the current version. Setting `feedback` auto-reverts status to `draft`.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `plan_id` | Yes | Plan UUID |
-| `approach` | No | Updated approach |
-| `status` | No | `draft`, `review`, `approved`, `executing`, `completed` |
-| `feedback` | No | Human feedback (auto-reverts to draft) |
-| `assumptions` | No | Updated assumptions |
-| `constraints` | No | Updated constraints |
-| `success_criteria` | No | Updated criteria |
-| `risks` | No | Updated risks |
-
-**Returns**: `{ plan_id, version, status }`
-
-> **Code**: `src/tools.ts` handleTool() -> archives current version to `planning_context_versions`, updates `planning_context`. Version increments on content/feedback changes.
-
----
-
 ## Memory & Knowledge Base
 
 Pack: `core` (always active)
 
-Supabase `memories` table is the source of truth. Local `.md` files at `~/.crowdlisten/context/` are a rendered cache that agents browse via `INDEX.md`.
+Supabase `memories` table is the source of truth. Local `.md` files at `~/.crowdlisten/context/` are a rendered cache.
 
 ### `save`
 
-Save context that persists across sessions. Renders to local `.md` knowledge base. Dual-writes to `project_insights` for frontend visibility when tags include `decision`, `pattern`, `preference`, `learning`, or `principle`.
+Save context that persists across sessions. Renders to local `.md` knowledge base. Dual-writes to `project_insights` for frontend visibility when tags include `decision`, `pattern`, `preference`, `learning`, or `principle`. Pass `publish` to share with a team.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -312,54 +127,90 @@ Save context that persists across sessions. Renders to local `.md` knowledge bas
 | `project_id` | No | Project scope |
 | `task_id` | No | Task association |
 | `confidence` | No | 0.0--1.0 (default 1.0) |
+| `publish` | No | `{ team_id }` — publish to a team when saving |
 
-**Returns**: `{ saved: true, id, title, tags, supabase: true|false }`
+**Returns**: `{ saved: true, id, title, tags, supabase: true|false, published?: true }`
 
-> **Code**: `src/tools.ts` handleTool() -> inserts into Supabase `memories` table, calls `renderEntry()` from `src/context/md-store.ts`. Falls back to local `context.json` via `addBlocks()` if Supabase fails.
+> **Code**: `src/tools.ts` handleTool() -> inserts into Supabase `memories` table, calls `renderEntry()` from `src/context/md-store.ts`. Falls back to local `context.json` via `addBlocks()` if Supabase fails. When `publish` is provided, also sets `is_published`, `published_at`, `team_id`.
 
-### `recall`
+### `wiki_list`
 
-Search saved context using keyword matching. For structured browsing, read `~/.crowdlisten/context/INDEX.md` directly.
+Browse the knowledge base index. Returns entries grouped by tag with metadata.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `search` | No | Natural language search query (matches title and content via `ILIKE`) |
-| `tags` | No | Filter by tags (array, uses `overlaps`) |
-| `project_id` | No | Filter by project |
+| `tag` | No | Filter by tag |
+| `limit` | No | Max results (default 50) |
+
+**Returns**: `{ entries: [...], count, index_path }`
+
+> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` table query, grouped by tags.
+
+### `wiki_read`
+
+Read a single knowledge base entry by ID.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `entry_id` | Yes | Memory UUID |
+
+**Returns**: `{ entry: { id, title, content, tags, created_at, ... } }`
+
+> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` table single row fetch.
+
+### `wiki_write`
+
+Write or update a knowledge base entry directly.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `title` | Yes | Entry title |
+| `content` | Yes | Entry content |
+| `tags` | No | Freeform tags |
+| `entry_id` | No | If provided, updates existing entry instead of creating new |
+
+**Returns**: `{ id, title, status: "created" | "updated" }`
+
+> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` table upsert + local `.md` render.
+
+### `wiki_search`
+
+Full-text search across all knowledge base entries.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `query` | Yes | Search query |
 | `limit` | No | Max results (default 20) |
 
-**Returns**: `{ memories: [...], count, search_mode: "keyword" | "local_md", index_path }`
+**Returns**: `{ results: [...], count, query }`
 
-> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` table query with `ILIKE` text search. Falls back to `searchLocalIndex()` from `src/context/md-store.ts`.
+> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` table query with `ILIKE` text search.
 
-### `sync_context`
+### `wiki_ingest`
 
-Pull all context from cloud and rebuild local `.md` knowledge base. Pass `organize=true` to also detect near-duplicates, group by topic, and return an organization report.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `full` | No | Force full rebuild (default: `true`) |
-| `organize` | No | Also run dedup/topic grouping and return an organization report (default: `false`) |
-| `dry_run` | No | When `organize=true`, preview only without file changes (default: `false`) |
-
-**Returns (sync only)**: `{ synced: true, entry_count, index_path, meta }`
-
-**Returns (organize=true)**: `{ synced: true, entry_count, index_path, meta, total_entries, tag_groups, topic_candidates, duplicates, dry_run, hint }`
-
-> **Code**: `src/tools.ts` handleTool() -> fetches all `memories` rows, calls `renderAll()` from `src/context/md-store.ts`. When `organize=true`, also computes Jaccard similarity (>= 0.7 on title words), groups by tag, and rebuilds INDEX.md (unless `dry_run`).
-
-### `publish_context`
-
-Publish a saved memory to a team. Teammates see it in INDEX.md `## Shared` section after `sync_context`.
+Ingest external content (URL or raw text) into the knowledge base.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `memory_id` | Yes | Memory UUID |
-| `team_id` | Yes | Team UUID |
+| `url_or_text` | Yes | URL to fetch or raw text to ingest |
+| `source` | No | Source label (e.g. `"article"`, `"slack-export"`) |
 
-**Returns**: `{ published: true, memory_id, team_id }`
+**Returns**: `{ ingested: true, id, title, source }`
 
-> **Code**: `src/tools.ts` handleTool() -> Supabase `memories` update: sets `is_published`, `published_at`, `team_id`
+> **Code**: `src/tools.ts` handleTool() -> fetches URL or processes text, inserts into Supabase `memories` table.
+
+### `wiki_log`
+
+Append a timestamped log entry for decisions, progress notes, or session journals.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `message` | Yes | Log message |
+| `tags` | No | Freeform tags (e.g. `["decision", "session"]`) |
+
+**Returns**: `{ id, logged: true, timestamp }`
+
+> **Code**: `src/tools.ts` handleTool() -> inserts into Supabase `memories` table with auto-generated title and timestamp.
 
 ---
 
@@ -371,18 +222,20 @@ Platforms: `tiktok`, `twitter`, `reddit`, `instagram`, `youtube`, `moltbook`. Us
 
 ### `search_content`
 
-Search for posts and discussions across social platforms.
+Search for posts and discussions across social platforms. Pass `type: "user"` with `userId` to get a specific user's recent posts.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `platform` | Yes | Platform name or `"all"` |
 | `query` | Yes | Search query (keywords, hashtags) |
 | `limit` | No | Max posts (1--50, default 10) |
+| `type` | No | `"user"` — switches to user content mode |
+| `userId` | No | User ID or username (required when `type: "user"`) |
 | `useVision` | No | Force vision extraction (treats `query` as a URL) |
 
 **Returns**: `{ platform, query, count, posts: [...] }`
 
-> **Code**: `src/insights/index.ts` handleInsightsTool() -> `src/insights/handlers.ts` searchContent() -> `UnifiedSocialMediaService.searchContent()` or `getCombinedSearchResults()`. Vision mode delegates to `extractWithVision()`.
+> **Code**: `src/insights/index.ts` handleInsightsTool() -> `src/insights/handlers.ts` searchContent() -> `UnifiedSocialMediaService.searchContent()` or `getUserContent()`. Vision mode delegates to `extractWithVision()`.
 
 ### `get_content_comments`
 
@@ -412,43 +265,19 @@ Get currently trending posts from a platform.
 
 > **Code**: `src/insights/handlers.ts` getTrendingContent() -> `UnifiedSocialMediaService.getTrendingContent()` or `getCombinedTrendingContent()`
 
-### `get_user_content`
+### `platform_status`
 
-Get recent posts from a specific user/creator.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `platform` | Yes | Platform name |
-| `userId` | Yes | User ID or username |
-| `limit` | No | Max posts (1--50, default 10) |
-
-**Returns**: `{ platform, userId, count, posts: [...] }`
-
-> **Code**: `src/insights/handlers.ts` getUserContent() -> `UnifiedSocialMediaService.getUserContent()`
-
-### `get_platform_status`
-
-List available platforms and their capabilities.
+List available platforms and their capabilities. Pass `diagnose: true` for full connectivity health check.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| *(none)* | | |
+| `diagnose` | No | If `true`, runs full health check on all platforms (default: `false`) |
 
-**Returns**: `{ availablePlatforms: { ... }, totalPlatforms }`
+**Returns (status)**: `{ availablePlatforms: { ... }, totalPlatforms }`
 
-> **Code**: `src/insights/handlers.ts` getPlatformStatus() -> `UnifiedSocialMediaService.getAvailablePlatforms()`
+**Returns (diagnose=true)**: `{ overall, healthStatus: { [platform]: { status, responseTimeMs, lastChecked, consecutiveFailures, ... } }, source: "cached" | "live", timestamp }`
 
-### `health_check`
-
-Check connectivity and health of all configured platforms. Uses cached health data (< 5 min old) from `HealthMonitor` when available.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ overall, healthStatus: { [platform]: { status, responseTimeMs, lastChecked, consecutiveFailures, ... } }, source: "cached" | "live", timestamp }`
-
-> **Code**: `src/insights/handlers.ts` healthCheck() -> `HealthMonitor.getSummary()` (cached) or `HealthMonitor.checkAll()` (live), fallback to `UnifiedSocialMediaService.healthCheck()`
+> **Code**: `src/insights/handlers.ts` getPlatformStatus() -> `UnifiedSocialMediaService.getAvailablePlatforms()`. When `diagnose: true`, also calls `HealthMonitor.getSummary()` or `HealthMonitor.checkAll()`.
 
 ### `extract_url`
 
@@ -474,17 +303,19 @@ These tools fetch comments locally via `UnifiedSocialMediaService`, then delegat
 
 ### `analyze_content`
 
-Analyze a post and its comments -- sentiment, themes, tension synthesis.
+Analyze a post and its comments -- sentiment, themes, tension synthesis. Pass `enrichment: true` for intent/stance analysis on individual comments.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `platform` | Yes | Platform name |
 | `contentId` | Yes | Content ID |
 | `analysisDepth` | No | `surface`, `standard`, `deep`, `comprehensive` (default: `standard`) |
+| `enrichment` | No | If `true`, also runs intent detection, stance analysis, and engagement scoring on comments |
+| `question` | No | Analysis context/question (used with `enrichment: true`) |
 
-**Returns**: Analysis result object with sentiment, themes, tensions.
+**Returns**: Analysis result object with sentiment, themes, tensions. When `enrichment: true`, also includes enriched comment objects with intent, stance, scores.
 
-> **Code**: `src/insights/handlers.ts` analyzeContent() -> `POST /api/v1/analyze` on agent API
+> **Code**: `src/insights/handlers.ts` analyzeContent() -> `POST /api/v1/analyze` on agent API. When `enrichment: true`, also calls `POST /api/v1/enrich`.
 
 ### `cluster_opinions`
 
@@ -502,19 +333,19 @@ Group comments into engagement-weighted semantic opinion clusters.
 
 > **Code**: `src/insights/handlers.ts` clusterOpinions() -> fetches up to 500 comments locally, sends payload to `POST /api/v1/cluster` on agent API (max 150 comments)
 
-### `enrich_content`
+### `extract_insights`
 
-Enrich comments with intent detection, stance analysis, engagement scoring.
+Extract pain points, feature requests, and other actionable insights from post comments.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `platform` | Yes | Platform name |
 | `contentId` | Yes | Content ID |
-| `question` | No | Analysis context/question |
+| `categories` | No | Insight categories to extract (default: all) |
 
-**Returns**: Enriched comment objects with intent, stance, scores.
+**Returns**: Extracted insights grouped by category.
 
-> **Code**: `src/insights/handlers.ts` enrichContent() -> fetches up to 200 comments locally, sends to `POST /api/v1/enrich` on agent API
+> **Code**: `src/insights/handlers.ts` extractInsights() -> fetches comments locally, sends to agent API for extraction.
 
 ---
 
@@ -599,82 +430,24 @@ Pack: `crowd-intelligence`
 
 ### `crowd_research`
 
-Research what the crowd says about a topic. Searches social platforms, clusters opinions, synthesizes structured intelligence enriched with business context. Async -- returns a `job_id`.
+Research what the crowd says about a topic, or poll job status. Pass `action: "start"` to begin async research, `action: "status"` to poll.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `query` | Yes | Research question |
+| `action` | Yes | `"start"` or `"status"` |
+| `query` | No | Research question (required for `action: "start"`) |
 | `platforms` | No | `reddit`, `twitter`, `moltbook`, `xiaohongshu`, `web` (default: all) |
 | `depth` | No | `quick` (~30s), `standard` (~90s), `deep` (~120s) |
-| `context` | No | Business context. If omitted, auto-recalls saved context via semantic memory (`/agent/v1/content/search`). |
+| `context` | No | Business context. If omitted, auto-recalls saved context via semantic memory. |
+| `job_id` | No | Job ID to poll (required for `action: "status"`) |
 
-**Returns**: `{ status: "running", job_id, estimated_seconds, message }`
+**Returns (start)**: `{ status: "running", job_id, estimated_seconds, message }`
 
-> **Code**: `src/agent-tools.ts` handleAgentTool() -> optionally queries `/agent/v1/content/search` for context, then `agentPost()` -> `POST /api/agents/analyze`
+**Returns (status/running)**: `{ status: "running" | "queued", job_id, message }`
 
-### `crowd_research_status`
+**Returns (status/complete)**: `{ status: "complete", takeaway, sentiment, themes, key_opinions, related_questions, source_count, share_url, _knowledge_base_hint }`
 
-Poll the status of a `crowd_research` job.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `job_id` | Yes | Job ID from `crowd_research` |
-
-**Returns (running)**: `{ status: "running" | "queued", job_id, message }`
-
-**Returns (complete)**: `{ status: "complete", takeaway, sentiment, themes, key_opinions, related_questions, source_count, share_url, _knowledge_base_hint }`
-
-> **Code**: `src/agent-tools.ts` handleAgentTool() -> `agentGet()` -> `GET /api/agents/analyze/{job_id}`
-
----
-
-## Spec Delivery
-
-Pack: `spec-delivery`
-
-Actionable specs generated from crowd feedback analysis. Specs have a lifecycle: `pending` -> `claimed` -> `in_progress` -> `completed`.
-
-### `get_specs`
-
-List actionable specs. Filter by status, type, priority, or minimum confidence.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `project_id` | No | Filter by project UUID |
-| `status` | No | `pending`, `claimed`, `in_progress`, `completed`, `rejected` (default: `pending`) |
-| `spec_type` | No | `feature`, `bug_fix`, `improvement`, `investigation` |
-| `min_confidence` | No | Minimum confidence 0.0--1.0 |
-| `priority` | No | `critical`, `high`, `medium`, `low` |
-| `limit` | No | Max results (default 20) |
-
-**Returns**: `{ specs: [{ id, spec_type, title, objective, priority, confidence, status, project_id, created_at }], count, filters }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `actionable_specs` table with dynamic filters
-
-### `get_spec_detail`
-
-Get full spec details including evidence citations, acceptance criteria, and formatted markdown.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `spec_id` | Yes | Spec UUID |
-
-**Returns**: `{ spec: { ...full row... }, formatted: "# Title\n..." }`
-
-> **Code**: `src/tools.ts` handleTool() -> Supabase `actionable_specs` single row, renders markdown with evidence and acceptance criteria checklist
-
-### `start_spec`
-
-Claim a spec and begin implementation. Composes `create_task` + `claim_task` internally: creates a kanban card from the spec, moves to In Progress, creates workspace and session.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `spec_id` | Yes | Spec UUID |
-| `executor` | No | Agent type (auto-detected if omitted) |
-
-**Returns**: `{ spec_id, task_id, workspace_id, session_id, branch, executor, status: "started", spec: { title, spec_type, priority, objective, acceptance_criteria } }`
-
-> **Code**: `src/tools.ts` handleTool() -> fetches `actionable_specs`, inserts `kanban_cards` with labels, inserts `kanban_workspaces` + `kanban_sessions`, updates spec status to `"claimed"`. Branch pattern: `spec/{slug}-{id8}`
+> **Code**: `src/agent-tools.ts` handleAgentTool() -> For `start`: optionally queries `/agent/v1/content/search` for context, then `agentPost()` -> `POST /api/agents/analyze`. For `status`: `agentGet()` -> `GET /api/agents/analyze/{job_id}`
 
 ---
 
@@ -682,31 +455,23 @@ Claim a spec and begin implementation. Composes `create_task` + `claim_task` int
 
 Pack: `core` (always active)
 
-### `list_skill_packs`
+### `skills`
 
-List all available skill packs with active/available status.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `include_virtual` | No | Include SKILL.md workflow packs (default: `true`) |
-
-**Returns**: `{ packs: [{ id, name, description, toolCount, status, isVirtual }], activePacks, totalPacks, hint }`
-
-> **Code**: `src/tools.ts` handleTool() -> `loadUserState()` from `src/context/user-state.ts`, `listPacks()` from `src/tools/registry.ts`
-
-### `activate_skill_pack`
-
-Activate a skill pack to unlock its tools. For virtual SKILL.md packs, returns the full workflow content instead of adding tools.
+List all available skill packs or activate one. Combines the former `list_skill_packs` and `activate_skill_pack` tools.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `pack_id` | Yes | Pack ID (e.g. `"planning"`, `"social-listening"`, `"competitive-analysis"`) |
+| `action` | Yes | `"list"` or `"activate"` |
+| `pack_id` | No | Pack ID to activate (required for `action: "activate"`, e.g. `"planning"`, `"social-listening"`, `"competitive-analysis"`) |
+| `include_virtual` | No | Include SKILL.md workflow packs when listing (default: `true`) |
 
-**Returns (tool pack)**: `{ activated, type: "tool_pack", name, tools: [...], toolCount, totalActivePacks, _needsListChanged: true }`
+**Returns (list)**: `{ packs: [{ id, name, description, toolCount, status, isVirtual }], activePacks, totalPacks, hint }`
 
-**Returns (virtual pack)**: `{ activated, type: "skill_workflow", name, description, instructions: "<SKILL.md content>" }`
+**Returns (activate/tool pack)**: `{ activated, type: "tool_pack", name, tools: [...], toolCount, totalActivePacks, _needsListChanged: true }`
 
-> **Code**: `src/tools.ts` handleTool() -> `src/tools/registry.ts` getPack(). Virtual: `getSkillMdContent()` reads SKILL.md from disk. Tool pack: `activatePack()` from `src/context/user-state.ts`, `getPackTools()` from registry. Server fires `tools/list_changed` notification.
+**Returns (activate/virtual pack)**: `{ activated, type: "skill_workflow", name, description, instructions: "<SKILL.md content>" }`
+
+> **Code**: `src/tools.ts` handleTool() -> For `list`: `loadUserState()` from `src/context/user-state.ts`, `listPacks()` from `src/tools/registry.ts`. For `activate`: `src/tools/registry.ts` getPack(). Virtual: `getSkillMdContent()` reads SKILL.md from disk. Tool pack: `activatePack()` from `src/context/user-state.ts`, `getPackTools()` from registry. Server fires `tools/list_changed` notification.
 
 ### `search_skills`
 
@@ -741,100 +506,6 @@ Install a skill by ID. Copies SKILL.md content for `copy` type skills, or return
 
 ---
 
-## Agent Network
-
-Pack: `agent-network`
-
-### `register_agent`
-
-Register this agent in the CrowdListen agent network.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | Agent display name |
-| `capabilities` | No | Array: `analysis`, `planning`, `coding`, `research`, `content` |
-| `executor` | No | `CLAUDE_CODE`, `CURSOR`, `GEMINI`, `CODEX`, `AMP`, `OPENCLAW` |
-
-**Returns**: Registration result with `agent_id`.
-
-> **Code**: `src/agent-tools.ts` handleAgentTool() -> `agentPost()` -> `POST /api/agents/register`
-
-### `get_capabilities`
-
-List capabilities of agents in the network.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: Network capability listing.
-
-> **Code**: `src/agent-tools.ts` handleAgentTool() -> `agentGet()` -> `GET /api/agents/capabilities`
-
----
-
-## Preferences
-
-Pack: `core` (always active)
-
-### `set_preferences`
-
-Set user preferences for telemetry, proactive suggestions, and cross-project learnings.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `telemetry` | No | `off` (no tracking), `anonymous` (local-only), `community` (anonymous aggregate) |
-| `proactive_suggestions` | No | Enable/disable proactive skill pack suggestions |
-| `cross_project_learnings` | No | Enable/disable cross-project learning persistence |
-
-**Returns**: `{ updated: [...changes...], preferences: { telemetry, proactiveSuggestions, crossProjectLearnings } }`
-
-> **Code**: `src/tools.ts` handleTool() -> `loadUserState()` / `saveUserState()` from `src/context/user-state.ts`. Persisted to `~/.crowdlisten/user-state.json`.
-
----
-
-## Context Extraction
-
-These tools process raw text (chat exports, transcripts) through PII redaction and LLM extraction.
-
-### `process_transcript`
-
-Process text through the context extraction pipeline: PII redaction -> LLM extraction -> skill matching.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `text` | Yes | Transcript/chat text (PII redacted before LLM sees it) |
-| `source` | No | Source label, e.g. `"slack-export"` (default: `"mcp"`) |
-| `is_chat` | No | Chat history mode: extracts style/insight/pattern/preference (default: `true`) |
-
-**Returns**: `{ blocks_extracted, blocks: [...], skills: [...], redaction_stats, total_redactions, chunks_processed }`
-
-> **Code**: `src/tools.ts` handleTool() -> `runPipeline()` from `src/context/pipeline.ts`
-
-### `get_context_blocks`
-
-Retrieve locally-stored context blocks from previous extractions.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ count, blocks: [...] }`
-
-> **Code**: `src/tools.ts` handleTool() -> `getBlocks()` from `src/context/store.ts`. Reads `~/.crowdlisten/context.json`.
-
-### `recommend_skills`
-
-Get skill recommendations based on stored context blocks. Matches block content against skill catalog using keyword overlap scoring.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| *(none)* | | |
-
-**Returns**: `{ skills: [...] }`
-
-> **Code**: `src/tools.ts` handleTool() -> `getBlocks()` from `src/context/store.ts`, then `matchSkills()` from `src/context/matcher.ts`
-
 ---
 
 ## Skill Pack Reference
@@ -844,13 +515,9 @@ Packs defined in `src/tools/registry.ts` `initializeRegistry()`:
 | Pack ID | Name | Tool Count |
 |---------|------|------------|
 | `core` | Core | 8 (always active) |
-| `planning` | Planning & Tasks | 13 |
-| `sessions` | Multi-Agent Sessions | 3 |
-| `setup` | Setup & Board Management | 5 |
-| `social-listening` | Social Listening | 7 |
-| `audience-analysis` | Audience Analysis | 6 |
+| `planning` | Planning & Tasks | 6 |
+| `social-listening` | Social Listening | 5 |
+| `audience-analysis` | Audience Analysis | 3 |
 | `analysis` | Analysis Engine | 5 |
-| `crowd-intelligence` | Crowd Intelligence | 2 |
-| `agent-network` | Agent Network | 2 |
-| `spec-delivery` | Spec Delivery | 3 |
+| `crowd-intelligence` | Crowd Intelligence | 1 |
 | *(virtual)* | SKILL.md workflows | 0 (content only) |
