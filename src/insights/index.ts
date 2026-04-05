@@ -40,7 +40,7 @@ export const INSIGHTS_TOOLS = [
   // ── Retrieval tools ─────────────────────────────────────────────────────
   {
     name: 'search_content',
-    description: 'Search for posts and discussions across social platforms. Use this first to find content, then use get_content_comments on specific results.',
+    description: 'Search for posts and discussions across social platforms. Supports keyword search or user content retrieval. Use this first to find content, then use get_content_comments on specific results.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -52,6 +52,16 @@ export const INSIGHTS_TOOLS = [
         query: {
           type: 'string',
           description: 'Search query (keywords, hashtags, etc.)',
+        },
+        type: {
+          type: 'string',
+          enum: ['search', 'user'],
+          default: 'search',
+          description: 'Type of search: "search" for keyword search, "user" to get content from a specific user (requires userId)',
+        },
+        userId: {
+          type: 'string',
+          description: 'User ID or username — required when type is "user"',
         },
         limit: {
           type: 'number',
@@ -66,7 +76,7 @@ export const INSIGHTS_TOOLS = [
           description: 'Force vision extraction mode (screenshot + LLM analysis). Treats query as a URL.',
         },
       },
-      required: ['platform', 'query'],
+      required: ['platform'],
     },
   },
   {
@@ -123,45 +133,17 @@ export const INSIGHTS_TOOLS = [
     },
   },
   {
-    name: 'get_user_content',
-    description: 'Get recent posts from a specific user/creator. Useful for tracking influencers, competitors, or key voices.',
+    name: 'platform_status',
+    description: 'Check which platforms are available, their capabilities, and connectivity health. Combines status listing and health diagnostics.',
     inputSchema: {
       type: 'object',
       properties: {
-        platform: {
-          type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook'],
-          description: 'Platform to get user content from',
-        },
-        userId: {
-          type: 'string',
-          description: 'User ID or username to get content from',
-        },
-        limit: {
-          type: 'number',
-          minimum: 1,
-          maximum: 50,
-          default: 10,
-          description: 'Maximum number of posts to retrieve',
+        diagnose: {
+          type: 'boolean',
+          default: false,
+          description: 'When true, also runs connectivity checks on each platform (slower but more thorough)',
         },
       },
-      required: ['platform', 'userId'],
-    },
-  },
-  {
-    name: 'get_platform_status',
-    description: 'List which platforms are available and their capabilities. Call this to check what platforms are configured before searching.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'health_check',
-    description: 'Check connectivity and health of all configured platforms. Call this to diagnose issues if search or comments return errors.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
     },
   },
 
@@ -197,7 +179,7 @@ export const INSIGHTS_TOOLS = [
   // ── Analysis tools ──────────────────────────────────────────────────────
   {
     name: 'analyze_content',
-    description: 'Analyze a post and its comments via the CrowdListen analysis API — sentiment, themes, tension synthesis.',
+    description: 'Analyze a post and its comments via the CrowdListen analysis API — sentiment, themes, tension synthesis. Set enrichment=true to also add intent detection, stance analysis, and engagement scoring.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -215,6 +197,15 @@ export const INSIGHTS_TOOLS = [
           enum: ['surface', 'standard', 'deep', 'comprehensive'],
           default: 'standard',
           description: 'Depth of analysis',
+        },
+        enrichment: {
+          type: 'boolean',
+          default: false,
+          description: 'Also enrich comments with intent detection, stance analysis, engagement scoring, and timestamp hints',
+        },
+        question: {
+          type: 'string',
+          description: 'Optional analysis context/question (used when enrichment=true)',
         },
       },
       required: ['platform', 'contentId'],
@@ -251,29 +242,6 @@ export const INSIGHTS_TOOLS = [
           type: 'boolean',
           default: true,
           description: 'Weight clusters by comment engagement (likes, replies)',
-        },
-      },
-      required: ['platform', 'contentId'],
-    },
-  },
-  {
-    name: 'enrich_content',
-    description: 'Enrich comments with intent detection, stance analysis, engagement scoring, and timestamp hints.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        platform: {
-          type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook'],
-          description: 'Platform where the content is located',
-        },
-        contentId: {
-          type: 'string',
-          description: 'ID of the content to enrich comments for',
-        },
-        question: {
-          type: 'string',
-          description: 'Optional analysis context/question',
         },
       },
       required: ['platform', 'contentId'],
@@ -367,8 +335,13 @@ export async function handleInsightsTool(
 
   switch (name) {
     // ── Retrieval tools ─────────────────────────────────────────────
-    case 'search_content':
+    case 'search_content': {
+      // Merged: type="user" delegates to getUserContent
+      if ((args as any).type === 'user' && (args as any).userId) {
+        return JSON.stringify(await getUserContent(insightsService, args as any), null, 2);
+      }
       return JSON.stringify(await searchContent(insightsService, args as any), null, 2);
+    }
 
     case 'get_content_comments':
       return JSON.stringify(await getContentComments(insightsService, args as any), null, 2);
@@ -376,28 +349,43 @@ export async function handleInsightsTool(
     case 'get_trending_content':
       return JSON.stringify(await getTrendingContent(insightsService, args as any), null, 2);
 
-    case 'get_user_content':
-      return JSON.stringify(await getUserContent(insightsService, args as any), null, 2);
+    // Merged: platform_status = get_platform_status + health_check
+    case 'platform_status': {
+      const status = getPlatformStatus(insightsService);
+      if ((args as any).diagnose) {
+        const health = await healthCheck(insightsService, insightsMonitor ?? undefined);
+        return JSON.stringify({ ...status, health }, null, 2);
+      }
+      return JSON.stringify(status, null, 2);
+    }
 
+    // Legacy aliases — route to merged tools
     case 'get_platform_status':
       return JSON.stringify(getPlatformStatus(insightsService), null, 2);
-
     case 'health_check':
       return JSON.stringify(await healthCheck(insightsService, insightsMonitor ?? undefined), null, 2);
+    case 'get_user_content':
+      return JSON.stringify(await getUserContent(insightsService, args as any), null, 2);
+    case 'enrich_content':
+      return JSON.stringify(await enrichContent(insightsService, args as any), null, 2);
 
     // ── Vision extraction ─────────────────────────────────────────
     case 'extract_url':
       return JSON.stringify(await extractWithVision(args as any), null, 2);
 
-    // ── Analysis tools (all delegate to agent API) ──────────────────
-    case 'analyze_content':
-      return JSON.stringify(await analyzeContent(insightsService, args as any), null, 2);
+    // ── Analysis tools ──────────────────────────────────────────────
+    case 'analyze_content': {
+      // Merged: enrichment=true also runs enrichContent
+      const analysisResult = await analyzeContent(insightsService, args as any);
+      if ((args as any).enrichment) {
+        const enrichResult = await enrichContent(insightsService, args as any);
+        return JSON.stringify({ ...analysisResult, enrichment: enrichResult }, null, 2);
+      }
+      return JSON.stringify(analysisResult, null, 2);
+    }
 
     case 'cluster_opinions':
       return JSON.stringify(await clusterOpinions(insightsService, args as any), null, 2);
-
-    case 'enrich_content':
-      return JSON.stringify(await enrichContent(insightsService, args as any), null, 2);
 
     case 'extract_insights':
       return JSON.stringify(await extractInsights(args as any), null, 2);

@@ -103,18 +103,27 @@ export const AGENT_TOOLS = [
     },
   },
 
-  // ── Crowd Intelligence Pack (2 tools) ──────────────────────────────────
+  // ── Crowd Intelligence Pack (1 tool — merged start + status) ──────────
   {
     name: "crowd_research",
     description:
-      "[Crowd Intelligence] Research what the crowd is saying about a topic. Searches social platforms, clusters opinions, and synthesizes structured intelligence enriched with your business context. Returns a job_id — poll with crowd_research_status.",
+      "[Crowd Intelligence] Research what the crowd is saying about a topic, or check status of existing research. action='start' (default): submits research and returns job_id. action='status': poll with job_id for results.",
     inputSchema: {
       type: "object" as const,
       properties: {
+        action: {
+          type: "string",
+          enum: ["start", "status"],
+          description: "Action: 'start' to begin research, 'status' to poll for results. Default: 'start'.",
+        },
         query: {
           type: "string",
           description:
-            "Research question (e.g., 'What do developers think about cursor vs copilot?')",
+            "Research question (required for action='start')",
+        },
+        job_id: {
+          type: "string",
+          description: "Job ID from a previous crowd_research call (required for action='status')",
         },
         platforms: {
           type: "array",
@@ -137,54 +146,7 @@ export const AGENT_TOOLS = [
             "Optional business context to enrich analysis. If omitted, auto-recalls saved context via semantic memory.",
         },
       },
-      required: ["query"],
     },
-  },
-  {
-    name: "crowd_research_status",
-    description:
-      "[Crowd Intelligence] Poll the status of a crowd_research job. Returns 'queued', 'running', 'complete', or 'error'. When complete, includes the full analysis result with themes, sentiment, insights, and context connections.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        job_id: {
-          type: "string",
-          description: "The job_id returned by crowd_research",
-        },
-      },
-      required: ["job_id"],
-    },
-  },
-
-  // ── Agent Network Pack (2 tools) ───────────────────────────────────────
-  {
-    name: "register_agent",
-    description:
-      "[Agent Network] Register this agent in the CrowdListen agent network. Returns agent_id for future interactions.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        name: { type: "string", description: "Agent display name" },
-        capabilities: {
-          type: "array",
-          items: { type: "string" },
-          description:
-            "Agent capabilities: analysis, planning, coding, research, content",
-        },
-        executor: {
-          type: "string",
-          description:
-            "Agent runtime: CLAUDE_CODE, CURSOR, GEMINI, CODEX, AMP, OPENCLAW",
-        },
-      },
-      required: ["name"],
-    },
-  },
-  {
-    name: "get_capabilities",
-    description:
-      "[Agent Network] List capabilities of agents in the network.",
-    inputSchema: { type: "object" as const, properties: {} },
   },
 
   // ── Task Execution (2 tools) ──────────────────────────────────────────
@@ -306,9 +268,52 @@ export async function handleAgentTool(
       return JSON.stringify(result, null, 2);
     }
 
-    // ── Crowd Intelligence ────────────────────────────────────
+    // ── Crowd Intelligence (merged start + status) ─────────────
     case "crowd_research": {
-      // Step 1: Auto-recall business context if not provided
+      const action = (args.action as string) || "start";
+
+      // Status polling
+      if (action === "status") {
+        if (!args.job_id) throw new Error("job_id is required for action='status'");
+        const result = await agentGet(
+          `/api/agents/analyze/${args.job_id}`,
+          apiKey
+        );
+        const poll = result as any;
+
+        if (poll.status === "complete") {
+          return JSON.stringify(
+            {
+              status: "complete",
+              takeaway: poll.summary,
+              sentiment: poll.sentiment,
+              themes: poll.themes,
+              key_opinions: poll.key_opinions,
+              related_questions: poll.related_questions,
+              source_count: poll.source_count,
+              share_url: poll.share_url,
+              _knowledge_base_hint: "Save key insights from this research using save().",
+            },
+            null,
+            2
+          );
+        }
+
+        return JSON.stringify(
+          {
+            status: poll.status || "running",
+            job_id: args.job_id,
+            message: "Analysis still running. Call again with action='status' in 10 seconds.",
+          },
+          null,
+          2
+        );
+      }
+
+      // Start new research
+      if (!args.query) throw new Error("query is required for action='start'");
+
+      // Auto-recall business context if not provided
       let businessContext = args.context as string | undefined;
       if (!businessContext) {
         try {
@@ -329,7 +334,6 @@ export async function handleAgentTool(
         }
       }
 
-      // Step 2: Submit async analysis via Agent Partners API
       const platforms = args.platforms as string[] | undefined;
       const depth = (args.depth as string) || "standard";
 
@@ -352,58 +356,26 @@ export async function handleAgentTool(
           status: "running",
           job_id: response.analysis_id,
           estimated_seconds: response.estimated_seconds || 60,
-          message: `Analysis submitted. Poll with crowd_research_status({ job_id: "${response.analysis_id}" }) every 10 seconds.`,
+          message: `Analysis submitted. Call crowd_research({ action: "status", job_id: "${response.analysis_id}" }) every 10 seconds.`,
         },
         null,
         2
       );
     }
 
+    // Legacy aliases — route to merged handlers
     case "crowd_research_status": {
       const result = await agentGet(
         `/api/agents/analyze/${args.job_id}`,
         apiKey
       );
-      const poll = result as any;
-
-      if (poll.status === "complete") {
-        return JSON.stringify(
-          {
-            status: "complete",
-            takeaway: poll.summary,
-            sentiment: poll.sentiment,
-            themes: poll.themes,
-            key_opinions: poll.key_opinions,
-            related_questions: poll.related_questions,
-            source_count: poll.source_count,
-            share_url: poll.share_url,
-            _knowledge_base_hint: "Save key insights from this research using save(). Run sync_context({ organize: true }) periodically to organize.",
-          },
-          null,
-          2
-        );
-      }
-
-      return JSON.stringify(
-        {
-          status: poll.status || "running",
-          job_id: args.job_id,
-          message: "Analysis still running. Poll again in 10 seconds.",
-        },
-        null,
-        2
-      );
+      return JSON.stringify(result, null, 2);
     }
 
-    // ── Agent Network ──────────────────────────────────────────
     case "register_agent": {
       const result = await agentPost(
         "/api/agents/register",
-        {
-          name: args.name,
-          capabilities: args.capabilities,
-          executor: args.executor,
-        },
+        { name: args.name, capabilities: args.capabilities, executor: args.executor },
         apiKey
       );
       return JSON.stringify(result, null, 2);

@@ -223,376 +223,36 @@ export async function autoInstallMcp(): Promise<string[]> {
 // ─── Tool Definitions ───────────────────────────────────────────────────────
 
 export const TOOLS = [
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CORE (2 tools — always on)
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    name: "get_or_create_global_board",
-    description: "[Setup] Get (or create) your single global task board. Call once at start of session if you need the board_id. All tasks go here by default.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-  {
-    name: "list_projects",
-    description: "[Setup] List all projects you have access to. Use to find project_id for scoping tasks and context.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-  {
-    name: "list_tasks",
+    name: "skills",
     description:
-      "List tasks on the board. Call this first to see what work is available. Uses global board by default. Filter by status: todo, inprogress, inreview, done, cancelled.",
+      "List or activate skill packs. action='list' shows available packs. action='activate' enables a pack's tools. SKILL.md packs return workflow instructions.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        board_id: { type: "string", description: "Optional: specific board (defaults to global board)" },
-        status: { type: "string", description: "Filter by status" },
-        limit: { type: "number", description: "Max results (default 50)" },
-      },
-    },
-  },
-  {
-    name: "get_task",
-    description: "Get full details of a task including description, status, priority, and labels.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "create_task",
-    description: "Create a new task on the board. Uses global board by default. Optionally tag with a project_id for scoping.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        title: { type: "string", description: "Task title" },
-        description: { type: "string", description: "Task description" },
-        priority: { type: "string", description: "low, medium, or high" },
-        project_id: { type: "string", description: "Optional: tag task with a project" },
-        board_id: { type: "string", description: "Optional: specific board (defaults to global board)" },
-        labels: {
-          type: "array",
-          items: { type: "object", properties: { name: { type: "string" }, color: { type: "string" } } },
-          description: "Label objects [{name, color}]",
-        },
-      },
-      required: ["title"],
-    },
-  },
-  {
-    name: "update_task",
-    description: "Update a task's title, description, status, or priority. Pass only the fields you want to change.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        title: { type: "string" },
-        description: { type: "string" },
-        status: { type: "string", description: "todo, inprogress, inreview, done, cancelled" },
-        priority: { type: "string", description: "low, medium, high" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "claim_task",
-    description:
-      "Claim a task to start working on it. Call this after list_tasks to begin. Moves task to In Progress, creates workspace + session. Returns context (semantic map, knowledge base, existing plan) and branch name. Call query_context next to check existing decisions.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        executor: {
+        action: {
           type: "string",
-          description: "Coding agent name: CLAUDE_CODE, CURSOR, GEMINI, CODEX, AMP, OPENCLAW, OPENCODE, COPILOT, DROID, QWEN_CODE",
+          enum: ["list", "activate"],
+          description: "Action: 'list' to see packs, 'activate' to enable one. Default: 'list'.",
         },
-        branch: { type: "string", description: "Custom branch name (auto-generated if omitted)" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "complete_task",
-    description: "Mark task done. Call record_learning before this to capture what you learned. Optionally attach a summary of what was accomplished. Auto-completes the plan if one exists.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        summary: { type: "string", description: "Summary of work completed" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "log_progress",
-    description:
-      "Log a progress note to the task's execution session. Call periodically during execution to track what you're doing. Useful for handoff between agents.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        message: { type: "string", description: "Progress message" },
-        session_id: {
-          type: "string",
-          description: "Optional: specific session UUID (defaults to most recent active session)",
-        },
-      },
-      required: ["task_id", "message"],
-    },
-  },
-  {
-    name: "delete_task",
-    description: "Permanently delete a task. Cannot be undone.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "migrate_to_global_board",
-    description: "[Setup] Migrate all tasks from all boards to the global board. Run once to consolidate if you have tasks spread across multiple boards.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-  {
-    name: "start_session",
-    description:
-      "[Advanced] Start a new parallel agent session for a task. Use when multiple agents need to work on different aspects of the same task simultaneously. claim_task already creates one session.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        executor: {
-          type: "string",
-          description: "Agent: CLAUDE_CODE, CURSOR, GEMINI, CODEX, AMP, etc.",
-        },
-        focus: {
-          type: "string",
-          description: "What this session will work on (e.g., 'implement auth backend')",
-        },
-      },
-      required: ["task_id", "focus"],
-    },
-  },
-  {
-    name: "list_sessions",
-    description:
-      "[Advanced] List all agent sessions for a task, showing status and what each is working on. Useful for coordinating parallel agents.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        status: {
-          type: "string",
-          description: "Filter by status: idle, running, completed, failed, stopped",
-        },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "update_session",
-    description:
-      "[Advanced] Update a session's status or focus. Use to mark running/completed/stopped when coordinating parallel agents.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        session_id: { type: "string", description: "Session UUID" },
-        status: {
-          type: "string",
-          description: "idle, running, completed, failed, stopped",
-        },
-        focus: { type: "string", description: "Updated focus description" },
-      },
-      required: ["session_id"],
-    },
-  },
-
-  // ── Planning & Context Tools ─────────────────────────────────────────────
-
-  {
-    name: "create_plan",
-    description:
-      "Create an execution plan for a task. Call after claim_task and query_context. Plans go through draft → review → approved → executing → completed lifecycle. Submit for human review with update_plan(status='review').",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-        approach: { type: "string", description: "How you plan to execute this task" },
-        assumptions: {
-          type: "array",
-          items: { type: "string" },
-          description: "Assumptions the plan relies on",
-        },
-        constraints: {
-          type: "array",
-          items: { type: "string" },
-          description: "Known constraints to work within",
-        },
-        success_criteria: {
-          type: "array",
-          items: { type: "string" },
-          description: "How to know the task is done correctly",
-        },
-        risks: {
-          type: "array",
-          items: { type: "string" },
-          description: "Potential risks or blockers",
-        },
-        estimated_steps: { type: "number", description: "Estimated number of steps" },
-      },
-      required: ["task_id", "approach"],
-    },
-  },
-  {
-    name: "get_plan",
-    description: "Get the current plan for a task including version history and any pending human feedback. Check this after human review to see feedback.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        task_id: { type: "string", description: "Card/task UUID" },
-      },
-      required: ["task_id"],
-    },
-  },
-  {
-    name: "update_plan",
-    description:
-      "Iterate on a plan: update approach, change status, or add human feedback. Set status='review' to submit for review, status='executing' after approval. Content changes archive the current version. Setting feedback auto-reverts status to draft for revision.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        plan_id: { type: "string", description: "Plan UUID (from create_plan or get_plan)" },
-        approach: { type: "string", description: "Updated approach" },
-        status: {
-          type: "string",
-          description: "draft, review, approved, executing, completed",
-        },
-        feedback: { type: "string", description: "Human feedback — auto-reverts plan to draft" },
-        assumptions: { type: "array", items: { type: "string" } },
-        constraints: { type: "array", items: { type: "string" } },
-        success_criteria: { type: "array", items: { type: "string" } },
-        risks: { type: "array", items: { type: "string" } },
-      },
-      required: ["plan_id"],
-    },
-  },
-  // query_context, add_context, record_learning → consolidated into save/recall
-  // ─── Context Extraction Tools ──────────────────────────────────────────────
-  {
-    name: "process_transcript",
-    description:
-      "[Context] Process text through the context extraction pipeline: PII redaction → LLM extraction → skill matching. Returns extracted context blocks and recommended skills. Requires LLM provider to be configured (run setup-context).",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        text: {
-          type: "string",
-          description:
-            "The transcript/chat text to process. PII will be redacted before LLM sees it.",
-        },
-        source: {
-          type: "string",
-          description: "Label for the source (e.g. 'slack-export', 'chat-history'). Defaults to 'mcp'.",
-        },
-        is_chat: {
-          type: "boolean",
-          description:
-            "Whether the text is chat history (uses 4-type extraction: style/insight/pattern/preference). Default true.",
-        },
-      },
-      required: ["text"],
-    },
-  },
-  {
-    name: "get_context_blocks",
-    description:
-      "[Context] Retrieve locally-stored context blocks from previous extractions. Blocks are stored in ~/.crowdlisten/context.json.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-  {
-    name: "recommend_skills",
-    description:
-      "[Context] Get CrowdListen skill recommendations based on stored context blocks. Matches block content against the skill catalog using keyword overlap scoring.",
-    inputSchema: { type: "object" as const, properties: {} },
-  },
-
-  // ─── Skill Discovery Tools ──────────────────────────────────────────────
-  {
-    name: "search_skills",
-    description:
-      "[Context] Search or discover skills across all 154 skills (8 native + 146 community). Pass a query for keyword search, or pass context for context-driven discovery that scores skills against your extracted context blocks.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        query: { type: "string", description: "Search query (name, keyword, or description text)" },
-        context: {
-          type: "string",
-          description: "Raw context text for context-driven discovery. Processes text through extraction pipeline and scores skills against it.",
-        },
-        tier: { type: "string", description: "Filter: crowdlisten or community" },
-        category: {
-          type: "string",
-          description: "Filter: development, data, content, research, automation, design, business, productivity",
-        },
-        limit: {
-          type: "number",
-          description: "Max results to return (default 10, used with context-driven discovery)",
-        },
-      },
-    },
-  },
-  {
-    name: "install_skill",
-    description:
-      "[Context] Install a skill by ID — copies SKILL.md content to .claude/commands/ for 'copy' type skills, or returns npx/git instructions for other install methods.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        skill_id: { type: "string", description: "Skill ID (e.g., 'comm-typescript-expert' or 'competitive-analysis')" },
-        target_dir: {
-          type: "string",
-          description: "Target directory for SKILL.md (default: .claude/commands/)",
-        },
-      },
-      required: ["skill_id"],
-    },
-  },
-
-  // ─── Core Always-On Tools (Skill Pack Discovery + Memory) ────────────────
-  {
-    name: "list_skill_packs",
-    description:
-      "List all available skill packs with status (active/available). Skill packs group related tools — activate a pack to unlock its tools. Start here to see what capabilities are available.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        include_virtual: {
-          type: "boolean",
-          description: "Include SKILL.md workflow packs (default true)",
-        },
-      },
-    },
-  },
-  {
-    name: "activate_skill_pack",
-    description:
-      "Activate a skill pack to unlock its tools. After activation, the new tools appear in tools/list. For SKILL.md packs, returns the full workflow instructions. Call list_skill_packs first to see available packs.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
         pack_id: {
           type: "string",
-          description: "Pack ID to activate (e.g., 'planning', 'social-listening', 'competitive-analysis')",
+          description: "Pack ID to activate (required for action='activate')",
+        },
+        include_virtual: {
+          type: "boolean",
+          description: "Include SKILL.md workflow packs in list (default true)",
         },
       },
-      required: ["pack_id"],
     },
   },
   {
     name: "save",
     description:
-      "Save context that persists across sessions. Use tags to categorize (e.g. 'decision', 'pattern', 'preference'). Renders to ~/.crowdlisten/context/ for browsing.",
+      "Save context that persists across sessions. Use tags to categorize. Set publish=true to share with your team.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -621,184 +281,87 @@ export const TOOLS = [
           type: "number",
           description: "Confidence 0-1 (default 1.0)",
         },
+        publish: {
+          type: "boolean",
+          description: "Publish to your team after saving (default false)",
+        },
+        team_id: {
+          type: "string",
+          description: "Team UUID (required when publish=true)",
+        },
       },
       required: ["title", "content"],
     },
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PLANNING (6 tools — activated via pack)
+  // ═══════════════════════════════════════════════════════════════════════════
   {
-    name: "recall",
+    name: "list_tasks",
     description:
-      "Search saved context using keyword matching. For structured browsing, read ~/.crowdlisten/context/INDEX.md directly.",
+      "List tasks on the board, or get details of a single task. Pass task_id for single-task detail. Filter by status: todo, inprogress, inreview, done, cancelled.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        search: {
-          type: "string",
-          description: "Natural language search query",
-        },
-        tags: {
+        task_id: { type: "string", description: "Optional: get full details of a specific task" },
+        board_id: { type: "string", description: "Optional: specific board (defaults to global board)" },
+        status: { type: "string", description: "Filter by status" },
+        limit: { type: "number", description: "Max results (default 50)" },
+      },
+    },
+  },
+  {
+    name: "create_task",
+    description: "Create a new task on the board. Uses global board by default. Optionally tag with a project_id for scoping.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        title: { type: "string", description: "Task title" },
+        description: { type: "string", description: "Task description" },
+        priority: { type: "string", description: "low, medium, or high" },
+        project_id: { type: "string", description: "Optional: tag task with a project" },
+        board_id: { type: "string", description: "Optional: specific board (defaults to global board)" },
+        labels: {
           type: "array",
-          items: { type: "string" },
-          description: "Filter by tags",
-        },
-        project_id: {
-          type: "string",
-          description: "Filter by project",
-        },
-        limit: {
-          type: "number",
-          description: "Max results (default 20)",
+          items: { type: "object", properties: { name: { type: "string" }, color: { type: "string" } } },
+          description: "Label objects [{name, color}]",
         },
       },
-    },
-  },
-  // ── Knowledge Base Management ─────────────────────────────────────
-  {
-    name: "sync_context",
-    description:
-      "Pull all context from cloud and rebuild local .md knowledge base at ~/.crowdlisten/context/. Pass organize=true to also detect duplicates, group by topic, and return an organization report.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        full: {
-          type: "boolean",
-          description: "Force full rebuild (default: true)",
-        },
-        organize: {
-          type: "boolean",
-          description: "Also run dedup/topic grouping and return an organization report (default: false)",
-        },
-        dry_run: {
-          type: "boolean",
-          description: "When organize=true, preview only without file changes (default: false)",
-        },
-      },
+      required: ["title"],
     },
   },
   {
-    name: "publish_context",
+    name: "claim_task",
     description:
-      "Publish a saved memory to your team. Teammates will see it in their INDEX.md '## Shared' section after sync_context.",
+      "Claim a task to start working on it. Moves task to In Progress, creates workspace + session. Returns project context and branch name.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        memory_id: {
-          type: "string",
-          description: "Memory UUID to publish",
-        },
-        team_id: {
-          type: "string",
-          description: "Team UUID to share with",
-        },
-      },
-      required: ["memory_id", "team_id"],
-    },
-  },
-  // ── Spec Delivery ─────────────────────────────────────────────────
-  {
-    name: "get_specs",
-    description:
-      "[Specs] List actionable specs generated from crowd feedback analysis. " +
-      "These are agent-consumable implementation specs with evidence, acceptance criteria, and priority. " +
-      "Filter by status (pending/claimed/in_progress/completed), type, priority, or minimum confidence.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        project_id: {
-          type: "string",
-          description: "Filter by project UUID",
-        },
-        status: {
-          type: "string",
-          enum: ["pending", "claimed", "in_progress", "completed", "rejected"],
-          description: "Filter by lifecycle status (default: pending)",
-        },
-        spec_type: {
-          type: "string",
-          enum: ["feature", "bug_fix", "improvement", "investigation"],
-          description: "Filter by spec type",
-        },
-        min_confidence: {
-          type: "number",
-          description: "Minimum confidence threshold (0.0-1.0)",
-        },
-        priority: {
-          type: "string",
-          enum: ["critical", "high", "medium", "low"],
-          description: "Filter by priority level",
-        },
-        limit: {
-          type: "number",
-          description: "Max results (default 20)",
-        },
-      },
-    },
-  },
-  {
-    name: "get_spec_detail",
-    description:
-      "[Specs] Get full spec details including evidence citations, acceptance criteria, " +
-      "and implementation context. Read this before starting implementation.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        spec_id: {
-          type: "string",
-          description: "Spec UUID to retrieve",
-        },
-      },
-      required: ["spec_id"],
-    },
-  },
-  {
-    name: "start_spec",
-    description:
-      "[Specs] Claim an actionable spec and begin implementation. " +
-      "Creates a kanban task from the spec, claims it (moves to In Progress), " +
-      "and returns workspace context for the coding agent. " +
-      "Composes create_task → claim_task internally.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        spec_id: {
-          type: "string",
-          description: "Spec UUID to start working on",
-        },
+        task_id: { type: "string", description: "Card/task UUID" },
         executor: {
           type: "string",
-          description: "Coding agent type (auto-detected if omitted)",
+          description: "Coding agent name: CLAUDE_CODE, CURSOR, GEMINI, CODEX, AMP, OPENCLAW",
         },
+        branch: { type: "string", description: "Custom branch name (auto-generated if omitted)" },
       },
-      required: ["spec_id"],
+      required: ["task_id"],
     },
   },
-  // ── Preferences ─────────────────────────────────────────────────
   {
-    name: "set_preferences",
-    description:
-      "Set user preferences for telemetry, proactive suggestions, and cross-project learnings. " +
-      "Telemetry levels: off (no tracking), anonymous (local-only stats), community (anonymous aggregate stats). " +
-      "Pass only the fields you want to change.",
+    name: "complete_task",
+    description: "Mark task done, or log progress on it. Pass progress=true with message to log a progress note without completing.",
     inputSchema: {
       type: "object" as const,
       properties: {
-        telemetry: {
-          type: "string",
-          enum: ["off", "anonymous", "community"],
-          description: "Telemetry privacy level",
-        },
-        proactive_suggestions: {
-          type: "boolean",
-          description: "Enable/disable proactive skill pack suggestions",
-        },
-        cross_project_learnings: {
-          type: "boolean",
-          description: "Enable/disable cross-project learning persistence",
-        },
+        task_id: { type: "string", description: "Card/task UUID" },
+        summary: { type: "string", description: "Summary of work completed (or progress message)" },
+        progress: { type: "boolean", description: "If true, log progress note without completing the task" },
       },
+      required: ["task_id"],
     },
   },
-  // log_learning, search_learnings → consolidated into save/recall
+  // execute_task + get_execution_status come from ...AGENT_TOOLS below
 
   // ── Wiki Tools ─────────────────────────────────────────────────────────────
   {
@@ -1049,7 +612,60 @@ export async function handleTool(
   args: Record<string, unknown>
 ): Promise<string> {
   switch (name) {
-    // ── Global Board ─────────────────────────────────────────
+    // ── Core: skills (merged list_skill_packs + activate_skill_pack) ─────
+    case "skills": {
+      const action = (args.action as string) || "list";
+
+      if (action === "activate") {
+        const packId = args.pack_id as string;
+        if (!packId) return json({ error: "Missing 'pack_id' parameter" });
+        if (!hasPack(packId)) return json({ error: `Pack '${packId}' not found. Use skills({ action: 'list' }) to see available packs.` });
+
+        const pack = getPack(packId)!;
+
+        // Virtual SKILL.md packs — return content
+        if (pack.isVirtual) {
+          const content = getSkillMdContent(packId);
+          if (!content) return json({ error: `SKILL.md not found for pack '${packId}'` });
+          return json({
+            activated: packId,
+            type: "skill_workflow",
+            name: pack.name,
+            description: pack.description,
+            instructions: content,
+          });
+        }
+
+        // Regular tool pack
+        const state = activatePack(packId);
+        const tools = getPackTools(packId).map(t => t.name);
+        return json({
+          activated: packId,
+          type: "tool_pack",
+          name: pack.name,
+          tools,
+          toolCount: tools.length,
+          totalActivePacks: state.activePacks.length,
+          _needsListChanged: true,
+        });
+      }
+
+      // Default: list
+      const includeVirtual = args.include_virtual !== false;
+      const state = loadUserState();
+      let packList = listPacks(state.activePacks);
+      if (!includeVirtual) {
+        packList = packList.filter(p => !p.isVirtual);
+      }
+      return json({
+        packs: packList,
+        activePacks: state.activePacks.length,
+        totalPacks: packList.length,
+        hint: "Call skills({ action: 'activate', pack_id: '...' }) to unlock a pack's tools.",
+      });
+    }
+
+    // ── Legacy: Global Board ─────────────────────────────────────────
     case "get_or_create_global_board": {
       const board = await getOrCreateGlobalBoard(sb, userId);
       return json({
@@ -1074,7 +690,22 @@ export async function handleTool(
 
     // ── Tasks ─────────────────────────────────────────────────
     case "list_tasks": {
-      // Use global board if no board_id specified
+      // Single-task detail mode (absorbs get_task)
+      if (args.task_id) {
+        const { data, error } = await sb
+          .from("kanban_cards")
+          .select(
+            `id, title, description, status, priority, labels, due_date, position, created_at, updated_at,
+             column:column_id(id, name),
+             board:board_id(id, name, project_id)`
+          )
+          .eq("id", args.task_id as string)
+          .single();
+        if (error) throw new Error(error.message);
+        return json({ task: data });
+      }
+
+      // List mode
       let boardId = args.board_id as string | undefined;
       if (!boardId) {
         const globalBoard = await getOrCreateGlobalBoard(sb, userId);
@@ -1098,19 +729,9 @@ export async function handleTool(
       return json({ tasks: data, count: data?.length || 0, board_id: boardId });
     }
 
-    case "get_task": {
-      const { data, error } = await sb
-        .from("kanban_cards")
-        .select(
-          `id, title, description, status, priority, labels, due_date, position, created_at, updated_at,
-           column:column_id(id, name),
-           board:board_id(id, name, project_id)`
-        )
-        .eq("id", args.task_id as string)
-        .single();
-      if (error) throw new Error(error.message);
-      return json({ task: data });
-    }
+    // Legacy alias — route to list_tasks with task_id
+    case "get_task":
+      return handleTool(sb, userId, "list_tasks", { task_id: args.task_id });
 
     case "create_task": {
       // Use global board if no board_id specified
@@ -1280,12 +901,21 @@ export async function handleTool(
       });
     }
 
-    // ── Complete ──────────────────────────────────────────────
+    // ── Complete (absorbs log_progress via progress=true) ──────
     case "complete_task": {
       const taskId = args.task_id as string;
       const summary = (args.summary as string) || null;
+      const progressOnly = !!(args.progress);
 
-      // Move to Done
+      // Progress mode: log a note without completing
+      if (progressOnly) {
+        if (summary) {
+          await logToSession(sb, userId, taskId, summary, false);
+        }
+        return json({ task_id: taskId, status: "progress_logged" });
+      }
+
+      // Complete mode: move to Done
       const { data: card } = await sb
         .from("kanban_cards")
         .select("board_id")
@@ -1318,14 +948,9 @@ export async function handleTool(
       return json({ task_id: taskId, status: "done" });
     }
 
-    // ── Log Progress ──────────────────────────────────────────
-    case "log_progress": {
-      const taskId = args.task_id as string;
-      const message = args.message as string;
-      const sessionId = args.session_id as string | undefined;
-      await logToSession(sb, userId, taskId, message, false, sessionId);
-      return json({ task_id: taskId, session_id: sessionId || null, status: "logged" });
-    }
+    // Legacy alias — route to complete_task with progress=true
+    case "log_progress":
+      return handleTool(sb, userId, "complete_task", { task_id: args.task_id, summary: args.message, progress: true });
 
     // ── Delete ────────────────────────────────────────────────
     case "delete_task": {
@@ -1838,56 +1463,12 @@ export async function handleTool(
     }
 
     // ── Core Always-On Tools ─────────────────────────────────────
-    case "list_skill_packs": {
-      const includeVirtual = args.include_virtual !== false;
-      const state = loadUserState();
-      let packList = listPacks(state.activePacks);
-      if (!includeVirtual) {
-        packList = packList.filter(p => !p.isVirtual);
-      }
-      return json({
-        packs: packList,
-        activePacks: state.activePacks.length,
-        totalPacks: packList.length,
-        hint: "Call activate_skill_pack with a pack_id to unlock its tools.",
-      });
-    }
+    // Legacy aliases — route to `skills` handler
+    case "list_skill_packs":
+      return handleTool(sb, userId, "skills", { action: "list", include_virtual: args.include_virtual });
 
-    case "activate_skill_pack": {
-      const packId = args.pack_id as string;
-      if (!packId) return json({ error: "Missing 'pack_id' parameter" });
-      if (!hasPack(packId)) return json({ error: `Pack '${packId}' not found. Use list_skill_packs to see available packs.` });
-
-      const pack = getPack(packId)!;
-
-      // Virtual SKILL.md packs — return content instead of activating tools
-      if (pack.isVirtual) {
-        const content = getSkillMdContent(packId);
-        if (!content) return json({ error: `SKILL.md not found for pack '${packId}'` });
-        return json({
-          activated: packId,
-          type: "skill_workflow",
-          name: pack.name,
-          description: pack.description,
-          instructions: content,
-        });
-      }
-
-      // Regular tool pack — activate and signal tools/list_changed
-      const state = activatePack(packId);
-      const tools = getPackTools(packId).map(t => t.name);
-
-      // Note: server.sendToolListChanged() is called by the index.ts dispatcher
-      return json({
-        activated: packId,
-        type: "tool_pack",
-        name: pack.name,
-        tools,
-        toolCount: tools.length,
-        totalActivePacks: state.activePacks.length,
-        _needsListChanged: true,
-      });
-    }
+    case "activate_skill_pack":
+      return handleTool(sb, userId, "skills", { action: "activate", pack_id: args.pack_id });
 
     case "save": {
       const title = args.title as string;
@@ -1981,7 +1562,27 @@ export async function handleTool(
         addBlocks([block], "save");
       }
 
-      return json({ saved: true, id: memoryId, title, tags, supabase: savedToSupabase });
+      // Side effect: publish if requested (absorbs publish_context)
+      if (args.publish && memoryId && savedToSupabase) {
+        try {
+          const teamId = args.team_id as string;
+          if (teamId) {
+            await sb
+              .from("memories")
+              .update({
+                is_published: true,
+                published_at: new Date().toISOString(),
+                team_id: teamId,
+              })
+              .eq("id", memoryId)
+              .eq("user_id", userId);
+          }
+        } catch {
+          // Non-blocking — publish failure doesn't affect save
+        }
+      }
+
+      return json({ saved: true, id: memoryId, title, tags, supabase: savedToSupabase, published: !!(args.publish && memoryId) });
     }
 
     case "recall": {
@@ -2210,6 +1811,7 @@ export async function handleTool(
       }
     }
 
+    // Legacy: publish_context — still works directly for existing callers
     case "publish_context": {
       const memoryId = args.memory_id as string;
       const teamId = args.team_id as string;

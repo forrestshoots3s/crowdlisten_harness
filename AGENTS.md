@@ -31,7 +31,7 @@ Auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, OpenClaw, Amp.
 
 | Interface | Access | Best for |
 |-----------|--------|----------|
-| MCP stdio | `npx @crowdlisten/harness` — ~30 tools | Local agents |
+| MCP stdio | `npx @crowdlisten/harness` — ~28 tools | Local agents |
 | MCP HTTP | `POST https://mcp.crowdlisten.com/mcp` | Remote agents, cloud |
 | REST | `POST https://mcp.crowdlisten.com/tools/{name}` | Non-MCP integrations |
 | OpenAPI | `GET https://mcp.crowdlisten.com/openapi.json` | Docs, code gen |
@@ -40,55 +40,47 @@ Auto-configures MCP for Claude Code, Cursor, Gemini CLI, Codex, OpenClaw, Amp.
 
 ## Progressive Disclosure
 
-You start with **7 tools**. Activate skill packs to unlock more:
+You start with **8 tools**. Activate skill packs to unlock more:
 
 ```
-list_skill_packs()                              → see available packs
-activate_skill_pack({ pack_id: "planning" })    → unlocks 13 task tools
-activate_skill_pack({ pack_id: "social-listening" }) → unlocks 7 social tools
+skills({ action: "list" })                      → see available packs
+skills({ action: "activate", pack_id: "planning" }) → unlocks 6 task tools
+skills({ action: "activate", pack_id: "social-listening" }) → unlocks 5 social tools
 ```
 
 After activation, new tools appear automatically via `tools/list_changed`.
 
-## Always-On Tools (7)
+## Always-On Tools (8)
 
-- **list_skill_packs**(include_virtual?) — List all packs with status (active/available), tool counts
-- **activate_skill_pack**(pack_id) — Activate a pack to unlock its tools. For SKILL.md packs, returns workflow instructions.
-- **save**(title, content, tags?, project_id?, confidence?) — Save context to .md knowledge base. Renders to ~/.crowdlisten/context/.
-- **recall**(search?, tags?, project_id?, limit?) — Search saved context via keyword matching. For structured browsing, read ~/.crowdlisten/context/INDEX.md.
-- **sync_context**(full?, organize?, dry_run?) — Pull all context from cloud and rebuild local .md knowledge base. Pass organize=true to also detect duplicates and group by topic.
-- **publish_context**(memory_id, team_id) — Share a memory with your team.
-- **set_preferences**(...) — Set user preferences.
+- **skills**(action: "list"|"activate", pack_id?) — List all packs or activate one. For SKILL.md packs, returns workflow instructions.
+- **save**(title, content, tags?, project_id?, confidence?, publish?: { team_id }) — Save context to .md knowledge base. Pass `publish` to share with a team.
+- **wiki_list**(tag?, limit?) — Browse the knowledge base index with optional tag filter.
+- **wiki_read**(entry_id) — Read a single knowledge base entry by ID.
+- **wiki_write**(title, content, tags?) — Write or update a knowledge base entry directly.
+- **wiki_search**(query, limit?) — Full-text search across the knowledge base.
+- **wiki_ingest**(url_or_text, source?) — Ingest external content (URL or raw text) into the knowledge base.
+- **wiki_log**(message, tags?) — Append a timestamped log entry (for decisions, progress notes, session journals).
 
 ## Skill Packs
 
 | Pack | Tools | Description |
 |------|-------|-------------|
-| **core** (always on) | 7 | .md knowledge base + discovery |
-| **planning** | 13 | Tasks, plans, progress tracking, server-side agent execution |
-| **social-listening** | 7 | Search social platforms |
-| **audience-analysis** | 4 | AI analysis |
-| **crowd-intelligence** | 2 | Context-enriched crowd research |
-| **sessions** | 3 | Multi-agent coordination |
-| **setup** | 3 | Board management |
-| **spec-delivery** | 3 | Actionable specs from crowd feedback |
+| **core** (always on) | 8 | Wiki knowledge base + skill discovery |
+| **planning** | 6 | Tasks, execution, progress tracking, server-side agent execution |
+| **social-listening** | 5 | Search social platforms |
+| **audience-analysis** | 3 | AI analysis + opinion clustering |
+| **analysis** | 5 | Full audience analyses + spec generation |
+| **crowd-intelligence** | 1 | Context-enriched crowd research |
 
 Plus: 9 native SKILL.md workflow packs (knowledge-base, competitive-analysis, content-creator, etc.)
 
-## Planning Pack (13 tools)
+## Planning Pack (6 tools)
 
-- **list_tasks**(board_id?, status?, limit?) — List board tasks
-- **get_task**(task_id) — Full task details
+- **list_tasks**(board_id?, status?, limit?, task_id?) — List board tasks, or pass `task_id` for full details of a single task.
 - **create_task**(title, description?, priority?) — Create task
-- **update_task**(task_id, ...) — Update task fields
 - **claim_task**(task_id, executor?, branch?) — Start work, get context
-- **complete_task**(task_id, summary?) — Mark done
-- **delete_task**(task_id) — Remove task
-- **log_progress**(task_id, message) — Track execution
-- **create_plan**(task_id, approach, ...) — Draft execution plan
-- **get_plan**(task_id) — View plan with history
-- **update_plan**(plan_id, ...) — Iterate, submit for review
-- **execute_task**(task_id, executor?) — Trigger server-side AI agent execution. Calls `POST /agent/v1/kanban/agents/execute`. Supported executors: amp, claude-code, codex, gemini-cli.
+- **complete_task**(task_id, summary?, progress?: true) — Mark done. Pass `progress: true` to log a progress note instead of completing.
+- **execute_task**(task_id, executor?) — Trigger server-side AI agent execution. Supported executors: amp, claude-code, codex, gemini-cli.
 - **get_execution_status**(execution_id) — Poll execution progress. Returns status (queued, running, completed, failed) and output when done.
 
 ### Task Execution Workflow
@@ -99,38 +91,27 @@ claim_task → execute_task → get_execution_status (poll) → complete_task
 
 Dispatch a claimed task to a server-side agent, poll until finished, then mark it complete. The executor runs on the backend — your local agent only needs to poll for results.
 
-## Social Listening Pack (7 tools)
+## Social Listening Pack (5 tools)
 
-- **search_content**(platform, query, limit?) — Search posts across platforms
+- **search_content**(platform, query, limit?, type?: "user", userId?) — Search posts across platforms. Pass `type: "user"` with `userId` to get a user's recent posts.
 - **get_content_comments**(platform, contentId, limit?) — Get comments/replies
 - **get_trending_content**(platform, limit?) — Trending posts
-- **get_user_content**(platform, userId, limit?) — User's recent posts
-- **get_platform_status**() — Available platforms + capabilities
-- **health_check**() — Platform connectivity status
+- **platform_status**(diagnose?: true) — Available platforms + capabilities. Pass `diagnose: true` for full connectivity health check.
 - **extract_url**(url, mode?, limit?) — Vision extraction from any URL
 
 Platforms: reddit, twitter, tiktok, instagram, youtube, moltbook
 
-## Audience Analysis Pack (4 tools)
+## Audience Analysis Pack (3 tools)
 
-- **analyze_content**(platform, contentId, analysisDepth?) — Sentiment, themes, tensions. Use analysisDepth: "deep" or "comprehensive" for full audience intelligence.
+- **analyze_content**(platform, contentId, analysisDepth?, enrichment?: true) — Sentiment, themes, tensions. Use analysisDepth: "deep" or "comprehensive" for full audience intelligence. Pass `enrichment: true` for intent/stance analysis.
 - **cluster_opinions**(platform, contentId, clusterCount?) — Opinion clustering
-- **enrich_content**(platform, contentId, question?) — Intent/stance analysis
 - **extract_insights**(platform, contentId, categories?) — Pain points, feature requests
 
-## Crowd Intelligence Pack (2 tools)
+## Crowd Intelligence Pack (1 tool)
 
-Activate: `activate_skill_pack({ pack_id: "crowd-intelligence" })`
+Activate: `skills({ action: "activate", pack_id: "crowd-intelligence" })`
 
-| Tool | Description |
-|------|-------------|
-| `crowd_research` | Submit async crowd research. Returns job_id. |
-| `crowd_research_status` | Poll job status. Returns full analysis when complete. |
-
-**Usage pattern:**
-1. `crowd_research({ query: "...", platforms: ["reddit", "twitter"] })`
-2. Wait 10s, then poll: `crowd_research_status({ job_id: "..." })`
-3. Repeat until status is "complete"
+- **crowd_research**(action: "start"|"status", query?, platforms?, depth?, context?, job_id?) — Start async crowd research or poll status. Pass `action: "start"` with a query to begin, `action: "status"` with a job_id to poll.
 
 **Platforms:** reddit, twitter, moltbook, xiaohongshu, web (Exa search)
 **Depth:** quick (~30s), standard (~90s), deep (~120s)
@@ -139,18 +120,18 @@ Activate: `activate_skill_pack({ pack_id: "crowd-intelligence" })`
 ### Crowd Intelligence Example
 
 ```
-Agent: activate_skill_pack({ pack_id: "crowd-intelligence" })
-Agent: crowd_research({ query: "What do users think about AI code editors?", platforms: ["reddit", "twitter"], depth: "standard" })
+Agent: skills({ action: "activate", pack_id: "crowd-intelligence" })
+Agent: crowd_research({ action: "start", query: "What do users think about AI code editors?", platforms: ["reddit", "twitter"], depth: "standard" })
 → { status: "running", job_id: "abc-123", estimated_seconds: 60 }
 
 [wait 10 seconds]
 
-Agent: crowd_research_status({ job_id: "abc-123" })
+Agent: crowd_research({ action: "status", job_id: "abc-123" })
 → { status: "running", message: "Analysis still running..." }
 
 [wait 10 seconds]
 
-Agent: crowd_research_status({ job_id: "abc-123" })
+Agent: crowd_research({ action: "status", job_id: "abc-123" })
 → { status: "complete", takeaway: "...", themes: [...], sentiment: {...} }
 ```
 
@@ -162,20 +143,9 @@ Agent: crowd_research_status({ job_id: "abc-123" })
 - **list_analyses**(project_id, limit?) — List analyses for a project.
 - **generate_specs**(project_id, analysis_id?, spec_type?) — Generate feature requests, user stories, acceptance criteria from analysis.
 
-## Sessions (3 tools) — Parallel Agents
-
-- **start_session**(task_id, executor?, focus) — Start additional parallel session.
-- **list_sessions**(task_id, status?) — List sessions showing status and focus.
-- **update_session**(session_id, status?, focus?) — Update session: idle, running, completed, failed, stopped.
-
-## Agent Network (2 tools)
-
-- **register_agent**(name, capabilities?, executor?) — Register in agent network.
-- **get_capabilities**() — List network capabilities.
-
 ## Knowledge Base
 
-The knowledge base is a compounding loop: every agent interaction can make it better. Raw saves accumulate, compile organizes them into topics, agents browse the index to find what they need, and research results get filed back. Over time the knowledge base becomes a rich starting point instead of a blank slate.
+The knowledge base is a compounding loop: every agent interaction can make it better. Saves accumulate, the wiki tools let agents browse, search, and ingest content, and research results get filed back. Over time the knowledge base becomes a rich starting point instead of a blank slate.
 
 ### How data flows
 
@@ -183,42 +153,35 @@ The knowledge base is a compounding loop: every agent interaction can make it be
  save()          Supabase              ~/.crowdlisten/context/
 ───────→  memories table  ──render──→  ├── INDEX.md
                                        ├── entries/a1b2c3d4.md
- recall()        ↑                     └── topics/auth.md
+ wiki_search()   ↑                     └── topics/auth.md
 ←────────────────┘
-                                       sync_context({ organize: true })
- sync_context()                        detects duplicates,
- rebuilds local ←──── full pull ────── groups by topic,
- .md cache                             suggests syntheses
+ wiki_list()                           wiki_ingest()
+ browse index                          ingest external content
 ```
 
-1. **Save** — `save({ title, content, tags })` writes to Supabase and renders a `.md` file locally with YAML frontmatter (id, title, tags, source_agent, timestamp).
-2. **Recall** — `recall({ search })` queries Supabase via keyword matching. For structured browsing, agents read `~/.crowdlisten/context/INDEX.md` directly. INDEX.md groups entries by tag, lists recent entries, and links to topic summaries.
-3. **Sync** — `sync_context()` pulls all entries from cloud and rebuilds the entire local `.md` folder. Use after web uploads or switching machines. Pass `organize: true` to also detect near-duplicates, identify topics with 3+ entries, and return a report telling the agent what to synthesize or prune.
-5. **Publish** — `publish_context({ memory_id, team_id })` shares an entry with teammates. Their next `sync_context` pulls it into a `## Shared` section in their INDEX.md.
+1. **Save** — `save({ title, content, tags })` writes to Supabase and renders a `.md` file locally. Pass `publish: { team_id }` to share with teammates.
+2. **Browse** — `wiki_list()` browses the index. `wiki_read(entry_id)` reads a single entry.
+3. **Search** — `wiki_search({ query })` performs full-text search across all entries.
+4. **Write** — `wiki_write({ title, content, tags })` creates or updates an entry directly.
+5. **Ingest** — `wiki_ingest({ url_or_text })` ingests external content (URLs or raw text) into the knowledge base.
+6. **Log** — `wiki_log({ message, tags })` appends a timestamped log entry for decisions, progress notes, or session journals.
 
 ### The compounding effect
 
-After every analysis or research task, the agent saves 2-3 key insights. Over time, `sync_context({ organize: true })` groups these into topics. The agent synthesizes topics into distilled summaries. The next agent (or the same agent in a new session) starts with a rich INDEX.md instead of a blank slate. Each cycle makes the knowledge base more useful.
+After every analysis or research task, the agent saves 2-3 key insights. The wiki tools let agents browse, search, and organize this knowledge. The next agent (or the same agent in a new session) starts with a rich knowledge base instead of a blank slate.
 
 Supabase is the source of truth. The local `.md` folder is a read-only rendered cache. No sync conflicts, no merge issues.
 
 ### Tag vocabulary
 
-Use consistent tags so compile can group effectively: `decision`, `pattern`, `insight`, `preference`, `learning`, `principle`, `synthesis`.
-
-### When to organize
-
-Run `sync_context({ organize: true })`:
-- After accumulating 20+ new entries
-- Before starting a new project or research area
-- Periodically (weekly) to keep the index fresh
+Use consistent tags so grouping works effectively: `decision`, `pattern`, `insight`, `preference`, `learning`, `principle`, `synthesis`.
 
 ## Core Workflow
 
 ```
-list_skill_packs → activate_skill_pack("planning")
-→ list_tasks → claim_task → recall → create_plan
-→ [human review] → execute_task → get_execution_status (poll) → save → complete_task
+skills({ action: "activate", pack_id: "planning" })
+→ list_tasks → claim_task → wiki_search → execute_task
+→ get_execution_status (poll) → save → complete_task
 ```
 
 ## Privacy

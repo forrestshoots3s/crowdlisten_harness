@@ -65,7 +65,7 @@ Para acceso remoto, usa el transporte HTTP:
 |-----------|----------|---------------|
 | **Buscar en plataformas sociales** | Buscar en Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu desde una herramienta | Devuelve publicaciones estructuradas con metricas de engagement, timestamps e info del autor — mismo formato sin importar la plataforma |
 | **Analizar senales de audiencia** | Agrupar opiniones, extraer puntos de dolor, generar reportes multi-plataforma | IA agrupa comentarios por tema, puntua sentimiento, identifica senales competitivas |
-| **Guardar y recuperar entre sesiones** | Base de conocimiento .md que se acumula entre agentes y dispositivos | Tu agente guarda con `save`, recupera con `recall`, navega `~/.crowdlisten/context/INDEX.md`, organiza con `sync_context({ organize: true })` |
+| **Guardar y recuperar entre sesiones** | Base de conocimiento .md que se acumula entre agentes y dispositivos | Tu agente guarda con `save`, busca con `wiki_search`, navega con `wiki_list`, ingesta contenido con `wiki_ingest` |
 | **Planificar y dar seguimiento** | Tareas, planes de ejecucion, seguimiento de progreso, ejecucion en servidor | Tu agente reclama tareas, redacta planes con supuestos y riesgos, registra progreso, dispara ejecucion y consulta estado |
 | **Ejecutar analisis completos** | Analisis colectivo de extremo a extremo con resultados en streaming | `run_analysis` dispara el pipeline completo en el backend; `continue_analysis` para seguimiento |
 | **Obtener specs del feedback colectivo** | Convertir inteligencia colectiva en specs implementables | Las specs incluyen citas de evidencia, criterios de aceptacion y puntaje de confianza |
@@ -75,7 +75,7 @@ Para acceso remoto, usa el transporte HTTP:
 
 ![CrowdListen Pipeline — Raw Crowd Signals to Agent Delivery](docs/images/pipeline.jpg)
 
-Tu agente comienza con **7 herramientas base** y activa paquetes de habilidades bajo demanda (~30 herramientas en total). Sin reinicio — las nuevas herramientas aparecen al instante via `tools/list_changed`.
+Tu agente comienza con **8 herramientas base** y activa paquetes de habilidades bajo demanda (~28 herramientas en total). Sin reinicio — las nuevas herramientas aparecen al instante via `tools/list_changed`.
 
 **Ejecucion de Tareas** — Dispara ejecucion de agentes IA en servidor (Amp, Claude Code, Codex, Gemini CLI) y consulta progreso via MCP. Llama `execute_task` para asignar trabajo y `get_execution_status` para rastrear completamiento.
 
@@ -83,16 +83,12 @@ Tu agente comienza con **7 herramientas base** y activa paquetes de habilidades 
 
 | Paquete | Herramientas | Que hace |
 |---------|:------------:|----------|
-| **core** (siempre activo) | 7 | Base de conocimiento .md (save/recall/sync/publish), descubrimiento de habilidades, preferencias |
-| **social-listening** | 7 | Buscar en Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu |
-| **audience-analysis** | 4 | Agrupacion de opiniones, extraccion de insights, enriquecimiento de contenido |
-| **planning** | 13 | Tareas, planes de ejecucion, seguimiento de progreso, ejecucion de agentes en servidor |
+| **core** (siempre activo) | 8 | Wiki base de conocimiento (save/wiki_*/skills), descubrimiento de habilidades |
+| **social-listening** | 5 | Buscar en Reddit, TikTok, YouTube, Twitter, Instagram, Xiaohongshu |
+| **audience-analysis** | 3 | Agrupacion de opiniones, extraccion de insights, analisis de contenido |
+| **planning** | 6 | Tareas, ejecucion, seguimiento de progreso, ejecucion de agentes en servidor |
 | **analysis** | 5 | Ejecutar analisis completos, generar specs de resultados |
-| **crowd-intelligence** | 2 | Investigacion colectiva asincrona con consulta de estado |
-| **spec-delivery** | 3 | Navegar y reclamar specs accionables del feedback colectivo |
-| **sessions** | 3 | Coordinacion multi-agente |
-| **setup** | 3 | Gestion de tablero, lista de proyectos, migracion |
-| **agent-network** | 2 | Registrar agentes, descubrir capacidades |
+| **crowd-intelligence** | 1 | Investigacion colectiva asincrona con consulta de estado |
 
 Ademas, 9 **paquetes de flujo de trabajo** que entregan metodologia experta via SKILL.md al activarse:
 - knowledge-base, competitive-analysis, content-strategy, content-creator, data-storytelling, heuristic-evaluation, market-research-reports, user-stories, ux-researcher
@@ -107,22 +103,21 @@ Cada interaccion del agente puede mejorar la base de conocimiento. El sistema fu
  save()          Supabase              ~/.crowdlisten/context/
 ───────→  tabla memories  ──render──→  ├── INDEX.md
                                        ├── entries/a1b2c3d4.md
- recall()        ↑                     └── topics/auth.md
+ wiki_search()   ↑                     └── topics/auth.md
 ←────────────────┘
-                                       sync_context({ organize: true })
- sync_context()                        detecta duplicados,
- reconstruye  ←──── pull completo ──── agrupa por tema,
- cache .md local                       sugiere sintesis
+ wiki_list()                           wiki_ingest()
+ navegar indice                        ingestar contenido externo
 ```
 
 **Flujo de datos:**
 
-1. **Guardar** — `save({ title, content, tags })` escribe en Supabase y renderiza un archivo `.md` local con frontmatter YAML
-2. **Recuperar** — `recall({ search })` consulta Supabase via busqueda semantica (similitud coseno pgvector), con fallback a palabras clave. Para navegacion estructurada, los agentes leen `~/.crowdlisten/context/INDEX.md` directamente
-3. **Sincronizar** — `sync_context()` extrae todas las entradas de la nube y reconstruye toda la carpeta `.md` local. Usar despues de subir desde web o cambiar de maquina. Pasar `organize: true` para detectar casi-duplicados (similitud Jaccard), identificar temas con 3+ entradas, y devolver un reporte indicando que sintetizar o podar
-4. **Publicar** — `publish_context({ memory_id, team_id })` comparte una entrada con companeros. Su proximo `sync_context` la incluye en la seccion `## Shared` de su INDEX.md
+1. **Guardar** — `save({ title, content, tags })` escribe en Supabase y renderiza un archivo `.md` local. Pasar `publish: { team_id }` para compartir con el equipo.
+2. **Navegar** — `wiki_list()` navega el indice. `wiki_read(entry_id)` lee una entrada individual.
+3. **Buscar** — `wiki_search({ query })` busqueda de texto completo en todas las entradas.
+4. **Ingestar** — `wiki_ingest({ url_or_text })` ingesta contenido externo en la base de conocimiento.
+5. **Registrar** — `wiki_log({ message })` agrega entradas de registro con marca de tiempo para decisiones y progreso.
 
-**El efecto compuesto:** Despues de cada tarea de analisis o investigacion, el agente guarda 2-3 puntos clave. Con el tiempo, `sync_context({ organize: true })` los agrupa en temas. El agente sintetiza temas en resumenes destilados. El siguiente agente empieza con un INDEX.md rico en lugar de una pagina en blanco.
+**El efecto compuesto:** Despues de cada tarea de analisis o investigacion, el agente guarda 2-3 puntos clave. Las herramientas wiki permiten a los agentes navegar, buscar y organizar el conocimiento. El siguiente agente empieza con una base de conocimiento rica en lugar de una pagina en blanco.
 
 Supabase es la fuente de verdad. La carpeta `.md` local es un cache renderizado de solo lectura — sin conflictos de sincronizacion, sin problemas de merge.
 

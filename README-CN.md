@@ -65,7 +65,7 @@ npx @crowdlisten/harness login
 |------|------|------|
 | **搜索社交平台** | 一个工具搜索 Reddit、YouTube、TikTok、Twitter/X、Instagram、小红书 | 返回带互动指标、时间戳和作者信息的结构化帖子——所有平台格式统一 |
 | **分析受众信号** | 聚类意见、提取痛点、生成跨平台报告 | AI 按主题分组评论、评分情感、识别竞争信号 |
-| **跨会话保存和调取** | .md 知识库跨智能体和设备持续积累 | 用 `save` 保存，`recall` 检索，浏览 `~/.crowdlisten/context/INDEX.md`，`sync_context({ organize: true })` 整理 |
+| **跨会话保存和调取** | .md 知识库跨智能体和设备持续积累 | 用 `save` 保存，`wiki_search` 搜索，`wiki_list` 浏览，`wiki_ingest` 导入内容 |
 | **规划和跟踪工作** | 任务、执行计划、进度跟踪、服务端执行 | 智能体领取任务、起草带假设和风险的方案、记录进度、触发执行并轮询状态 |
 | **运行完整分析** | 端到端群体分析，流式返回结果 | `run_analysis` 触发后端完整流水线；`continue_analysis` 追问 |
 | **从群体反馈获取规格说明** | 将群体情报转化为可执行的规格说明 | 规格包含证据引用、验收标准和置信度评分 |
@@ -75,7 +75,7 @@ npx @crowdlisten/harness login
 
 ![CrowdListen Pipeline — Raw Crowd Signals to Agent Delivery](docs/images/pipeline.jpg)
 
-智能体从 **7 个核心工具** 开始，按需激活技能包（所有包共约 30 个工具）。无需重启——新工具通过 `tools/list_changed` 自动出现。
+智能体从 **8 个核心工具** 开始，按需激活技能包（所有包共约 28 个工具）。无需重启——新工具通过 `tools/list_changed` 自动出现。
 
 **任务执行** — 触发服务端 AI 智能体执行（Amp、Claude Code、Codex、Gemini CLI），通过 MCP 轮询进度。调用 `execute_task` 分派工作，`get_execution_status` 跟踪完成情况。
 
@@ -83,16 +83,12 @@ npx @crowdlisten/harness login
 
 | 技能包 | 工具数 | 描述 |
 |--------|:------:|------|
-| **core**（始终开启） | 7 | .md 知识库（save/recall/sync/publish）、技能发现、偏好设置 |
-| **social-listening** | 7 | 搜索 Reddit、TikTok、YouTube、Twitter、Instagram、小红书 |
-| **audience-analysis** | 4 | 意见聚类、洞察提取、内容丰富 |
-| **planning** | 13 | 任务、执行计划、进度跟踪、服务端智能体执行 |
+| **core**（始终开启） | 8 | Wiki 知识库（save/wiki_*/skills）、技能发现 |
+| **social-listening** | 5 | 搜索 Reddit、TikTok、YouTube、Twitter、Instagram、小红书 |
+| **audience-analysis** | 3 | 意见聚类、洞察提取、内容分析 |
+| **planning** | 6 | 任务、执行、进度跟踪、服务端智能体执行 |
 | **analysis** | 5 | 运行完整分析、从结果生成规格说明 |
-| **crowd-intelligence** | 2 | 异步群体研究与任务轮询 |
-| **spec-delivery** | 3 | 浏览和领取群体反馈的可执行规格说明 |
-| **sessions** | 3 | 多智能体协作 |
-| **setup** | 3 | 看板管理、项目列表、迁移 |
-| **agent-network** | 2 | 注册智能体、发现能力 |
+| **crowd-intelligence** | 1 | 异步群体研究与任务轮询 |
 
 另有 9 个**工作流包**，激活时通过 SKILL.md 提供专业方法论：
 - knowledge-base、competitive-analysis、content-strategy、content-creator、data-storytelling、heuristic-evaluation、market-research-reports、user-stories、ux-researcher
@@ -107,22 +103,21 @@ npx @crowdlisten/harness login
  save()          Supabase              ~/.crowdlisten/context/
 ───────→  memories 表  ──渲染──→  ├── INDEX.md
                                   ├── entries/a1b2c3d4.md
- recall()        ↑                └── topics/auth.md
+ wiki_search()   ↑                └── topics/auth.md
 ←────────────────┘
-                                  sync_context({ organize: true })
- sync_context()                   检测重复，
- 重建本地 ←──── 完整拉取 ────── 按主题分组，
- .md 缓存                        建议合成
+ wiki_list()                      wiki_ingest()
+ 浏览索引                          导入外部内容
 ```
 
 **数据流向：**
 
-1. **保存** — `save({ title, content, tags })` 写入 Supabase，并在本地渲染带 YAML 前置数据的 `.md` 文件
-2. **调取** — `recall({ search })` 通过语义搜索（pgvector 余弦相似度）查询 Supabase，关键词匹配作为后备。结构化浏览可直接读取 `~/.crowdlisten/context/INDEX.md`
-3. **同步** — `sync_context()` 从云端拉取所有条目并重建本地 `.md` 目录。切换设备或网页上传后使用。传入 `organize: true` 可检测近似重复（Jaccard 相似度）、识别 3+ 条目的主题，返回报告告知智能体需要合成或修剪什么
-4. **发布** — `publish_context({ memory_id, team_id })` 与团队成员共享条目。下次 `sync_context` 会将其拉入 INDEX.md 的 `## Shared` 部分
+1. **保存** — `save({ title, content, tags })` 写入 Supabase，并在本地渲染 `.md` 文件。传入 `publish: { team_id }` 可与团队共享。
+2. **浏览** — `wiki_list()` 浏览索引。`wiki_read(entry_id)` 读取单个条目。
+3. **搜索** — `wiki_search({ query })` 跨所有条目全文搜索。
+4. **导入** — `wiki_ingest({ url_or_text })` 将外部内容导入知识库。
+5. **日志** — `wiki_log({ message })` 追加带时间戳的日志条目，用于决策和进度记录。
 
-**复利效应：** 每次分析或研究任务后，智能体保存 2-3 个关键要点。随时间推移，`sync_context({ organize: true })` 将其分组为主题。智能体将主题合成为精炼摘要。下一个智能体从丰富的 INDEX.md 开始，而非白纸一张。
+**复利效应：** 每次分析或研究任务后，智能体保存 2-3 个关键要点。Wiki 工具让智能体可以浏览、搜索和组织知识。下一个智能体从丰富的知识库开始，而非白纸一张。
 
 Supabase 是唯一真实来源。本地 `.md` 目录是只读渲染缓存——没有同步冲突，没有合并问题。
 
