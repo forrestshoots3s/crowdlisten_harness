@@ -79,7 +79,7 @@ export class TikTokAdapter extends BaseAdapter {
       : `https://www.tiktok.com/video/${contentId}`;
 
     const pool = getBrowserPool();
-    const page = await pool.acquire('tiktok');
+    const { page } = await pool.acquirePersistent('tiktok');
     const interceptor = new RequestInterceptor();
 
     try {
@@ -104,7 +104,7 @@ export class TikTokAdapter extends BaseAdapter {
 
   private async interceptPosts(url: string, limit: number): Promise<Post[]> {
     const pool = getBrowserPool();
-    const page = await pool.acquire('tiktok');
+    const { page } = await pool.acquirePersistent('tiktok');
     const interceptor = new RequestInterceptor();
 
     try {
@@ -171,7 +171,9 @@ export class TikTokAdapter extends BaseAdapter {
       try {
         const items = data?.data || data?.item_list || data?.itemList || [];
         if (Array.isArray(items)) {
-          for (const item of items) {
+          for (const rawItem of items) {
+            // TikTok search wraps each result: { type, item, common }
+            const item = (rawItem.item && !rawItem.id && !rawItem.aweme_id) ? rawItem.item : rawItem;
             const post = this.normalizeItem(item);
             if (post && !seenIds.has(post.id)) {
               seenIds.add(post.id);
@@ -182,7 +184,8 @@ export class TikTokAdapter extends BaseAdapter {
 
         const searchItems = data?.data?.item_list || data?.data?.items || [];
         if (Array.isArray(searchItems) && searchItems !== items) {
-          for (const item of searchItems) {
+          for (const rawItem of searchItems) {
+            const item = (rawItem.item && !rawItem.id && !rawItem.aweme_id) ? rawItem.item : rawItem;
             const post = this.normalizeItem(item);
             if (post && !seenIds.has(post.id)) {
               seenIds.add(post.id);
