@@ -74,21 +74,34 @@ export class TikTokAdapter extends BaseAdapter {
     this.validateContentId(contentId);
     await this.enforceRateLimit();
 
+    // Full URL required (/@username/video/{id}); /video/{id} alone 404s
     const url = contentId.includes('tiktok.com/')
       ? contentId
       : `https://www.tiktok.com/video/${contentId}`;
 
     const pool = getBrowserPool();
-    const page = await pool.acquire('tiktok');
+    const { page } = await pool.acquirePersistent('tiktok');
     const interceptor = new RequestInterceptor();
 
     try {
       await this.setupPage(page);
       await interceptor.setup(page, API_PATTERNS);
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
-      await this.waitAndScroll(page);
 
-      const apiData = interceptor.getAllData();
+      // Wait for page to fully render (comment button not available immediately)
+      await page.waitForTimeout(6000);
+
+      // Click the comment icon to trigger /api/comment/list/ request
+      try {
+        await page.click('[data-e2e="comment-icon"]', { timeout: 5000 });
+      } catch {
+        try { await page.click('[data-e2e="comments"]', { timeout: 3000 }); } catch {}
+      }
+
+      // Wait for the comment API response
+      await interceptor.waitForResponse(page, '/api/comment/list/', 8000);
+
+      const apiData = interceptor.getAllData('/api/comment/list/');
       if (apiData.length === 0) return [];
 
       return this.structureComments(apiData).slice(0, limit);
@@ -104,7 +117,7 @@ export class TikTokAdapter extends BaseAdapter {
 
   private async interceptPosts(url: string, limit: number): Promise<Post[]> {
     const pool = getBrowserPool();
-    const page = await pool.acquire('tiktok');
+    const { page } = await pool.acquirePersistent('tiktok');
     const interceptor = new RequestInterceptor();
 
     try {
@@ -171,7 +184,9 @@ export class TikTokAdapter extends BaseAdapter {
       try {
         const items = data?.data || data?.item_list || data?.itemList || [];
         if (Array.isArray(items)) {
-          for (const item of items) {
+          for (const rawItem of items) {
+            // TikTok search wraps each result: { type, item, common }
+            const item = (rawItem.item && !rawItem.id && !rawItem.aweme_id) ? rawItem.item : rawItem;
             const post = this.normalizeItem(item);
             if (post && !seenIds.has(post.id)) {
               seenIds.add(post.id);
@@ -182,7 +197,8 @@ export class TikTokAdapter extends BaseAdapter {
 
         const searchItems = data?.data?.item_list || data?.data?.items || [];
         if (Array.isArray(searchItems) && searchItems !== items) {
-          for (const item of searchItems) {
+          for (const rawItem of searchItems) {
+            const item = (rawItem.item && !rawItem.id && !rawItem.aweme_id) ? rawItem.item : rawItem;
             const post = this.normalizeItem(item);
             if (post && !seenIds.has(post.id)) {
               seenIds.add(post.id);
