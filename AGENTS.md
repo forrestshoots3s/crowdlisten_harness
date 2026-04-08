@@ -1,6 +1,6 @@
 # CrowdListen — Agent Reference
 
-Unified MCP server for AI agents. Planning, social listening, skill packs, and knowledge management with progressive disclosure.
+Unified MCP server for AI agents. Shared context via structured harnesses — ingest, compile, query, and compound.
 
 ## Quick Start
 

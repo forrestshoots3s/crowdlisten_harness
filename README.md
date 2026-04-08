@@ -1,6 +1,6 @@
 # CrowdListen
 
-> Give your AI agent crowd context — analyzed intelligence from what real users say, what markets think, and what communities want.
+> Give your AI agents shared context — structured harnesses compiled from your organization's conversations, feedback, and decisions.
 
 ![CrowdListen — Give your agent evidence, not guesses](docs/images/hero.png)
 
@@ -8,16 +8,16 @@
 
 ## The Problem
 
-AI agents don't know what your users think. Every session starts from scratch — no awareness of what people say on Reddit, no signal from TikTok comments, no synthesis of forum discussions. You end up copy-pasting feedback manually and watching your agent make decisions without the one input that matters most: what real people think.
+AI agents don't share context. Every session starts from scratch — no awareness of prior decisions, no access to customer feedback, no understanding of what's been tried. You end up pasting context into every prompt and watching agents build without the one thing that matters: shared organizational understanding.
 
 CrowdListen fixes this with a four-step loop:
 
-1. **Listen** — search Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu, and forums
-2. **Analyze** — cluster opinions by theme, extract pain points, synthesize cross-platform reports
-3. **Save** — capture insights into a .md knowledge base that compounds across sessions
-4. **Recall** — any agent retrieves context via semantic search or browses INDEX.md directly
+1. **Ingest** — connect Slack, Discord, Reddit, support tools, internal discussions
+2. **Compile** — AI distills signal into structured harnesses: themes, evidence, severity, trends
+3. **Execute** — agents inherit harnesses as context, building with full organizational knowledge
+4. **Learn** — agents write back observations, enriching harnesses for the next build
 
-Any agent — Claude Code, Cursor, Gemini CLI, Codex — can recall this later. The intelligence compounds across sessions and across agents. That's crowd context.
+Any agent — Claude Code, Cursor, Gemini CLI, Codex — reads and writes harnesses. Context compounds across sessions and across agents. That's how you align builds at scale.
 
 ## Get Started
 
@@ -64,11 +64,11 @@ For remote access, use the HTTP transport:
 | Capability | What it does | How it works |
 |---|---|---|
 | **Search social platforms** | Search Reddit, YouTube, TikTok, Twitter/X, Instagram, Xiaohongshu from one tool | Returns structured posts with engagement metrics, timestamps, and author info — same format regardless of platform |
-| **Analyze audience signal** | Cluster opinions, extract pain points, generate cross-platform reports | AI groups comments by theme, scores sentiment, identifies competitive signals |
-| **Save and recall across sessions** | .md knowledge base that compounds across agents and devices | Your agent saves with `save`, searches with `wiki_search`, browses with `wiki_list`, ingests content with `wiki_ingest` |
+| **Compile organizational signal** | AI distills conversations into structured harnesses — themes, evidence, severity, and trends | AI groups comments by theme, scores sentiment, identifies competitive signals |
+| **Shared context layer** | Harnesses persist across agents and sessions — query via semantic search or browse directly | Your agent saves with `save`, searches with `wiki_search`, browses with `wiki_list`, ingests content with `wiki_ingest` |
 | **Plan and track work** | Tasks, execution plans, progress tracking, server-side execution | Your agent claims tasks, drafts plans with assumptions and risks, logs progress, triggers agent execution and polls status |
 | **Run full analyses** | End-to-end crowd analysis with streaming results | `run_analysis` triggers the full pipeline on the backend; `continue_analysis` for follow-ups |
-| **Get specs from crowd feedback** | Turn crowd intelligence into implementation-ready specs | Specs include evidence citations, acceptance criteria, and confidence scores |
+| **From harnesses to specs** | Turn harnesses into implementation-ready specs with evidence citations and acceptance criteria | Specs include evidence citations, acceptance criteria, and confidence scores |
 | **Extract from any website** | Screenshot any URL and get structured data back | Vision mode sends screenshots to an LLM — works on forums, paywalled sites, anything with a URL |
 
 ## How It Works
