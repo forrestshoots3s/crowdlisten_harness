@@ -196,6 +196,69 @@ export const AGENT_TOOLS = [
     },
   },
 
+  // ── Observations & Intelligence (3 tools) ────────────────────────────
+  {
+    name: "submit_observation",
+    description:
+      "[Observations] Submit observations from conversations the agent has witnessed. Each observation is a signal (feature request, bug report, pain point, praise, question, competitive intel, or general). Observations are automatically classified, clustered into themes, and synthesized into wiki pages.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        observations: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              content: { type: "string", description: "The observation text (1-10000 chars)" },
+              source_platform: { type: "string", description: "Platform: slack, discord, reddit, etc." },
+              observation_type: {
+                type: "string",
+                enum: ["feature_request", "bug_report", "pain_point", "praise", "question", "competitive_intel", "general"],
+                description: "Type of observation (default: general)",
+              },
+              metadata: { type: "object", description: "Optional metadata (author, channel, thread_id, etc.)" },
+            },
+            required: ["content"],
+          },
+          description: "1-50 observations to submit",
+        },
+      },
+      required: ["observations"],
+    },
+  },
+  {
+    name: "get_observation_feed",
+    description:
+      "[Observations] Get recent observations for a project. Shows the raw signal flowing in from agents, connectors, and channel bridges.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        project_id: { type: "string", description: "Project UUID" },
+        type: {
+          type: "string",
+          enum: ["feature_request", "bug_report", "pain_point", "praise", "question", "competitive_intel", "general"],
+          description: "Filter by observation type",
+        },
+        days: { type: "number", description: "Look back N days (default 7, max 90)" },
+        limit: { type: "number", description: "Max results (default 50, max 200)" },
+      },
+      required: ["project_id"],
+    },
+  },
+  {
+    name: "get_theme_insights",
+    description:
+      "[Observations] Get clustered themes from observations — synthesized intelligence showing what topics are trending, their severity (P0/P1/P2), and trend direction (growing/stable/declining).",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        project_id: { type: "string", description: "Project UUID" },
+        limit: { type: "number", description: "Max themes (default 20)" },
+      },
+      required: ["project_id"],
+    },
+  },
+
   // ── Task Execution (2 tools) ──────────────────────────────────────────
   {
     name: "execute_task",
@@ -453,6 +516,40 @@ export async function handleAgentTool(
       if (args.limit) params.set("limit", String(args.limit));
       const result = await agentGet(
         `/agent/v1/insights/recent?${params.toString()}`,
+        apiKey
+      );
+      return JSON.stringify(result, null, 2);
+    }
+
+    // ── Observations & Intelligence ────────────────────────
+    case "submit_observation": {
+      const result = await agentPost(
+        "/api/observations/submit",
+        { observations: args.observations },
+        apiKey
+      );
+      return JSON.stringify(result, null, 2);
+    }
+
+    case "get_observation_feed": {
+      const params = new URLSearchParams();
+      params.set("project_id", args.project_id as string);
+      if (args.type) params.set("type", args.type as string);
+      if (args.days) params.set("days", String(args.days));
+      if (args.limit) params.set("limit", String(args.limit));
+      const result = await agentGet(
+        `/api/observations/feed?${params.toString()}`,
+        apiKey
+      );
+      return JSON.stringify(result, null, 2);
+    }
+
+    case "get_theme_insights": {
+      const params = new URLSearchParams();
+      params.set("project_id", args.project_id as string);
+      if (args.limit) params.set("limit", String(args.limit));
+      const result = await agentGet(
+        `/api/observations/themes?${params.toString()}`,
         apiKey
       );
       return JSON.stringify(result, null, 2);
