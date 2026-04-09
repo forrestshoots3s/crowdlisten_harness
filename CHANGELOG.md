@@ -2,6 +2,17 @@
 
 All notable changes to the CrowdListen Harness.
 
+## [2.2.0] - 2026-04-08
+
+### Added
+- **Insight Compiler pack**: `get_user_context` and `get_recent_insights` tools for querying synthesized user feedback themes, severity, evidence, and trends from connected channels
+- **Token-based login**: `login --token <access> <refresh>` for sandboxed environments (Codex, CI) where browser auth is unavailable
+- **Environment variable auth**: `CROWDLISTEN_ACCESS_TOKEN` and `CROWDLISTEN_REFRESH_TOKEN` env vars as login fallback in `getAuthedClient()`
+
+### Fixed
+- **Codex TOML config**: `autoInstallMcp()` now shells out to `codex mcp add` instead of parsing JSON at `~/.codex/config.json` (Codex uses TOML)
+- **Bin file permissions**: Added `postbuild` and `prepublishOnly` scripts to `chmod +x` dist bin files so `npx` execution works after `tsc` compile
+
 ## [2.1.0] - 2026-04-07
 
 ### Added

@@ -182,6 +182,34 @@ async function interactiveLogin(): Promise<StoredAuth> {
   });
 }
 
+// ─── Token-Based Login (for sandboxed environments) ────────────────────────
+
+async function tokenLogin(accessToken: string, refreshToken: string): Promise<StoredAuth> {
+  const supabase = createClient(CROWDLISTEN_SUPABASE_URL, CROWDLISTEN_ANON_KEY);
+  const { data, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
+
+  if (error || !data.session) {
+    console.error("❌ Token login failed:", error?.message || "Invalid tokens");
+    process.exit(1);
+  }
+
+  const auth: StoredAuth = {
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token,
+    user_id: data.user?.id || "",
+    email: data.user?.email || "",
+    expires_at: data.session.expires_at,
+  };
+
+  saveAuth(auth);
+  console.error(`✅ Logged in as ${auth.email}`);
+  console.error(`   Saved to ${AUTH_FILE}\n`);
+  return auth;
+}
+
 // ─── Authenticated Supabase Client ──────────────────────────────────────────
 
 async function getAuthedClient(): Promise<{
@@ -190,9 +218,21 @@ async function getAuthedClient(): Promise<{
 }> {
   let auth = loadAuth();
 
+  // Fallback: check environment variables (useful in sandboxed environments like Codex)
+  if (!auth) {
+    const envAccess = process.env.CROWDLISTEN_ACCESS_TOKEN;
+    const envRefresh = process.env.CROWDLISTEN_REFRESH_TOKEN;
+    if (envAccess && envRefresh) {
+      auth = await tokenLogin(envAccess, envRefresh);
+    }
+  }
+
   if (!auth) {
     console.error(
       "Not logged in. Run: npx @crowdlisten/harness login"
+    );
+    console.error(
+      "  Or set CROWDLISTEN_ACCESS_TOKEN and CROWDLISTEN_REFRESH_TOKEN env vars."
     );
     process.exit(1);
   }
@@ -233,7 +273,17 @@ async function getAuthedClient(): Promise<{
 const command = process.argv[2];
 
 if (command === "login") {
-  interactiveLogin().then(() => process.exit(0));
+  if (process.argv[3] === "--token") {
+    const accessToken = process.argv[4];
+    const refreshToken = process.argv[5];
+    if (!accessToken || !refreshToken) {
+      console.error("Usage: npx @crowdlisten/harness login --token <access_token> <refresh_token>");
+      process.exit(1);
+    }
+    tokenLogin(accessToken, refreshToken).then(() => process.exit(0));
+  } else {
+    interactiveLogin().then(() => process.exit(0));
+  }
 } else if (command === "logout") {
   clearAuth();
   console.error("✅ Logged out. Auth cleared.");
@@ -293,7 +343,8 @@ if (command === "login") {
 CrowdListen — Unified MCP Server
 
 COMMANDS:
-  login          Sign in + auto-configure your coding agents
+  login                    Sign in via browser + auto-configure agents
+  login --token <a> <r>    Sign in with access/refresh tokens (no browser)
   setup          Re-run auto-configure for agent MCP configs
   logout         Clear saved credentials
   whoami         Show current user
@@ -312,6 +363,12 @@ QUICK START:
 
   That's it. Login auto-detects and configures Claude Code,
   Cursor, Gemini CLI, Codex, and Amp. Just restart your agent.
+
+SANDBOXED / CI ENVIRONMENTS:
+
+  npx @crowdlisten/harness login --token <access_token> <refresh_token>
+
+  Or set env vars: CROWDLISTEN_ACCESS_TOKEN, CROWDLISTEN_REFRESH_TOKEN
 
   Your agent starts with 4 discovery tools:
     list_skill_packs, activate_skill_pack, remember, recall

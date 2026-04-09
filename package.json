@@ -10,9 +10,11 @@
   },
   "scripts": {
     "build": "tsc",
+    "postbuild": "chmod +x dist/index.js dist/transport/http.js dist/insights/cli.js",
     "build:web": "cd src/context/web && npx vite build --outDir ../../../web-dist",
     "build:catalog": "node scripts/build-catalog.js",
     "build:all": "npm run build:catalog && npm run build && npm run build:web",
+    "prepublishOnly": "npm run build:all && chmod +x dist/index.js dist/transport/http.js dist/insights/cli.js",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest run",
