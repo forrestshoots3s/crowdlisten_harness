@@ -124,6 +124,8 @@ export interface AgentConfig {
   configPath: string;
   mcpKey: string;
   wrapperKey?: string;
+  /** Shell command to install MCP entry (e.g. `codex mcp add`). Skips JSON config parsing when set. */
+  cliInstall?: string;
 }
 
 export function getAgentConfigs(): AgentConfig[] {
@@ -146,8 +148,9 @@ export function getAgentConfigs(): AgentConfig[] {
     },
     {
       name: "Codex",
-      configPath: path.join(home, ".codex", "config.json"),
+      configPath: path.join(home, ".codex", "config.toml"),
       mcpKey: "mcp_servers",
+      cliInstall: "codex mcp add crowdlisten -- npx -y @crowdlisten/harness",
     },
     {
       name: "OpenClaw",
@@ -167,6 +170,17 @@ export async function autoInstallMcp(): Promise<string[]> {
 
   for (const agent of getAgentConfigs()) {
     try {
+      // CLI-based install (e.g. Codex uses TOML config — shell out instead of parsing)
+      if (agent.cliInstall) {
+        try {
+          execSync(agent.cliInstall, { stdio: "pipe", timeout: 15_000 });
+          installed.push(agent.name);
+        } catch {
+          // CLI not found or command failed — skip silently
+        }
+        continue;
+      }
+
       if (!fs.existsSync(agent.configPath)) continue;
 
       let config: Record<string, unknown> = {};
