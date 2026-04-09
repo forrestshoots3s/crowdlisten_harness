@@ -35,6 +35,7 @@ export interface StoredAuth {
   user_id: string;
   email: string;
   expires_at?: number;
+  api_key?: string;
 }
 
 export function loadAuth(): StoredAuth | null {
@@ -57,6 +58,53 @@ export function clearAuth(): void {
     fs.unlinkSync(AUTH_FILE);
   } catch {
     // ignore
+  }
+}
+
+// ─── API Key Auto-Provisioning ────────────────────────────────────────────
+
+const AGENT_BASE =
+  process.env.CROWDLISTEN_AGENT_URL || "https://agent.crowdlisten.com";
+
+/**
+ * Provision a Research Partner API key using a Supabase JWT.
+ * Calls POST /api/user/keys on the agent backend.
+ * Returns the `cl_live_*` key on success, or null on failure.
+ * Never throws — login must not be blocked by key provisioning.
+ */
+export async function provisionApiKey(accessToken: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${AGENT_BASE}/api/user/keys`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "harness-auto",
+        scopes: ["analysis", "research", "context"],
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.error(`⚠️  API key provisioning failed (${res.status}): ${text || res.statusText}`);
+      return null;
+    }
+
+    const data = (await res.json()) as Record<string, unknown>;
+    const key = (data.key ?? data.api_key ?? data.token) as string | undefined;
+    if (!key || typeof key !== "string") {
+      console.error("⚠️  API key provisioning returned unexpected response");
+      return null;
+    }
+
+    return key;
+  } catch (err) {
+    // Network error, timeout, or offline — never block login
+    console.error(`⚠️  API key provisioning skipped: ${err instanceof Error ? err.message : String(err)}`);
+    return null;
   }
 }
 
@@ -579,6 +627,38 @@ export const TOOLS = [
   },
 
   ...AGENT_TOOLS,
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONNECTOR MANAGEMENT (1 tool)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    name: "setup_connector",
+    description:
+      "Register a new observation connector for a project. Returns an API key that agents use to submit observations via submit_observation. Each connector tracks which agent/bot is writing data.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        name: {
+          type: "string",
+          description: "Display name for the connector (e.g., 'Slack Bot - #product-feedback')",
+        },
+        project_id: {
+          type: "string",
+          description: "Project UUID to associate observations with",
+        },
+        connector_type: {
+          type: "string",
+          enum: ["agent", "native_bot", "webhook"],
+          description: "Type of connector (default: agent)",
+        },
+        platform: {
+          type: "string",
+          description: "Platform the connector operates on (slack, discord, etc.)",
+        },
+      },
+      required: ["name", "project_id"],
+    },
+  },
 ];
 
 // ─── Status <-> Column mapping ────────────────────────────────────────────────
@@ -2474,6 +2554,35 @@ export async function handleTool(
         }
       }
       return handleAgentTool(name, args);
+    }
+
+    case "setup_connector": {
+      try {
+        const { requireApiKey, agentPost: agPost } = await import("./agent-proxy.js");
+        const apiKey = requireApiKey();
+        const result = await agPost(
+          "/api/connectors",
+          {
+            name: args.name,
+            project_id: args.project_id,
+            connector_type: args.connector_type || "agent",
+            platform: args.platform,
+          },
+          apiKey
+        );
+        const res = result as any;
+        return json({
+          id: res.id,
+          name: res.name,
+          api_key: res.api_key,
+          connector_type: res.connector_type,
+          platform: res.platform,
+          project_id: res.project_id,
+          _setup_hint: `Use this API key with submit_observation to send observations. The key is shown once — save it now.`,
+        });
+      } catch (err: any) {
+        return json({ error: `Failed to create connector: ${err?.message || err}` });
+      }
     }
 
     default: {

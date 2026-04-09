@@ -129,6 +129,14 @@ export function initializeRegistry(skillsDir: string): void {
     toolNames: ["get_user_context", "get_recent_insights"],
   });
 
+  // Observations & Intelligence — agent-as-integration observation pipeline (4 tools)
+  packs.set("observations", {
+    id: "observations",
+    name: "Observations & Intelligence",
+    description: "Submit observations from conversations, get theme insights, manage connectors. The agent-native integration — what one agent learns, every agent can query.",
+    toolNames: ["submit_observation", "get_observation_feed", "get_theme_insights", "setup_connector"],
+  });
+
   // ── Virtual SKILL.md Packs ────────────────────────────────────────────
   // Each native skill directory becomes a virtual pack
   if (fs.existsSync(skillsDir)) {
