@@ -16,7 +16,6 @@ import {
 import { TwitterAdapter } from '../platforms/twitter/TwitterAdapter.js';
 import { RedditAdapter } from '../platforms/reddit/RedditAdapter.js';
 import { YouTubeAdapter } from '../platforms/youtube/YouTubeAdapter.js';
-import { MoltbookAdapter } from '../platforms/moltbook/MoltbookAdapter.js';
 import { TikTokAdapter } from '../platforms/tiktok/TikTokAdapter.js';
 import { InstagramAdapter } from '../platforms/instagram/InstagramAdapter.js';
 import { XiaohongshuAdapter } from '../platforms/xiaohongshu/XiaohongshuAdapter.js';
@@ -29,7 +28,6 @@ export interface UnifiedServiceConfig {
     reddit?: PlatformConfig;
     instagram?: PlatformConfig;
     youtube?: PlatformConfig;
-    moltbook?: PlatformConfig;
     xiaohongshu?: PlatformConfig;
   };
   globalOptions?: {
@@ -62,7 +60,6 @@ export class UnifiedSocialMediaService {
       { platform: 'xiaohongshu', create: () => new XiaohongshuAdapter(this.config.platforms.xiaohongshu!) },
       { platform: 'reddit', create: () => new RedditAdapter(this.config.platforms.reddit!) },
       { platform: 'youtube', create: () => new YouTubeAdapter(this.config.platforms.youtube!) },
-      { platform: 'moltbook', create: () => new MoltbookAdapter(this.config.platforms.moltbook!) },
     ];
 
     for (const { platform, create } of adapterMap) {

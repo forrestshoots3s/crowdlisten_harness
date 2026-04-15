@@ -131,7 +131,7 @@ export const AGENT_TOOLS = [
           type: "array",
           items: {
             type: "string",
-            enum: ["reddit", "twitter", "moltbook", "xiaohongshu", "web"],
+            enum: ["reddit", "twitter", "xiaohongshu", "web"],
           },
           description:
             "Platforms to search. 'web' = Exa semantic search across forums, news, blogs. Default: all.",

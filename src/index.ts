@@ -546,7 +546,7 @@ async function startMcpServer() {
   const toolPackMap = buildToolPackMap([
     { id: "core", toolNames: ["list_skill_packs", "activate_skill_pack", "save", "recall", "sync_context", "publish_context", "set_preferences"] },
     { id: "planning", toolNames: ["list_tasks", "create_task", "get_task", "update_task", "claim_task", "complete_task", "log_progress", "delete_task", "create_plan", "get_plan", "update_plan"] },
-    { id: "social-listening", toolNames: ["search_content", "get_content_comments", "get_trending_content", "get_user_content", "get_platform_status", "health_check", "extract_url"] },
+    { id: "social-listening", toolNames: ["search_content", "get_content_comments", "get_trending_content", "get_user_content", "get_platform_status", "health_check"] },
     { id: "audience-analysis", toolNames: ["analyze_content", "cluster_opinions", "enrich_content", "extract_insights"] },
     { id: "sessions", toolNames: ["start_session", "list_sessions", "update_session"] },
     { id: "setup", toolNames: ["get_or_create_global_board", "list_projects", "migrate_to_global_board"] },
