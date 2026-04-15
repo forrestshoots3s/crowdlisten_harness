@@ -22,7 +22,6 @@ import {
   getPlatformStatus,
   healthCheck,
   extractInsights,
-  extractWithVision,
 } from './handlers.js';
 import {
   agentPost,
@@ -123,7 +122,6 @@ program
   .command('search <platform> <query>')
   .description('Search social media for audience conversations')
   .option('-l, --limit <n>', 'Max results', '10')
-  .option('--vision', 'Force vision extraction mode')
   .action(async (platform: string, query: string, opts: any) => {
     await run(async () => {
       const svc = await getService();
@@ -131,7 +129,6 @@ program
         platform,
         query,
         limit: parseInt(opts.limit),
-        useVision: opts.vision || false,
       });
     });
   });
@@ -140,7 +137,6 @@ program
   .command('comments <platform> <contentId>')
   .description('Get comments for a specific post/video')
   .option('-l, --limit <n>', 'Max comments', '20')
-  .option('--vision', 'Force vision extraction mode')
   .action(async (platform: string, contentId: string, opts: any) => {
     await run(async () => {
       const svc = await getService();
@@ -148,7 +144,6 @@ program
         platform,
         contentId,
         limit: parseInt(opts.limit),
-        useVision: opts.vision || false,
       });
     });
   });
@@ -206,21 +201,6 @@ program
     await run(async () => {
       const svc = await getService();
       return getUserContent(svc, { platform, userId, limit: parseInt(opts.limit) });
-    });
-  });
-
-program
-  .command('vision <url>')
-  .description('Extract content from any URL using vision (LLM screenshot analysis)')
-  .option('-m, --mode <mode>', 'Extraction mode (posts|comments|raw)', 'posts')
-  .option('-l, --limit <n>', 'Max results', '10')
-  .action(async (url: string, opts: any) => {
-    await run(async () => {
-      return extractWithVision({
-        url,
-        mode: opts.mode,
-        limit: parseInt(opts.limit),
-      });
     });
   });
 
@@ -904,7 +884,7 @@ program
 if (process.argv.length <= 2 && !process.stdin.isTTY) {
   console.error('CrowdListen CLI. Use --help to see all commands.');
   console.error('  Admin: project, entity, source, analysis, research, task, agents');
-  console.error('  Social: search, comments, analyze, trending, cluster, vision');
+  console.error('  Social: search, comments, analyze, trending, cluster');
   console.error('  Setup: setup-project, whoami, status, health');
   process.exit(0);
 } else {

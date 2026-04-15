@@ -88,7 +88,7 @@ export function initializeRegistry(skillsDir: string): void {
     description: "Search and retrieve content from social platforms — Reddit, Twitter, TikTok, YouTube, Instagram.",
     toolNames: [
       "search_content", "get_content_comments", "get_trending_content",
-      "platform_status", "extract_url",
+      "platform_status",
     ],
     triggers: ["reddit", "twitter", "tiktok", "social", "platform", "trending", "youtube", "instagram"],
   });

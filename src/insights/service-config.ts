@@ -56,14 +56,6 @@ export function createServiceConfig(): UnifiedServiceConfig {
     };
   }
 
-  // Moltbook
-  if (process.env.MOLTBOOK_API_KEY) {
-    config.platforms.moltbook = {
-      platform: 'moltbook',
-      credentials: { apiKey: process.env.MOLTBOOK_API_KEY },
-    };
-  }
-
   return config;
 }
 

@@ -2,7 +2,7 @@
  * CrowdListen Shared Handlers
  * Pure functions that return plain objects — used by CLI and MCP server.
  *
- * Retrieval handlers: search, comments, trending, user content, vision
+ * Retrieval handlers: search, comments, trending, user content
  * Analysis handlers (API): analyze, cluster, enrich, insights
  */
 
@@ -10,7 +10,6 @@ import { UnifiedSocialMediaService } from './services/UnifiedSocialMediaService.
 import { PlatformType } from './core/interfaces/SocialMediaPlatform.js';
 import { TikTokUrlUtils } from './core/utils/TikTokUrlUtils.js';
 import { InstagramUrlUtils } from './core/utils/InstagramUrlUtils.js';
-import { VisionExtractor } from './vision/VisionExtractor.js';
 import { HealthMonitor } from './core/health/HealthMonitor.js';
 import { requireApiKey, agentPost as _agentPost } from '../agent-proxy.js';
 
@@ -20,14 +19,12 @@ export interface SearchArgs {
   platform: string;
   query: string;
   limit?: number;
-  useVision?: boolean;
 }
 
 export interface CommentsArgs {
   platform: string;
   contentId: string;
   limit?: number;
-  useVision?: boolean;
 }
 
 export interface AnalyzeArgs {
@@ -61,37 +58,6 @@ export interface UserContentArgs {
   limit?: number;
 }
 
-export interface ExtractUrlArgs {
-  url: string;
-  mode?: 'posts' | 'comments' | 'raw';
-  limit?: number;
-}
-
-// ---------- Vision Extraction Handler ----------
-
-export async function extractWithVision(args: ExtractUrlArgs) {
-  const { url, mode = 'posts', limit = 10 } = args;
-  const vision = new VisionExtractor();
-
-  if (!vision.isAvailable()) {
-    throw new Error(
-      'Vision extraction requires at least one LLM API key.\n' +
-      'Set ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY.'
-    );
-  }
-
-  const result = await vision.extract(url, { mode, limit });
-  return {
-    url,
-    mode,
-    provider: result.provider,
-    extractionMethod: 'vision',
-    ...(result.posts && { count: result.posts.length, posts: result.posts }),
-    ...(result.comments && { count: result.comments.length, comments: result.comments }),
-    ...(result.raw && { raw: result.raw }),
-  };
-}
-
 // ---------- Retrieval Handlers ----------
 
 export async function getTrendingContent(service: UnifiedSocialMediaService, args: TrendingArgs) {
@@ -114,12 +80,7 @@ export async function getUserContent(service: UnifiedSocialMediaService, args: U
 }
 
 export async function searchContent(service: UnifiedSocialMediaService, args: SearchArgs) {
-  const { platform, query, limit = 10, useVision } = args;
-
-  // Vision mode override
-  if (useVision) {
-    return extractWithVision({ url: query, mode: 'posts', limit });
-  }
+  const { platform, query, limit = 10 } = args;
 
   if (platform === 'all') {
     // Graceful degradation: search all platforms, report which ones failed
@@ -179,12 +140,7 @@ export async function searchContent(service: UnifiedSocialMediaService, args: Se
 }
 
 export async function getContentComments(service: UnifiedSocialMediaService, args: CommentsArgs) {
-  const { platform, contentId, limit = 20, useVision } = args;
-
-  // Vision mode override
-  if (useVision) {
-    return extractWithVision({ url: contentId, mode: 'comments', limit });
-  }
+  const { platform, contentId, limit = 20 } = args;
 
   let normalizedContentId = contentId;
   if (platform === 'tiktok' && typeof contentId === 'string' && TikTokUrlUtils.isTikTokUrl(contentId)) {

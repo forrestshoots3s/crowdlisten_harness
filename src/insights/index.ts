@@ -4,7 +4,7 @@
  * Tool definitions and handler dispatcher for social listening capabilities.
  * Merged from crowdlisten_sources into the unified MCP server.
  *
- * Retrieval tools: search, comments, trending, user content, platform status, health, vision
+ * Retrieval tools: search, comments, trending, user content, platform status, health
  * Analysis tools (API): analyze, cluster, enrich, insights
  */
 
@@ -22,7 +22,6 @@ import {
   clusterOpinions,
   enrichContent,
   extractInsights,
-  extractWithVision,
 } from './handlers.js';
 
 // Re-export types for consumers
@@ -46,7 +45,7 @@ export const INSIGHTS_TOOLS = [
       properties: {
         platform: {
           type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook', 'all'],
+          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'all'],
           description: 'Platform to search on, or "all" for all platforms',
         },
         query: {
@@ -70,11 +69,6 @@ export const INSIGHTS_TOOLS = [
           default: 10,
           description: 'Maximum number of posts to retrieve',
         },
-        useVision: {
-          type: 'boolean',
-          default: false,
-          description: 'Force vision extraction mode (screenshot + LLM analysis). Treats query as a URL.',
-        },
       },
       required: ['platform'],
     },
@@ -87,7 +81,7 @@ export const INSIGHTS_TOOLS = [
       properties: {
         platform: {
           type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook'],
+          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube'],
           description: 'Platform where the content is located',
         },
         contentId: {
@@ -101,11 +95,6 @@ export const INSIGHTS_TOOLS = [
           default: 20,
           description: 'Maximum number of comments to retrieve',
         },
-        useVision: {
-          type: 'boolean',
-          default: false,
-          description: 'Force vision extraction mode (screenshot + LLM analysis). Treats contentId as a URL.',
-        },
       },
       required: ['platform', 'contentId'],
     },
@@ -118,7 +107,7 @@ export const INSIGHTS_TOOLS = [
       properties: {
         platform: {
           type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook', 'all'],
+          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'all'],
           description: 'Platform to get trending content from, or "all" for all platforms',
         },
         limit: {
@@ -147,35 +136,6 @@ export const INSIGHTS_TOOLS = [
     },
   },
 
-  // ── Vision extraction — screenshot + LLM analysis ───────────────────────
-  {
-    name: 'extract_url',
-    description: 'Extract content from any URL using vision (screenshot + LLM analysis). Works with any website — social media, forums, news sites, etc. Requires at least one LLM API key (ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY).',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        url: {
-          type: 'string',
-          description: 'URL to extract content from',
-        },
-        mode: {
-          type: 'string',
-          enum: ['posts', 'comments', 'raw'],
-          default: 'posts',
-          description: 'Extraction mode: posts (structured posts), comments (structured comments), raw (unstructured text)',
-        },
-        limit: {
-          type: 'number',
-          minimum: 1,
-          maximum: 50,
-          default: 10,
-          description: 'Maximum items to extract',
-        },
-      },
-      required: ['url'],
-    },
-  },
-
   // ── Analysis tools ──────────────────────────────────────────────────────
   {
     name: 'analyze_content',
@@ -185,7 +145,7 @@ export const INSIGHTS_TOOLS = [
       properties: {
         platform: {
           type: 'string',
-          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube', 'moltbook'],
+          enum: ['tiktok', 'twitter', 'reddit', 'instagram', 'youtube'],
           description: 'Platform where the content is located',
         },
         contentId: {
@@ -340,10 +300,6 @@ export async function handleInsightsTool(
       return JSON.stringify(await getUserContent(insightsService, args as any), null, 2);
     case 'enrich_content':
       return JSON.stringify(await enrichContent(insightsService, args as any), null, 2);
-
-    // ── Vision extraction ─────────────────────────────────────────
-    case 'extract_url':
-      return JSON.stringify(await extractWithVision(args as any), null, 2);
 
     // ── Analysis tools ──────────────────────────────────────────────
     case 'analyze_content': {
